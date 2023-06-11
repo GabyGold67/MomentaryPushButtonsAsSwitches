@@ -136,7 +136,6 @@ bool AutoRptCntlMPBttn::notifySrvd(){
     return result;
 }
 
-//Complete checking needed
 bool AutoRptCntlMPBttn::updStatus()
 {
     bool result {false};
