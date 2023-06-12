@@ -1,0 +1,30 @@
+###############################################
+# Syntax Coloring Map For mmntryPshBtn
+###############################################
+
+###############################################
+# Datatypes (KEYWORD1)
+###############################################
+
+DbncdMPBttn	KEYWORD1
+AutoRptCntlMPBttn   KEYWORD1
+
+###############################################
+# Methods and Functions (KEYWORD2)
+###############################################
+
+getPressed  KEYWORD2
+updateStatus    KEYWORD2
+resetDbncTime   KEYWORD2
+setDbncTime KEYWORD2
+updIsPressed    KEYWORD2
+
+setAutoRptRate  KEYWORD2
+getSrvcPend KEYWORD2
+notifySrvd  KEYWORD2
+updStatus   KEYWORD2
+
+###############################################
+# Constants (LITERAL1)
+###############################################
+
