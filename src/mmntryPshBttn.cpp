@@ -55,7 +55,7 @@ void DbncdMPBttn::updIsPressed(){
     return;
 }
 
-bool DbncdMPBttn::updateStatus(){
+bool DbncdMPBttn::updStatus(){
     bool result {false};
 
     updIsPressed();

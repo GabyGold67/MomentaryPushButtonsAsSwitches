@@ -17,7 +17,7 @@ protected:
 public:    
     DbncdMPBttn(uint8_t mpbttnPin, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTime = 0);
     bool getPressed();
-    bool updateStatus();
+    bool updStatus();
     bool resetDbncTime();
     bool setDbncTime(const unsigned long int &newDbncTime);
     void updIsPressed();
@@ -43,5 +43,5 @@ public:
 };
 
 //Add subclass for voidable bttn
-//Add subclas for security button with display
+//Add subclass for security button with display
 #endif
