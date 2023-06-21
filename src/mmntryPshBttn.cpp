@@ -5,14 +5,38 @@ DbncdMPBttn::DbncdMPBttn(uint8_t mpbttnPin, bool pulledUp, bool typeNO, unsigned
 : _mpbttnPin{mpbttnPin}, _pulledUp{pulledUp}, _typeNO{typeNO}
 {
     if(dbncTime < _stdMinDbncTime)
-        _dbncTimeSet = _stdMinDbncTime;
+        _dbncTimeOrigSett = _stdMinDbncTime;
+    else
+        _dbncTimeOrigSett = dbncTime;
+    _dbncTimeTempSett = _dbncTimeOrigSett;
 
     pinMode(mpbttnPin, (pulledUp == true)?INPUT_PULLUP:INPUT);
 }
 
-bool DbncdMPBttn::getPressed(){
+unsigned long int DbncdMPBttn::getCurDbncTime(){
+
+    return _dbncTimeTempSett;
+}
+
+bool DbncdMPBttn::getIsPressed(){
     updIsPressed();
     return _isPressed;
+}
+
+bool DbncdMPBttn::resetDbncTime(){
+
+    return setDbncTime(_dbncTimeOrigSett);
+}
+
+bool DbncdMPBttn::setDbncTime(const unsigned long int &newDbncTime){
+    bool result {false};
+
+    if (newDbncTime >= _stdMinDbncTime){
+        _dbncTimeTempSett = newDbncTime;
+        result = true;
+    }
+
+    return result;
 }
 
 void DbncdMPBttn::updIsPressed(){
@@ -28,34 +52,36 @@ void DbncdMPBttn::updIsPressed(){
         b)  _pulledUp == true
             digitalRead == HIGH
     */
+    bool result {false};
     bool tmpPinLvl {digitalRead(_mpbttnPin)};
-
+    
     if (_typeNO == true){
         if (_pulledUp == false){
             if (tmpPinLvl == HIGH)
-                _isPressed = true;
+                result = true;
         }
         else{
             if (tmpPinLvl == LOW)
-                _isPressed = true;
+                result = true;
         }
     }
     else{
         //For NC MPBs
         if (_pulledUp == false){
             if (tmpPinLvl == LOW)
-                _isPressed = true;
+                result = true;
         }
         else{
             if (tmpPinLvl == HIGH)
-                _isPressed = true;
+                result = true;
         }
-    }
-    
+    }    
+    _isPressed = result;
+
     return;
 }
 
-bool DbncdMPBttn::updStatus(){
+bool DbncdMPBttn::updValidPress(){
     bool result {false};
 
     updIsPressed();
@@ -64,11 +90,10 @@ bool DbncdMPBttn::updStatus(){
         if(_wasPressed == false){
             //Started to be pressed
             _wasPressed = true;
-            result = false;
             _dbncTimerStrt = millis();
         }
         else{
-            if ((millis() - _dbncTimerStrt) >= _dbncTimeSet){
+            if ((millis() - _dbncTimerStrt) >= _dbncTimeTempSett){
                 result = true;
             }
         }
@@ -76,22 +101,7 @@ bool DbncdMPBttn::updStatus(){
     else{
         _wasPressed = false;
     }
-
-    return result;
-}
-
-bool DbncdMPBttn::resetDbncTime()
-{
-    return setDbncTime(_stdMinDbncTime);
-}
-
-bool DbncdMPBttn::setDbncTime(const unsigned long int &newDbncTime){
-    bool result {false};
-
-    if (newDbncTime >= _stdMinDbncTime){
-        _dbncTimeSet = newDbncTime;
-        result = true;
-    }
+    _validPress = result;
 
     return result;
 }
@@ -136,7 +146,7 @@ bool AutoRptCntlMPBttn::notifySrvd(){
     return result;
 }
 
-bool AutoRptCntlMPBttn::updStatus()
+bool AutoRptCntlMPBttn::updValidPress()
 {
     bool result {false};
     
@@ -150,7 +160,7 @@ bool AutoRptCntlMPBttn::updStatus()
             if (_autoRptOn || (!_autoRptOn && _rearmed) ){
                 if(_wasPressed){
                     //It was already being pushed, timer is already running
-                    if ((millis() - _dbncTimerStrt) >= _dbncTimeSet){
+                    if ((millis() - _dbncTimerStrt) >= _dbncTimeOrigSett){
                         _servicePend = true;
                         _rearmed = false;
                     }

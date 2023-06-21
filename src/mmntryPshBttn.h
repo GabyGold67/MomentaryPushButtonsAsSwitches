@@ -6,21 +6,24 @@
 class DbncdMPBttn{
 protected:
     uint8_t _mpbttnPin{};
-    bool _isPressed{};
+    bool _isPressed{false};
     bool _wasPressed{false};
     bool _typeNO{};
     bool _pulledUp{};
-    unsigned long int _dbncTimeSet{};
+    bool _validPress{false};
+    unsigned long int _dbncTimeOrigSett{};
+    unsigned long int _dbncTimeTempSett{};
     unsigned long int _dbncTimerStrt{};
     const unsigned long int _stdMinDbncTime {20};
 
 public:    
     DbncdMPBttn(uint8_t mpbttnPin, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTime = 0);
-    bool getPressed();
-    bool updStatus();
+    unsigned long int getCurDbncTime();
+    bool getIsPressed();
     bool resetDbncTime();
     bool setDbncTime(const unsigned long int &newDbncTime);
     void updIsPressed();
+    bool updValidPress();
 
 };
 
@@ -38,10 +41,11 @@ public:
     bool setAutoRptRate(unsigned long int newRate);
     bool getSrvcPend(); 
     bool notifySrvd ();
-    bool updStatus();
+    bool updValidPress();
 
 };
 
+//Addd subclass for toggle bttn
 //Add subclass for voidable bttn
 //Add subclass for security button with display
 #endif
