@@ -1,4 +1,4 @@
-#include "mmntryPshBttn.h"
+#include "mpbAdaptor.h"
 
 DbncdMPBttn::DbncdMPBttn(uint8_t mpbttnPin, bool pulledUp, bool typeNO, unsigned long int dbncTimeOrigSett)
 : _mpbttnPin{mpbttnPin}, _pulledUp{pulledUp}, _typeNO{typeNO}
@@ -109,6 +109,30 @@ bool DbncdMPBttn::updIsPressed(){
     _isPressed = result;
 
     return result;
+}
+
+bool DbncdMPBttn::begin(TickType_t pollDelay)
+{
+    return false;
+}
+
+bool DbncdMPBttn::pause()
+{
+    return false;
+}
+
+bool DbncdMPBttn::resume()
+{
+    return false;
+}
+
+bool DbncdMPBttn::end()
+{
+    return false;
+}
+
+void DbncdMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb)
+{
 }
 
 unsigned long int DbncdDlydMPBttn::getStrtDelay(){

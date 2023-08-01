@@ -1,5 +1,5 @@
-#ifndef _MMNTRYPSHBTTN_H_
-#define _MMNTRYPSHBTTN_H_
+#ifndef _MPBADAPTOR_H_
+#define _MPBADAPTOR_H_
 
 #include "Arduino.h"
 
@@ -19,6 +19,8 @@ protected:
     unsigned long int _dbncTimerStrt{};
     const unsigned long int _stdMinDbncTime {_HWMinDbncTime};
 
+    TimerHandle_t mpbPollTmr {nullptr};
+
     bool getIsHit();
 
 public:    
@@ -29,6 +31,13 @@ public:
     bool setDbncTime(const unsigned long int &newDbncTime);
     void updIsHit();
     bool updIsPressed();
+
+    bool begin(TickType_t pollDelay = 1000);
+    bool pause();
+    bool resume();
+    bool end();
+
+    static void mpbPollCallback(TimerHandle_t mpbTmrCb);
 
 };
 
