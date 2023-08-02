@@ -23,12 +23,11 @@ unsigned long int DbncdMPBttn::getCurDbncTime(){
 }
 
 bool DbncdMPBttn::getIsPressed(){
-    //updIsPressed();   //With the FreeRTOS timer working there's no need for this explicit call
+
     return _isPressed;
 }
 
 bool DbncdMPBttn::getIsOn (){
-    //updIsOn(); //With the FreeRTOS timer working there's no need for this explicit call
 
     return _isOn;
 }
@@ -104,7 +103,6 @@ bool DbncdMPBttn::updIsOn(){
         }
         else{
             if (((xTaskGetTickCount() / portTICK_RATE_MS) - _dbncTimerStrt) >= _dbncTimeTempSett){
-            //if ((millis() - _dbncTimerStrt) >= _dbncTimeTempSett){    //Arduino standard, but not FreeRTOS standard
                 result = true;
             }
         }
@@ -124,7 +122,7 @@ bool DbncdMPBttn::begin(unsigned long int pollDelayMs) {
             pdMS_TO_TICKS(pollDelayMs),  //Timer period in ticks
             pdTRUE,     //Autoreload true
             this,       //TimerID: data passed to the callback funtion to work
-            mpbPollCallback);
+            DbncdMPBttn::mpbPollCallback);
         assert (mpbPollTmrHndl);
     }
     xTimerStart(mpbPollTmrHndl, portMAX_DELAY);
@@ -160,6 +158,12 @@ void DbncdMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
     return;
 }
 
+DbncdDlydMPBttn::DbncdDlydMPBttn(uint8_t mpbttnPin, bool pulledUp, bool typeNO, unsigned long int dbncTimeOrigSett, unsigned long int strtDelay)
+:DbncdMPBttn(mpbttnPin, pulledUp, typeNO, dbncTimeOrigSett), _strtDelay{strtDelay}
+{
+
+}
+
 unsigned long int DbncdDlydMPBttn::getStrtDelay(){
     
     return _strtDelay;
@@ -174,16 +178,14 @@ bool DbncdDlydMPBttn::setStrtDelay(unsigned long int newStrtDelay){
 bool DbncdDlydMPBttn::updIsOn(){
     bool result {false};
 
-    updIsPressed();
-
     if(_isPressed){
         if(_wasPressed == false){
             //Started to be pressed
             _wasPressed = true;
-            _dbncTimerStrt = millis();
+            _dbncTimerStrt = xTaskGetTickCount() / portTICK_RATE_MS;
         }
         else{
-            if ((millis() - _dbncTimerStrt) >= (_dbncTimeTempSett + _strtDelay)){
+            if (((xTaskGetTickCount() / portTICK_RATE_MS) - _dbncTimerStrt) >= (_dbncTimeTempSett + _strtDelay)){
                 result = true;
             }
         }
@@ -196,6 +198,33 @@ bool DbncdDlydMPBttn::updIsOn(){
     return result;
 }
 
+bool DbncdDlydMPBttn::updIsPressed(){
+
+    return DbncdMPBttn::updIsPressed();
+}
+
+bool DbncdDlydMPBttn::begin(unsigned long int pollDelayMs){
+    if (!mpbPollTmrHndl){        
+        mpbPollTmrHndl = xTimerCreate(
+            _mpbPollTmrName,  //Timer name
+            pdMS_TO_TICKS(pollDelayMs),  //Timer period in ticks
+            pdTRUE,     //Autoreload true
+            this,       //TimerID: data passed to the callback funtion to work
+            DbncdDlydMPBttn::mpbPollCallback);
+        assert (mpbPollTmrHndl);
+    }
+    xTimerStart(mpbPollTmrHndl, portMAX_DELAY);
+
+    return mpbPollTmrHndl != nullptr;
+}
+
+void DbncdDlydMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
+    DbncdDlydMPBttn *obj = (DbncdDlydMPBttn*)pvTimerGetTimerID(mpbTmrCb);
+    obj->updIsPressed();
+    obj->updIsOn();
+
+    return;
+}
 
 SnglSrvcMPBttn::SnglSrvcMPBttn(uint8_t mpbttnPin, bool pulledUp, bool typeNO, unsigned long int dbncTime)
 :DbncdMPBttn(mpbttnPin, pulledUp, typeNO, dbncTime)

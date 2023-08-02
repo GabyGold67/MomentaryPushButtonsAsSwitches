@@ -24,6 +24,10 @@ pause   KEYWORD2
 resume  KEYWORD2
 end KEYWORD2
 
+getStrtDelay    KEYWORD2
+setStrtDelay    KEYWORD2
+
+
 setAutoRptRate  KEYWORD2
 getSrvcPend KEYWORD2
 notifySrvd  KEYWORD2

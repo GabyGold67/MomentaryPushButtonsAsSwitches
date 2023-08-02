@@ -6,15 +6,16 @@
 #define _HWMinDbncTime 20   //Documented minimum wait time for a MPB signal to stabilize
 
 class DbncdMPBttn{
+    static void mpbPollCallback(TimerHandle_t mpbTmrCb);
 protected:
     uint8_t _mpbttnPin{};
     bool _pulledUp{};
     bool _typeNO{};
     unsigned long int _dbncTimeOrigSett{};
 
-    bool _isPressed{false};
-    bool _wasPressed{false};
-    bool _isOn{false};
+    volatile bool _isPressed{false};
+    volatile bool _wasPressed{false};
+    volatile bool _isOn{false};
     unsigned long int _dbncTimeTempSett{};
     unsigned long int _dbncTimerStrt{};
     const unsigned long int _stdMinDbncTime {_HWMinDbncTime};
@@ -38,17 +39,19 @@ public:
     bool resume();
     bool end();
 
-    static void mpbPollCallback(TimerHandle_t mpbTmrCb);
-
 };
 
 class DbncdDlydMPBttn: public DbncdMPBttn{
+    static void mpbPollCallback(TimerHandle_t mpbTmrCb);
 private:    
     unsigned long int _strtDelay;
 public:
+    DbncdDlydMPBttn(uint8_t mpbttnPin, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0);
     unsigned long int getStrtDelay();
     boolean setStrtDelay(unsigned long int newStrtDelay);
     bool updIsOn();
+    bool updIsPressed();
+    bool begin(unsigned long int pollDelayMs = 5);
 };
 
 class SnglSrvcMPBttn: public DbncdMPBttn{
