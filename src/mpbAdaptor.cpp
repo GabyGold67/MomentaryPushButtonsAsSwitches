@@ -1,15 +1,20 @@
 #include "mpbAdaptor.h"
 
 DbncdMPBttn::DbncdMPBttn(uint8_t mpbttnPin, bool pulledUp, bool typeNO, unsigned long int dbncTimeOrigSett)
-: _mpbttnPin{mpbttnPin}, _pulledUp{pulledUp}, _typeNO{typeNO}
+: _mpbttnPin{mpbttnPin}, _pulledUp{pulledUp}, _typeNO{typeNO}, _dbncTimeOrigSett{dbncTimeOrigSett}
 {
-    if(dbncTimeOrigSett < _stdMinDbncTime)
+    char mpbttnPinChar[3]{};
+    sprintf(mpbttnPinChar, "%0.2d", (int)_mpbttnPin);
+    strcpy(_mpbPollTmrName, "PollMpbPin");
+    strcat(_mpbPollTmrName, mpbttnPinChar);
+    strcat(_mpbPollTmrName, "_tmr");
+
+    if(_dbncTimeOrigSett < _stdMinDbncTime)
         _dbncTimeOrigSett = _stdMinDbncTime;
-    else
-        _dbncTimeOrigSett = dbncTimeOrigSett;
     _dbncTimeTempSett = _dbncTimeOrigSett;
 
     pinMode(mpbttnPin, (pulledUp == true)?INPUT_PULLUP:INPUT);
+
 }
 
 unsigned long int DbncdMPBttn::getCurDbncTime(){
@@ -17,15 +22,15 @@ unsigned long int DbncdMPBttn::getCurDbncTime(){
     return _dbncTimeTempSett;
 }
 
-bool DbncdMPBttn::getIsHit(){
-    updIsHit();
-    return _isHit;
+bool DbncdMPBttn::getIsPressed(){
+    //updIsPressed();   //With the FreeRTOS timer working there's no need for this explicit call
+    return _isPressed;
 }
 
-bool DbncdMPBttn::getIsPressed (){
-    updIsPressed();
+bool DbncdMPBttn::getIsOn (){
+    //updIsOn(); //With the FreeRTOS timer working there's no need for this explicit call
 
-    return _isPressed;
+    return _isOn;
 }
 
 bool DbncdMPBttn::resetDbncTime(){
@@ -44,7 +49,7 @@ bool DbncdMPBttn::setDbncTime(const unsigned long int &newDbncTime){
     return result;
 }
 
-void DbncdMPBttn::updIsHit(){
+bool DbncdMPBttn::updIsPressed(){
     /*To be pressed the conditions are:
     1) For NO == true
         a)  _pulledUp == false
@@ -81,61 +86,82 @@ void DbncdMPBttn::updIsHit(){
                 result = true;
         }
     }    
-    _isHit = result;
+    _isPressed = result;
 
-    return;
+    return _isPressed;
 }
 
-bool DbncdMPBttn::updIsPressed(){
+bool DbncdMPBttn::updIsOn(){
     bool result {false};
 
-    updIsHit();
-
-    if(_isHit){
-        if(_wasHit == false){
+    //updIsPressed();   //With the FreeRTOS timer working there's no need for this explicit call
+    if(_isPressed){
+        if(_wasPressed == false){
             //Started to be pressed
-            _wasHit = true;
-            _dbncTimerStrt = millis();
+            _wasPressed = true;
+            //_dbncTimerStrt = millis(); //Arduino standard, but not FreeRTOS standard
+            _dbncTimerStrt = xTaskGetTickCount() / portTICK_RATE_MS;
         }
         else{
-            if ((millis() - _dbncTimerStrt) >= _dbncTimeTempSett){
+            if (((xTaskGetTickCount() / portTICK_RATE_MS) - _dbncTimerStrt) >= _dbncTimeTempSett){
+            //if ((millis() - _dbncTimerStrt) >= _dbncTimeTempSett){    //Arduino standard, but not FreeRTOS standard
                 result = true;
             }
         }
     }
     else{
-        _wasHit = false;
+        _wasPressed = false;
     }
-    _isPressed = result;
+    _isOn = result;
 
     return result;
 }
 
-bool DbncdMPBttn::begin(TickType_t pollDelay)
-{
-    return false;
+bool DbncdMPBttn::begin(unsigned long int pollDelayMs) {
+    if (!mpbPollTmrHndl){        
+        mpbPollTmrHndl = xTimerCreate(
+            _mpbPollTmrName,  //Timer name
+            pdMS_TO_TICKS(pollDelayMs),  //Timer period in ticks
+            pdTRUE,     //Autoreload true
+            this,       //TimerID: data passed to the callback funtion to work
+            mpbPollCallback);
+        assert (mpbPollTmrHndl);
+    }
+    xTimerStart(mpbPollTmrHndl, portMAX_DELAY);
+
+    return mpbPollTmrHndl != nullptr;
 }
 
-bool DbncdMPBttn::pause()
-{
-    return false;
+bool DbncdMPBttn::pause(){
+    xTimerStop(mpbPollTmrHndl, portMAX_DELAY);
+
+    return true;
 }
 
-bool DbncdMPBttn::resume()
-{
-    return false;
+bool DbncdMPBttn::resume(){
+    xTimerReset( mpbPollTmrHndl, portMAX_DELAY);    //Equivalent to xTimerStart()
+
+    return true;
 }
 
-bool DbncdMPBttn::end()
-{
-    return false;
+bool DbncdMPBttn::end(){
+    xTimerStop(mpbPollTmrHndl, portMAX_DELAY);
+    xTimerDelete(mpbPollTmrHndl, portMAX_DELAY);
+    mpbPollTmrHndl = nullptr;
+
+    return true;
 }
 
-void DbncdMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb)
-{
+void DbncdMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
+    DbncdMPBttn *obj = (DbncdMPBttn*)pvTimerGetTimerID(mpbTmrCb);
+    obj->updIsPressed();
+    obj->updIsOn();
+
+    return;
 }
 
 unsigned long int DbncdDlydMPBttn::getStrtDelay(){
+    
     return _strtDelay;
 }
 
@@ -145,15 +171,15 @@ bool DbncdDlydMPBttn::setStrtDelay(unsigned long int newStrtDelay){
     return true;
 }
 
-bool DbncdDlydMPBttn::updIsPressed(){
+bool DbncdDlydMPBttn::updIsOn(){
     bool result {false};
 
-    updIsHit();
+    updIsPressed();
 
-    if(_isHit){
-        if(_wasHit == false){
+    if(_isPressed){
+        if(_wasPressed == false){
             //Started to be pressed
-            _wasHit = true;
+            _wasPressed = true;
             _dbncTimerStrt = millis();
         }
         else{
@@ -163,9 +189,9 @@ bool DbncdDlydMPBttn::updIsPressed(){
         }
     }
     else{
-        _wasHit = false;
+        _wasPressed = false;
     }
-    _isPressed = result;
+    _isOn = result;
 
     return result;
 }
@@ -186,18 +212,18 @@ bool SnglSrvcMPBttn::notifySrvd(){
 
     if (_servicePend){
         _servicePend = false;
-        _wasHit = true;
+        _wasPressed = true;
         result = true;
     }
 
     return result;
 }
 
-bool SnglSrvcMPBttn::updIsPressed(){
+bool SnglSrvcMPBttn::updIsOn(){
     bool result {false};
     
     if (!_servicePend){
-        if (DbncdMPBttn::updIsPressed()){
+        if (DbncdMPBttn::updIsOn()){
             if (_released == true){
                 _servicePend = true;
                 _released = false;
@@ -244,7 +270,7 @@ bool AutoRptCntlMPBttn::notifySrvd(){
         if(_autoRptOn){
             _rearmed = true;
             _dbncTimerStrt = millis();
-            _wasHit = true;
+            _wasPressed = true;
         }
         result = true;
     }
@@ -256,15 +282,15 @@ bool AutoRptCntlMPBttn::updValidPress()
 {
     bool result {false};
     
-    updIsHit();
+    updIsPressed();
 
     int pinState {digitalRead(_mpbttnPin)};
-    bool nowPushed {_isHit};    //Button is pushed == true
+    bool nowPushed {_isPressed};    //Button is pushed == true
     if (!_servicePend){
         //There's no Service pending of being treated
         if (nowPushed){
             if (_autoRptOn || (!_autoRptOn && _rearmed) ){
-                if(_wasHit){
+                if(_wasPressed){
                     //It was already being pushed, timer is already running
                     if ((millis() - _dbncTimerStrt) >= _dbncTimeOrigSett){
                         _servicePend = true;
@@ -274,12 +300,12 @@ bool AutoRptCntlMPBttn::updValidPress()
                 else{
                     //It wasn't already pushed, timer must be started and status changed
                     _dbncTimerStrt = millis();
-                    _wasHit = true;
+                    _wasPressed = true;
                 }
             }
         }
         else{
-            _wasHit = false;
+            _wasPressed = false;
             if (!_autoRptOn)
                 _rearmed = true;
         }

@@ -3,7 +3,7 @@
 
 #include "Arduino.h"
 
-#define _HWMinDbncTime 20
+#define _HWMinDbncTime 20   //Documented minimum wait time for a MPB signal to stabilize
 
 class DbncdMPBttn{
 protected:
@@ -12,27 +12,28 @@ protected:
     bool _typeNO{};
     unsigned long int _dbncTimeOrigSett{};
 
-    bool _isHit{false};
-    bool _wasHit{false};
     bool _isPressed{false};
+    bool _wasPressed{false};
+    bool _isOn{false};
     unsigned long int _dbncTimeTempSett{};
     unsigned long int _dbncTimerStrt{};
     const unsigned long int _stdMinDbncTime {_HWMinDbncTime};
 
-    TimerHandle_t mpbPollTmr {nullptr};
+    TimerHandle_t mpbPollTmrHndl {nullptr};
+    char _mpbPollTmrName [17] {'\0'};
 
-    bool getIsHit();
+    bool getIsPressed();
 
 public:    
     DbncdMPBttn(uint8_t mpbttnPin, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0);
     unsigned long int getCurDbncTime();
-    bool getIsPressed ();
+    bool getIsOn ();
     bool resetDbncTime();
     bool setDbncTime(const unsigned long int &newDbncTime);
-    void updIsHit();
     bool updIsPressed();
+    bool updIsOn();
 
-    bool begin(TickType_t pollDelay = 1000);
+    bool begin(unsigned long int pollDelayMs = 5);
     bool pause();
     bool resume();
     bool end();
@@ -47,7 +48,7 @@ private:
 public:
     unsigned long int getStrtDelay();
     boolean setStrtDelay(unsigned long int newStrtDelay);
-    bool updIsPressed();
+    bool updIsOn();
 };
 
 class SnglSrvcMPBttn: public DbncdMPBttn{
@@ -59,7 +60,7 @@ public:
     SnglSrvcMPBttn(uint8_t mpbttnPin, bool pulledUp, bool typeNO, unsigned long int dbncTime = 0);
     bool getSrvcPend(); 
     bool notifySrvd ();
-    bool updIsPressed();
+    bool updIsOn();
 
 };
 

@@ -1,5 +1,5 @@
 ###############################################
-# Syntax Coloring Map For mmntryPshBtn
+# Syntax Coloring Map For MpbAdaptor
 ###############################################
 
 ###############################################
@@ -13,11 +13,16 @@ AutoRptCntlMPBttn   KEYWORD1
 # Methods and Functions (KEYWORD2)
 ###############################################
 
-getPressed  KEYWORD2
-updateStatus    KEYWORD2
+getCurDbncTime  KEYWORD2
+getIsOn KEYWORD2
 resetDbncTime   KEYWORD2
 setDbncTime KEYWORD2
 updIsPressed    KEYWORD2
+updIsOn    KEYWORD2
+begin   KEYWORD2
+pause   KEYWORD2
+resume  KEYWORD2
+end KEYWORD2
 
 setAutoRptRate  KEYWORD2
 getSrvcPend KEYWORD2
