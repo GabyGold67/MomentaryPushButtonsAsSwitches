@@ -91,14 +91,25 @@ bool DbncdMPBttn::updIsPressed(){
 }
 
 bool DbncdMPBttn::updIsOn(){
+
+    if (_validPressPend){
+        _isOn = true;
+    }
+    else{
+        _isOn = false;
+    }
+
+    return _isOn;
+}
+
+bool DbncdMPBttn::updValidPressPend()
+{
     bool result {false};
 
-    //updIsPressed();   //With the FreeRTOS timer working there's no need for this explicit call
     if(_isPressed){
         if(_wasPressed == false){
             //Started to be pressed
             _wasPressed = true;
-            //_dbncTimerStrt = millis(); //Arduino standard, but not FreeRTOS standard
             _dbncTimerStrt = xTaskGetTickCount() / portTICK_RATE_MS;
         }
         else{
@@ -110,7 +121,7 @@ bool DbncdMPBttn::updIsOn(){
     else{
         _wasPressed = false;
     }
-    _isOn = result;
+    _validPressPend = result;
 
     return result;
 }
@@ -153,6 +164,7 @@ bool DbncdMPBttn::end(){
 void DbncdMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
     DbncdMPBttn *obj = (DbncdMPBttn*)pvTimerGetTimerID(mpbTmrCb);
     obj->updIsPressed();
+    obj->updValidPressPend();
     obj->updIsOn();
 
     return;
@@ -161,7 +173,6 @@ void DbncdMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
 DbncdDlydMPBttn::DbncdDlydMPBttn(uint8_t mpbttnPin, bool pulledUp, bool typeNO, unsigned long int dbncTimeOrigSett, unsigned long int strtDelay)
 :DbncdMPBttn(mpbttnPin, pulledUp, typeNO, dbncTimeOrigSett), _strtDelay{strtDelay}
 {
-
 }
 
 unsigned long int DbncdDlydMPBttn::getStrtDelay(){
@@ -176,6 +187,22 @@ bool DbncdDlydMPBttn::setStrtDelay(unsigned long int newStrtDelay){
 }
 
 bool DbncdDlydMPBttn::updIsOn(){
+    if (_validPressPend){
+        _isOn = true;
+    }
+    else{
+        _isOn = false;
+    }
+
+    return _isOn;
+}
+
+bool DbncdDlydMPBttn::updIsPressed(){
+
+    return DbncdMPBttn::updIsPressed();
+}
+
+bool DbncdDlydMPBttn::updValidPressPend(){
     bool result {false};
 
     if(_isPressed){
@@ -185,7 +212,7 @@ bool DbncdDlydMPBttn::updIsOn(){
             _dbncTimerStrt = xTaskGetTickCount() / portTICK_RATE_MS;
         }
         else{
-            if (((xTaskGetTickCount() / portTICK_RATE_MS) - _dbncTimerStrt) >= (_dbncTimeTempSett + _strtDelay)){
+            if (((xTaskGetTickCount() / portTICK_RATE_MS) - _dbncTimerStrt) >= _dbncTimeTempSett + _strtDelay){
                 result = true;
             }
         }
@@ -193,14 +220,9 @@ bool DbncdDlydMPBttn::updIsOn(){
     else{
         _wasPressed = false;
     }
-    _isOn = result;
+    _validPressPend = result;
 
     return result;
-}
-
-bool DbncdDlydMPBttn::updIsPressed(){
-
-    return DbncdMPBttn::updIsPressed();
 }
 
 bool DbncdDlydMPBttn::begin(unsigned long int pollDelayMs){
@@ -221,13 +243,86 @@ bool DbncdDlydMPBttn::begin(unsigned long int pollDelayMs){
 void DbncdDlydMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
     DbncdDlydMPBttn *obj = (DbncdDlydMPBttn*)pvTimerGetTimerID(mpbTmrCb);
     obj->updIsPressed();
+    obj->updValidPressPend();
     obj->updIsOn();
 
     return;
 }
 
-SnglSrvcMPBttn::SnglSrvcMPBttn(uint8_t mpbttnPin, bool pulledUp, bool typeNO, unsigned long int dbncTime)
-:DbncdMPBttn(mpbttnPin, pulledUp, typeNO, dbncTime)
+LtchMPBttn::LtchMPBttn(uint8_t mpbttnPin, bool pulledUp, bool typeNO, unsigned long int dbncTimeOrigSett, unsigned long int strtDelay)
+:DbncdDlydMPBttn(mpbttnPin, pulledUp, typeNO, dbncTimeOrigSett, strtDelay)
+{
+}
+
+
+bool LtchMPBttn::updIsOn(){
+
+    if(_validPressPend){
+        _isOn = !_isOn;
+        _validPressPend = false;
+    }
+
+    return _isOn;
+}
+
+bool LtchMPBttn::updIsPressed(){
+
+    return DbncdMPBttn::updIsPressed();
+}
+
+bool LtchMPBttn::updValidPressPend(){
+
+    if(_isPressed){
+        if(!_releasePending){
+            if(!_wasPressed){
+                //Started to be pressed
+                _wasPressed = true;
+                _dbncTimerStrt = xTaskGetTickCount() / portTICK_RATE_MS;
+            }
+            else{
+                if (((xTaskGetTickCount() / portTICK_RATE_MS) - _dbncTimerStrt) >= (_dbncTimeTempSett + _strtDelay)){
+                    _validPressPend = true;
+                    _releasePending = true;
+                }
+            }
+        }
+    }
+    else{
+        _wasPressed = false;
+        _releasePending = false;
+    }
+
+   return _validPressPend;
+}
+
+bool LtchMPBttn::begin(unsigned long int pollDelayMs){
+    
+    if (!mpbPollTmrHndl){        
+        mpbPollTmrHndl = xTimerCreate(
+            _mpbPollTmrName,  //Timer name
+            pdMS_TO_TICKS(pollDelayMs),  //Timer period in ticks
+            pdTRUE,     //Autoreload true
+            this,       //TimerID: data passed to the callback funtion to work
+            LtchMPBttn::mpbPollCallback);
+        assert (mpbPollTmrHndl);
+    }
+    xTimerStart(mpbPollTmrHndl, portMAX_DELAY);
+
+    return mpbPollTmrHndl != nullptr;
+}
+
+void LtchMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
+    LtchMPBttn *obj = (LtchMPBttn*)pvTimerGetTimerID(mpbTmrCb);
+    obj->updIsPressed();
+    obj->updValidPressPend();
+    obj->updIsOn();
+
+    return;
+}
+
+/*
+SnglSrvcMPBttn::SnglSrvcMPBttn(uint8_t mpbttnPin, bool pulledUp, bool typeNO, unsigned long int dbncTimeOrigSett, unsigned long int strtDelay)
+:DbncdDlydMPBttn(mpbttnPin, pulledUp, typeNO, dbncTimeOrigSett, strtDelay)
 {
 }
 
@@ -270,8 +365,6 @@ bool SnglSrvcMPBttn::updIsOn(){
     return result;
 }
 
-
-/*
 AutoRptCntlMPBttn::AutoRptCntlMPBttn(uint8_t mpbttnPin, bool pulledUp, bool typeNO, unsigned long int dbncTime, unsigned long int rptRate, bool autoRptOn)
 :DbncdMPBttn(mpbttnPin, pulledUp, typeNO, dbncTime), _autoRptOn {autoRptOn}
 {
@@ -345,7 +438,6 @@ bool AutoRptCntlMPBttn::updValidPress()
     }
 
     return result;
-
 }
 
 */

@@ -10,6 +10,14 @@ The switches to simulate are:
 * 3-ways (a.k.a. staircase),  
 * multiPole (independent or as an option to other switches?).  
 
+Classes implemented:
+DbncdMPBttn: The MPB debounced, debounce time configurable from 20 milisecs up, the ON signal is true from the programmed debounce time setted up to the MPB release.  
+
+DbncdDlydMPBttn: Identical to the DbncdMPBttn, but an adittional parameter is included for a delay adition from the debounce time and before the ON signal is raised. If the MPB is released before the delay time exhaustion the ON signal will never be rised.  
+
+LtchMPBttn: Similar to the DbncdDlydMPBttn but after a validated press the ON signal is kept raised until a second validated press is received.
+
+
 The master idea is to poll a MPB object instead of a physical pin, even using the physical pinNumber transparently. Polling the object will return a clean signal 
 from a MPB debounced, delay corrected, simulating button press and button release for the MPB to act as different kind of physical switches.
 The Off/On status of the switch will be updated and logically calculated by a timer triggered callback (FreeRTOS).

@@ -15,6 +15,7 @@ protected:
 
     volatile bool _isPressed{false};
     volatile bool _wasPressed{false};
+    volatile bool _validPressPend{false};
     volatile bool _isOn{false};
     unsigned long int _dbncTimeTempSett{};
     unsigned long int _dbncTimerStrt{};
@@ -33,6 +34,7 @@ public:
     bool setDbncTime(const unsigned long int &newDbncTime);
     bool updIsPressed();
     bool updIsOn();
+    bool updValidPressPend();
 
     bool begin(unsigned long int pollDelayMs = 5);
     bool pause();
@@ -43,7 +45,7 @@ public:
 
 class DbncdDlydMPBttn: public DbncdMPBttn{
     static void mpbPollCallback(TimerHandle_t mpbTmrCb);
-private:    
+protected:    
     unsigned long int _strtDelay;
 public:
     DbncdDlydMPBttn(uint8_t mpbttnPin, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0);
@@ -51,23 +53,39 @@ public:
     boolean setStrtDelay(unsigned long int newStrtDelay);
     bool updIsOn();
     bool updIsPressed();
+    bool updValidPressPend();
     bool begin(unsigned long int pollDelayMs = 5);
 };
 
-class SnglSrvcMPBttn: public DbncdMPBttn{
+class LtchMPBttn: public DbncdDlydMPBttn{
+    static void mpbPollCallback(TimerHandle_t mpbTmrCb);
+private:
+    bool _releasePending{false};
+
+public:
+    LtchMPBttn(uint8_t mpbttnPin, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0);
+    bool begin(unsigned long int pollDelayMs = 5);
+    bool updIsOn();
+    bool updIsPressed();
+    bool updValidPressPend();
+
+};
+
+
+/*
+class SnglSrvcMPBttn: public DbncdDlydMPBttn{
 protected:
     bool _released{true};
     bool _servicePend{false};
 
 public:
-    SnglSrvcMPBttn(uint8_t mpbttnPin, bool pulledUp, bool typeNO, unsigned long int dbncTime = 0);
+    SnglSrvcMPBttn(uint8_t mpbttnPin, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0);
     bool getSrvcPend(); 
     bool notifySrvd ();
     bool updIsOn();
 
 };
 
-/*
 class AutoRptCntlMPBttn: public DbncdMPBttn{
 private:
     const unsigned long int _minRptRate = 250;
