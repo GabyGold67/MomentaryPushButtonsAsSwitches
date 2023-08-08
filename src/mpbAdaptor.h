@@ -3,8 +3,7 @@
 
 #include "Arduino.h"
 
-#define _HWMinDbncTime 20   //Documented minimum wait time for a MPB signal to stabilize
-
+#define _HwMinDbncTime 20   //Documented minimum wait time for a MPB signal to stabilize
 class DbncdMPBttn{
     static void mpbPollCallback(TimerHandle_t mpbTmrCb);
 protected:
@@ -19,7 +18,7 @@ protected:
     volatile bool _isOn{false};
     unsigned long int _dbncTimeTempSett{};
     unsigned long int _dbncTimerStrt{};
-    const unsigned long int _stdMinDbncTime {_HWMinDbncTime};
+    const unsigned long int _stdMinDbncTime {_HwMinDbncTime};
 
     TimerHandle_t mpbPollTmrHndl {nullptr};
     char _mpbPollTmrName [17] {'\0'};
@@ -59,7 +58,7 @@ public:
 
 class LtchMPBttn: public DbncdDlydMPBttn{
     static void mpbPollCallback(TimerHandle_t mpbTmrCb);
-private:
+protected:
     bool _releasePending{false};
 
 public:
@@ -68,6 +67,33 @@ public:
     bool updIsOn();
     bool updIsPressed();
     bool updValidPressPend();
+
+};
+
+class TmLtchMPBttn: public LtchMPBttn{
+// - strtFrmRelease: bool
+    static void mpbPollCallback(TimerHandle_t mpbTmrCb);
+
+protected:
+    uint8_t _wnngPinOut {0};
+    bool _tmRstbl {true};
+    bool _wrnngOn {false};
+    unsigned int _wrnngPrctg {0};
+    unsigned long int _wrnngMs{0};
+    unsigned long int _srvcTime {};
+    unsigned long int _srvcTimerStrt{0};
+
+public:
+    TmLtchMPBttn(uint8_t mpbttnPin, unsigned long int actTime, unsigned int wrnngPrctg = 0, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0);
+    bool begin(unsigned long int pollDelayMs = 5);
+    bool getWrnngOn();
+    uint8_t getWrnngPin();
+    bool setTmerRstbl(bool isRstbl);
+    bool setWnngPinOut(uint8_t wrnngPinOut);
+    bool updIsOn();
+    bool updIsPressed();
+    bool updValidPressPend();
+    bool updWrnngOn();
 
 };
 
