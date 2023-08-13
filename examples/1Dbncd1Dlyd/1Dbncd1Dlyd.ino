@@ -1,8 +1,7 @@
 #include <Arduino.h>
-#include <mpbAdaptor.h>
+#include <mpbToSwitch.h>
 
 //1Dbncd1Dlyd.ino
-
 
 const uint8_t redLed{GPIO_NUM_19};
 const uint8_t blueLed{GPIO_NUM_21};
@@ -20,13 +19,11 @@ unsigned int blueAloneCount {0};
 bool blueFlips{false};
 
 void setup() {
-  // put your setup code here, to run once:
   pinMode(redLed, OUTPUT);
   pinMode(blueLed, OUTPUT);
 
   blueBttn.begin();
   redBttn.begin();
-
 }
 
 void loop() {
@@ -66,7 +63,6 @@ void loop() {
       if (redCount == toggleCount){
         redBttn.pause();
       }
-    }
-      
+    }      
   }
 }  

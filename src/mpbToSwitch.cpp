@@ -184,6 +184,7 @@ void DbncdMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
     return;
 }
 
+//=========================================================================> Class methods delimiter
 DbncdDlydMPBttn::DbncdDlydMPBttn(uint8_t mpbttnPin, bool pulledUp, bool typeNO, unsigned long int dbncTimeOrigSett, unsigned long int strtDelay)
 :DbncdMPBttn(mpbttnPin, pulledUp, typeNO, dbncTimeOrigSett), _strtDelay{strtDelay}
 {
@@ -257,19 +258,10 @@ void DbncdDlydMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
     return;
 }
 
+//=========================================================================> Class methods delimiter
 LtchMPBttn::LtchMPBttn(uint8_t mpbttnPin, bool pulledUp, bool typeNO, unsigned long int dbncTimeOrigSett, unsigned long int strtDelay)
 :DbncdDlydMPBttn(mpbttnPin, pulledUp, typeNO, dbncTimeOrigSett, strtDelay)
 {
-}
-
-bool LtchMPBttn::updIsOn(){
-
-    if(_validPressPend){
-        _isOn = !_isOn;
-        _validPressPend = false;
-    }
-
-    return _isOn;
 }
 
 bool LtchMPBttn::updIsPressed(){
@@ -302,6 +294,36 @@ bool LtchMPBttn::updValidPressPend(){
    return _validPressPend;
 }
 
+bool LtchMPBttn::updUnlatchPend(){
+
+    if(_validPressPend){
+        if (_isOn){
+            _unlatchPending = true;
+            _validPressPend = false;
+        }
+    }
+
+    return _unlatchPending;
+}
+
+bool LtchMPBttn::updIsOn(){
+
+    if(_validPressPend){
+        if (!_isOn){
+            _isOn = !_isOn;
+            _validPressPend = false;
+        }
+    }
+    else if(_unlatchPending){
+        if (_isOn){
+            _isOn = !_isOn;
+            _unlatchPending = false;
+        }
+    }
+
+    return _isOn;
+}
+
 bool LtchMPBttn::begin(unsigned long int pollDelayMs){
 
     if (!mpbPollTmrHndl){        
@@ -322,17 +344,90 @@ void LtchMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
     LtchMPBttn *obj = (LtchMPBttn*)pvTimerGetTimerID(mpbTmrCb);
     obj->updIsPressed();
     obj->updValidPressPend();
+    obj->updUnlatchPend();
     obj->updIsOn();
 
     return;
 }
 
+//=========================================================================> Class methods delimiter
 TmLtchMPBttn::TmLtchMPBttn(uint8_t mpbttnPin, unsigned long int actTime, unsigned int wrnngPrctg, bool pulledUp, bool typeNO, unsigned long int dbncTimeOrigSett, unsigned long int strtDelay)
 :LtchMPBttn(mpbttnPin, pulledUp, typeNO, dbncTimeOrigSett, strtDelay), _srvcTime{actTime}, _wrnngPrctg{wrnngPrctg}
 {
     if(_wrnngPrctg > 0)
         _wrnngMs = actTime * _wrnngPrctg/100;
     
+}
+
+bool TmLtchMPBttn::updIsPressed(){
+
+    return DbncdMPBttn::updIsPressed();
+}
+
+bool TmLtchMPBttn::updValidPressPend(){
+
+    return LtchMPBttn::updValidPressPend();
+}
+
+bool TmLtchMPBttn::updUnlatchPend(){
+    if(_isOn){
+        if (((xTaskGetTickCount() / portTICK_RATE_MS) - _srvcTimerStrt) >= _srvcTime){
+            _unlatchPending = true;
+            _validPressPend = false;
+        }
+    }
+
+    return _unlatchPending;
+}
+
+bool TmLtchMPBttn::updIsOn() {
+
+    if(_validPressPend){
+        if (!_isOn){
+            _srvcTimerStrt = xTaskGetTickCount() / portTICK_RATE_MS;
+            _isOn = true;
+        }
+        else{
+            if (_tmRstbl){
+                _srvcTimerStrt = xTaskGetTickCount() / portTICK_RATE_MS;
+            }
+        }
+        _validPressPend = false;
+    }
+    else if(_unlatchPending){
+        if (_isOn){
+            _isOn = !_isOn;
+            _unlatchPending = false;
+        }
+    }
+
+    return _isOn;
+}
+
+bool TmLtchMPBttn::updWrnngOn(){
+
+    if(_wrnngPrctg > 0){
+        if (_isOn)
+            if (((xTaskGetTickCount() / portTICK_RATE_MS) - _srvcTimerStrt) >= (_srvcTime - _wrnngMs))
+                _wrnngOn = true;            
+            else
+                _wrnngOn = false;            
+        else
+            _wrnngOn = false;
+    }
+    
+    return _wrnngOn;
+}
+
+void TmLtchMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
+    TmLtchMPBttn *mpbObj = (TmLtchMPBttn*)pvTimerGetTimerID(mpbTmrCb);
+    mpbObj->updIsPressed();
+    mpbObj->updValidPressPend();
+    mpbObj->updUnlatchPend();
+    mpbObj->updIsOn();
+    mpbObj->updWrnngOn();
+
+    return;
 }
 
 bool TmLtchMPBttn::begin(unsigned long int pollDelayMs){
@@ -366,56 +461,6 @@ bool TmLtchMPBttn::setTmerRstbl(bool isRstbl){
     return true;
 }
 
-bool TmLtchMPBttn::updIsOn() {
-
-    if(_validPressPend){
-        if (!_isOn){
-            _srvcTimerStrt = xTaskGetTickCount() / portTICK_RATE_MS;
-            _wrnngOn = false;
-            _isOn = true;
-        }
-        else{
-            if (_tmRstbl){
-                _srvcTimerStrt = xTaskGetTickCount() / portTICK_RATE_MS;
-                _wrnngOn = false;
-
-            }
-        }
-        _validPressPend = false;
-    }
-    if (((xTaskGetTickCount() / portTICK_RATE_MS) - _srvcTimerStrt) >= _srvcTime){
-        _isOn = false;
-    }
-
-    return _isOn;
-}
-
-bool TmLtchMPBttn::updIsPressed(){
-
-    return DbncdMPBttn::updIsPressed();
-}
-
-bool TmLtchMPBttn::updValidPressPend(){
-
-    return LtchMPBttn::updValidPressPend();
-}
-
-bool TmLtchMPBttn::updWrnngOn(){
-
-    if(_wrnngPrctg > 0){
-        if (_isOn){
-            if (((xTaskGetTickCount() / portTICK_RATE_MS) - _srvcTimerStrt) >= (_srvcTime - _wrnngMs)){
-                _wrnngOn = true;
-            }
-        }
-        else{
-            _wrnngOn = false;
-        }
-    }
-    
-    return _wrnngOn;
-}
-
 bool TmLtchMPBttn::setWnngPinOut(uint8_t wrnngPinOut){
     _wnngPinOut = wrnngPinOut;
     pinMode(_wnngPinOut, OUTPUT);
@@ -423,7 +468,19 @@ bool TmLtchMPBttn::setWnngPinOut(uint8_t wrnngPinOut){
     return true;
 }
 
-void TmLtchMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
+//=========================================================================> Class methods delimiter
+
+XtrnUnltchMPBttn::XtrnUnltchMPBttn(uint8_t mpbttnPin, DbncdMPBttn *unLtchBttn, bool pulledUp, bool typeNO, unsigned long int dbncTimeOrigSett, unsigned long int strtDelay)
+:LtchMPBttn(mpbttnPin, pulledUp, typeNO, dbncTimeOrigSett, strtDelay), _unLtchBttn{unLtchBttn}
+{
+}
+
+bool XtrnUnltchMPBttn::begin(unsigned long int pollDelayMs)
+{
+    return false;
+}
+
+void XtrnUnltchMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
     TmLtchMPBttn *mpbObj = (TmLtchMPBttn*)pvTimerGetTimerID(mpbTmrCb);
     mpbObj->updIsPressed();
     mpbObj->updValidPressPend();
@@ -435,7 +492,7 @@ void TmLtchMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
 }
 
 
-
+//=========================================================================> Class methods delimiter
 
 /*
 SnglSrvcMPBttn::SnglSrvcMPBttn(uint8_t mpbttnPin, bool pulledUp, bool typeNO, unsigned long int dbncTimeOrigSett, unsigned long int strtDelay)
