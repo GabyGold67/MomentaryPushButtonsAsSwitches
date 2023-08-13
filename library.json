@@ -1,0 +1,30 @@
+{
+    "name": "mpbToSwitch",
+    "version": "1.0.0",
+    
+    "description": "Add any kind of switch to a project by using momentary push buttons and this library to replace the internal mechanism of each of them. Replace many kind of physical switches with push buttons (Momentary Puttons or Momentary Push Buttons) with the tools provided in this library. Beyond the basic debouncing of the input signal, the provided clases will make the push button act as toggle switches, staircase switches, time latched switches, and some more." ,
+    "keywords": "momentary, push button, LED, display, print, blink, gauge, floating point, negative, shift register, counter, tally counter, click counter",
+    
+    "repository":
+    {
+      "type": "git",
+      "url": "https://github.com/GabyGold67/"
+    },
+    "authors":
+    [
+      {
+        "name": "Gabriel D. Goldman",
+        "email": "gdgoldman67@hotmail.com",
+        "url": "https://github.com/GabyGold67",
+        "maintainer": true
+      }
+    ],
+
+    "license": "GPL-3.0-or-later",
+    "homepage": "https://www.gnu.org/licenses/gpl-3.0-standalone.html",
+    "dependencies":
+    [
+    ] ,
+    "frameworks": "Arduino",
+    "platforms": "espressif32"
+  }

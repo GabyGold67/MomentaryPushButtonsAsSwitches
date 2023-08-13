@@ -1,5 +1,5 @@
-#ifndef _MPBADAPTOR_H_
-#define _MPBADAPTOR_H_
+#ifndef _MPBTOSWITCH_H_
+#define _MPBTOSWITCH_H_
 
 #include "Arduino.h"
 
@@ -71,7 +71,6 @@ public:
 };
 
 class TmLtchMPBttn: public LtchMPBttn{
-// - strtFrmRelease: bool
     static void mpbPollCallback(TimerHandle_t mpbTmrCb);
 
 protected:
@@ -94,6 +93,21 @@ public:
     bool updIsPressed();
     bool updValidPressPend();
     bool updWrnngOn();
+
+};
+
+class XtrnUnltchMPBttn: public LtchMPBttn{
+    static void mpbPollCallback(TimerHandle_t mpbTmrCb);
+
+protected:
+    uint8_t _unltchPinIn {};
+    bool _unltchPulledUp{};
+    bool _unltchTypeNO{};
+
+
+public:
+    XtrnUnltchMPBttn(uint8_t mpbttnPin, uint8_t unltchPinIn, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0);
+    bool begin(unsigned long int pollDelayMs = 5);
 
 };
 

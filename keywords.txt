@@ -1,5 +1,5 @@
 ###############################################
-# Syntax Coloring Map For MpbAdaptor
+# Syntax Coloring Map For mpbToSwitch
 ###############################################
 
 ###############################################
@@ -7,7 +7,10 @@
 ###############################################
 
 DbncdMPBttn	KEYWORD1
-AutoRptCntlMPBttn   KEYWORD1
+DbncdDlydMPBttn KEYWORD1
+LtchMPBttn  KEYWORD1
+TmLtchMPBttn    KEYWORD1
+XtrnUnltchMPBttn    KEYWORD1
 
 ###############################################
 # Methods and Functions (KEYWORD2)
@@ -17,8 +20,9 @@ getCurDbncTime  KEYWORD2
 getIsOn KEYWORD2
 resetDbncTime   KEYWORD2
 setDbncTime KEYWORD2
-updIsPressed    KEYWORD2
 updIsOn    KEYWORD2
+updIsPressed    KEYWORD2
+updValidPressPend   KEYWORD2
 begin   KEYWORD2
 pause   KEYWORD2
 resume  KEYWORD2
@@ -27,11 +31,11 @@ end KEYWORD2
 getStrtDelay    KEYWORD2
 setStrtDelay    KEYWORD2
 
-
-setAutoRptRate  KEYWORD2
-getSrvcPend KEYWORD2
-notifySrvd  KEYWORD2
-updStatus   KEYWORD2
+getWrnngOn  KEYWORD2
+getWrnngPin KEYWORD2
+setTmerRstbl    KEYWORD2
+setWnngPinOut   KEYWORD2
+updWrnngOn  KEYWORD2
 
 ###############################################
 # Constants (LITERAL1)
