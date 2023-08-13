@@ -249,10 +249,10 @@ bool DbncdDlydMPBttn::begin(unsigned long int pollDelayMs){
 }
 
 void DbncdDlydMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
-    DbncdDlydMPBttn *obj = (DbncdDlydMPBttn*)pvTimerGetTimerID(mpbTmrCb);
-    obj->updIsPressed();
-    obj->updValidPressPend();
-    obj->updIsOn();
+    DbncdDlydMPBttn *mpbObj = (DbncdDlydMPBttn*)pvTimerGetTimerID(mpbTmrCb);
+    mpbObj->updIsPressed();
+    mpbObj->updValidPressPend();
+    mpbObj->updIsOn();
 
     return;
 }
@@ -424,11 +424,12 @@ bool TmLtchMPBttn::setWnngPinOut(uint8_t wrnngPinOut){
 }
 
 void TmLtchMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
-    TmLtchMPBttn *obj = (TmLtchMPBttn*)pvTimerGetTimerID(mpbTmrCb);
-    obj->updIsPressed();
-    obj->updValidPressPend();
-    obj->updIsOn();
-    obj->updWrnngOn();
+    TmLtchMPBttn *mpbObj = (TmLtchMPBttn*)pvTimerGetTimerID(mpbTmrCb);
+    mpbObj->updIsPressed();
+    mpbObj->updValidPressPend();
+    mpbObj->updUnlatchPend();
+    mpbObj->updIsOn();
+    mpbObj->updWrnngOn();
 
     return;
 }

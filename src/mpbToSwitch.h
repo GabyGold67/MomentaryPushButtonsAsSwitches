@@ -45,7 +45,7 @@ public:
 class DbncdDlydMPBttn: public DbncdMPBttn{
     static void mpbPollCallback(TimerHandle_t mpbTmrCb);
 protected:    
-    unsigned long int _strtDelay;
+    unsigned long int _strtDelay {0};
 public:
     DbncdDlydMPBttn(uint8_t mpbttnPin, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0);
     unsigned long int getStrtDelay();
@@ -58,6 +58,7 @@ public:
 
 class LtchMPBttn: public DbncdDlydMPBttn{
     static void mpbPollCallback(TimerHandle_t mpbTmrCb);
+
 protected:
     bool _releasePending{false};
 
