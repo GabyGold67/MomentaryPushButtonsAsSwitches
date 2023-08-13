@@ -265,8 +265,16 @@ LtchMPBttn::LtchMPBttn(uint8_t mpbttnPin, bool pulledUp, bool typeNO, unsigned l
 bool LtchMPBttn::updIsOn(){
 
     if(_validPressPend){
-        _isOn = !_isOn;
-        _validPressPend = false;
+        if (!_isOn){
+            _isOn = !_isOn;
+            _validPressPend = false;
+        }
+    }
+    else if(_unlatchPending){
+        if (_isOn){
+            _isOn = !_isOn;
+            _unlatchPending = false;
+        }
     }
 
     return _isOn;
@@ -275,6 +283,18 @@ bool LtchMPBttn::updIsOn(){
 bool LtchMPBttn::updIsPressed(){
 
     return DbncdMPBttn::updIsPressed();
+}
+
+bool LtchMPBttn::updUnlatchPend(){
+
+    if(_validPressPend){
+        if (_isOn){
+            _unlatchPending = true;
+            _validPressPend = false;
+        }
+    }
+
+    return _unlatchPending;
 }
 
 bool LtchMPBttn::updValidPressPend(){
@@ -322,6 +342,7 @@ void LtchMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
     LtchMPBttn *obj = (LtchMPBttn*)pvTimerGetTimerID(mpbTmrCb);
     obj->updIsPressed();
     obj->updValidPressPend();
+    obj->updUnlatchPend();
     obj->updIsOn();
 
     return;
@@ -398,6 +419,11 @@ bool TmLtchMPBttn::updIsPressed(){
 bool TmLtchMPBttn::updValidPressPend(){
 
     return LtchMPBttn::updValidPressPend();
+}
+
+bool TmLtchMPBttn::updUnlatchPend(){
+
+    return false;
 }
 
 bool TmLtchMPBttn::updWrnngOn(){

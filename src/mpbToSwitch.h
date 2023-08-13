@@ -61,12 +61,14 @@ class LtchMPBttn: public DbncdDlydMPBttn{
 
 protected:
     bool _releasePending{false};
+    bool _unlatchPending{false};
 
 public:
     LtchMPBttn(uint8_t mpbttnPin, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0);
     bool begin(unsigned long int pollDelayMs = 5);
     bool updIsOn();
     bool updIsPressed();
+    bool updUnlatchPend();
     bool updValidPressPend();
 
 };
@@ -82,6 +84,7 @@ protected:
     unsigned long int _wrnngMs{0};
     unsigned long int _srvcTime {};
     unsigned long int _srvcTimerStrt{0};
+    bool _unlatchPending{false};
 
 public:
     TmLtchMPBttn(uint8_t mpbttnPin, unsigned long int actTime, unsigned int wrnngPrctg = 0, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0);
@@ -93,6 +96,7 @@ public:
     bool updIsOn();
     bool updIsPressed();
     bool updValidPressPend();
+    bool updUnlatchPend();
     bool updWrnngOn();
 
 };

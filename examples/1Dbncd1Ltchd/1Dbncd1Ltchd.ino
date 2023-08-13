@@ -1,11 +1,7 @@
 #include <Arduino.h>
-#include <mpbAdaptor.h>
+#include <mpbToSwitch.h>
 
 //1Dbncd1Dlyd.ino
-
-
-// put function declarations here:
-//int myFunction(int, int);
 
 const uint8_t redLed{GPIO_NUM_19};
 const uint8_t blueLed{GPIO_NUM_21};
@@ -22,7 +18,6 @@ void setup() {
 
   blueBttn.begin();
   redBttn.begin();
-
 }
 
 void loop() {
@@ -38,12 +33,5 @@ void loop() {
   }
   else {
     digitalWrite(redLed, LOW);
-  }
-      
+  }      
 }
-  
-
-// put function definitions here:
-// int myFunction(int x, int y) {
-//   return x + y;
-// }
