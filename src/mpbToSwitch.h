@@ -84,7 +84,6 @@ protected:
     unsigned long int _wrnngMs{0};
     unsigned long int _srvcTime {};
     unsigned long int _srvcTimerStrt{0};
-    bool _unlatchPending{false};
 
 public:
     TmLtchMPBttn(uint8_t mpbttnPin, unsigned long int actTime, unsigned int wrnngPrctg = 0, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0);
@@ -108,10 +107,11 @@ protected:
     uint8_t _unltchPinIn {};
     bool _unltchPulledUp{};
     bool _unltchTypeNO{};
+    DbncdMPBttn *_unLtchBttn{};
 
 
 public:
-    XtrnUnltchMPBttn(uint8_t mpbttnPin, uint8_t unltchPinIn, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0);
+    XtrnUnltchMPBttn(uint8_t mpbttnPin, DbncdMPBttn *unLtchBttn, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0);
     bool begin(unsigned long int pollDelayMs = 5);
 
 };
