@@ -118,38 +118,4 @@ public:
 
 };
 
-
-/*
-class SnglSrvcMPBttn: public DbncdDlydMPBttn{
-protected:
-    bool _released{true};
-    bool _servicePend{false};
-
-public:
-    SnglSrvcMPBttn(uint8_t mpbttnPin, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0);
-    bool getSrvcPend(); 
-    bool notifySrvd ();
-    bool updIsOn();
-
-};
-
-class AutoRptCntlMPBttn: public DbncdMPBttn{
-private:
-    const unsigned long int _minRptRate = 250;
-    bool _autoRptOn;
-    bool _released{true};
-    bool _rearmed {false};
-    bool _servicePend{false};
-    unsigned long int _rptRate;
-
-public:
-    AutoRptCntlMPBttn(uint8_t mpbttnPin, bool pulledUp, bool typeNO, unsigned long int dbncTime = 0, unsigned long int rptRate = 0, bool autoRptOn = true);
-    bool setAutoRptRate(unsigned long int newRate);
-    bool getSrvcPend(); 
-    bool notifySrvd ();
-    bool updValidPress();
-
-};
-*/
-
 #endif
