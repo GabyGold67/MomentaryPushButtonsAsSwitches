@@ -16,26 +16,31 @@ XtrnUnltchMPBttn    KEYWORD1
 # Methods and Functions (KEYWORD2)
 ###############################################
 
+begin   KEYWORD2
+end KEYWORD2
 getCurDbncTime  KEYWORD2
 getIsOn KEYWORD2
+pause   KEYWORD2
 resetDbncTime   KEYWORD2
+resume  KEYWORD2
 setDbncTime KEYWORD2
 updIsOn    KEYWORD2
 updIsPressed    KEYWORD2
 updValidPressPend   KEYWORD2
-begin   KEYWORD2
-pause   KEYWORD2
-resume  KEYWORD2
-end KEYWORD2
 
 getStrtDelay    KEYWORD2
 setStrtDelay    KEYWORD2
+
+setUnlatchPend  KEYWORD2
+updUnlatchPend  KEYWORD2
 
 getWrnngOn  KEYWORD2
 getWrnngPin KEYWORD2
 setTmerRstbl    KEYWORD2
 setWnngPinOut   KEYWORD2
 updWrnngOn  KEYWORD2
+
+
 
 ###############################################
 # Constants (LITERAL1)

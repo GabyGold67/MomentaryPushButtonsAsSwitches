@@ -66,6 +66,7 @@ protected:
 public:
     LtchMPBttn(uint8_t mpbttnPin, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0);
     bool begin(unsigned long int pollDelayMs = 5);
+    bool setUnlatchPend();
     bool updIsOn();
     bool updIsPressed();
     bool updUnlatchPend();
@@ -104,15 +105,16 @@ class XtrnUnltchMPBttn: public LtchMPBttn{
     static void mpbPollCallback(TimerHandle_t mpbTmrCb);
 
 protected:
-    uint8_t _unltchPinIn {};
     bool _unltchPulledUp{};
     bool _unltchTypeNO{};
-    DbncdMPBttn *_unLtchBttn{};
-
+    DbncdDlydMPBttn _unLtchBttn;
 
 public:
-    XtrnUnltchMPBttn(uint8_t mpbttnPin, DbncdMPBttn *unLtchBttn, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0);
+    XtrnUnltchMPBttn(uint8_t mpbttnPin, uint8_t unltchPin, 
+        bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0,
+        bool upulledUp = true, bool utypeNO = true, unsigned long int udbncTimeOrigSett = 0, unsigned long int ustrtDelay = 0);
     bool begin(unsigned long int pollDelayMs = 5);
+    bool updUnlatchPend();
 
 };
 
