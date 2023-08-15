@@ -41,4 +41,123 @@ public:
 };
 
 
+SnglSrvcMPBttn::SnglSrvcMPBttn(uint8_t mpbttnPin, bool pulledUp, bool typeNO, unsigned long int dbncTimeOrigSett, unsigned long int strtDelay)
+:DbncdDlydMPBttn(mpbttnPin, pulledUp, typeNO, dbncTimeOrigSett, strtDelay)
+{
+}
+
+bool SnglSrvcMPBttn::getSrvcPend(){
+    
+    return _servicePend;
+}
+
+bool SnglSrvcMPBttn::notifySrvd(){
+    bool result {false};
+
+    if (_servicePend){
+        _servicePend = false;
+        _wasPressed = true;
+        result = true;
+    }
+
+    return result;
+}
+
+bool SnglSrvcMPBttn::updIsOn(){
+    bool result {false};
+    
+    if (!_servicePend){
+        if (DbncdMPBttn::updIsOn()){
+            if (_released == true){
+                _servicePend = true;
+                _released = false;
+                result = true;
+            }
+        }
+        else{
+            _released = true;
+        }
+    }
+    else{
+        result = true;
+    }
+
+    return result;
+}
+
+AutoRptCntlMPBttn::AutoRptCntlMPBttn(uint8_t mpbttnPin, bool pulledUp, bool typeNO, unsigned long int dbncTime, unsigned long int rptRate, bool autoRptOn)
+:DbncdMPBttn(mpbttnPin, pulledUp, typeNO, dbncTime), _autoRptOn {autoRptOn}
+{
+    if (rptRate <_minRptRate)
+        _rptRate = _minRptRate;
+    else
+        _rptRate = rptRate;    
+}
+
+bool AutoRptCntlMPBttn::setAutoRptRate(unsigned long int newRptRate){
+    bool result {false};
+
+    if (newRptRate >= _minRptRate){
+        _rptRate = newRptRate;
+        result = true;
+    }
+
+    return result;
+}
+bool AutoRptCntlMPBttn::notifySrvd(){
+    bool result {false};
+
+    if (_servicePend){
+        _servicePend = false;
+        if(_autoRptOn){
+            _rearmed = true;
+            _dbncTimerStrt = millis();
+            _wasPressed = true;
+        }
+        result = true;
+    }
+
+    return result;
+}
+
+bool AutoRptCntlMPBttn::updValidPress()
+{
+    bool result {false};
+    
+    updIsPressed();
+
+    int pinState {digitalRead(_mpbttnPin)};
+    bool nowPushed {_isPressed};    //Button is pushed == true
+    if (!_servicePend){
+        //There's no Service pending of being treated
+        if (nowPushed){
+            if (_autoRptOn || (!_autoRptOn && _rearmed) ){
+                if(_wasPressed){
+                    //It was already being pushed, timer is already running
+                    if ((millis() - _dbncTimerStrt) >= _dbncTimeOrigSett){
+                        _servicePend = true;
+                        _rearmed = false;
+                    }
+                }
+                else{
+                    //It wasn't already pushed, timer must be started and status changed
+                    _dbncTimerStrt = millis();
+                    _wasPressed = true;
+                }
+            }
+        }
+        else{
+            _wasPressed = false;
+            if (!_autoRptOn)
+                _rearmed = true;
+        }
+        result = true;
+    }
+    else{
+        //Could not be treated as a Service is pending of treatment        
+    }
+
+    return result;
+}
+
 X For the latched subclasses the _validPressPending must be provided by different meanings, the rest would be the same...

@@ -106,9 +106,8 @@ bool DbncdMPBttn::updValidPressPend(){
     bool result {false};
 
     if(_isPressed){
-        if(_wasPressed == false){
+        if(_dbncTimerStrt == 0){    //It was not previously pressed
             //Started to be pressed
-            _wasPressed = true;
             _dbncTimerStrt = xTaskGetTickCount() / portTICK_RATE_MS;
         }
         else{
@@ -118,7 +117,7 @@ bool DbncdMPBttn::updValidPressPend(){
         }
     }
     else{
-        _wasPressed = false;
+        _dbncTimerStrt = 0;
     }
     _validPressPend = result;
 
@@ -201,23 +200,12 @@ bool DbncdDlydMPBttn::setStrtDelay(unsigned long int newStrtDelay){
     return true;
 }
 
-bool DbncdDlydMPBttn::updIsOn(){
-
-    return DbncdMPBttn::updIsOn();
-}
-
-bool DbncdDlydMPBttn::updIsPressed(){
-
-    return DbncdMPBttn::updIsPressed();
-}
-
 bool DbncdDlydMPBttn::updValidPressPend(){
     bool result {false};
 
     if(_isPressed){
-        if(_wasPressed == false){
+        if(_dbncTimerStrt == 0){    //It was not previously pressed
             //Started to be pressed
-            _wasPressed = true;
             _dbncTimerStrt = xTaskGetTickCount() / portTICK_RATE_MS;
         }
         else{
@@ -227,7 +215,7 @@ bool DbncdDlydMPBttn::updValidPressPend(){
         }
     }
     else{
-        _wasPressed = false;
+        _dbncTimerStrt = 0;
     }
     _validPressPend = result;
 
@@ -273,9 +261,8 @@ bool LtchMPBttn::updValidPressPend(){
 
     if(_isPressed){
         if(!_releasePending){
-            if(!_wasPressed){
+            if(_dbncTimerStrt == 0){    //It was not previously pressed
                 //Started to be pressed
-                _wasPressed = true;
                 _dbncTimerStrt = xTaskGetTickCount() / portTICK_RATE_MS;
             }
             else{
@@ -287,7 +274,7 @@ bool LtchMPBttn::updValidPressPend(){
         }
     }
     else{
-        _wasPressed = false;
+        _dbncTimerStrt = 0;
         _releasePending = false;
     }
 
@@ -528,128 +515,131 @@ void XtrnUnltchMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
     return;
 }
 
-
 //=========================================================================> Class methods delimiter
-
-/*
-SnglSrvcMPBttn::SnglSrvcMPBttn(uint8_t mpbttnPin, bool pulledUp, bool typeNO, unsigned long int dbncTimeOrigSett, unsigned long int strtDelay)
-:DbncdDlydMPBttn(mpbttnPin, pulledUp, typeNO, dbncTimeOrigSett, strtDelay)
+VdblMPBttn::VdblMPBttn(uint8_t mpbttnPin, bool pulledUp, bool typeNO, unsigned long int dbncTimeOrigSett, unsigned long int strtDelay, bool isOnDisabled)
+:DbncdDlydMPBttn(mpbttnPin, pulledUp, typeNO, dbncTimeOrigSett, strtDelay), _isOnDisabled{isOnDisabled}
 {
 }
 
-bool SnglSrvcMPBttn::getSrvcPend(){
-    
-    return _servicePend;
+bool VdblMPBttn::getIsVoided(){
+
+    return _isVoided;
 }
 
-bool SnglSrvcMPBttn::notifySrvd(){
-    bool result {false};
+bool VdblMPBttn::setIsVoided(bool voidValue){
 
-    if (_servicePend){
-        _servicePend = false;
-        _wasPressed = true;
-        result = true;
+    _isVoided = voidValue;
+
+    return _isVoided;
+}
+
+bool VdblMPBttn::getIsEnabled(){
+
+    return _isEnabled;
+}
+
+bool VdblMPBttn::setIsEnabled(bool newEnabledValue){
+
+    if (!newEnabledValue){
+        if(_isEnabled){
+            if(_isOnDisabled)
+                _isOn = true;
+            else
+                _isOn = false;
+            pause();
+        }            
     }
+    else{
+        resume();
+    }
+    _isEnabled = newEnabledValue;
 
-    return result;
+    return _isEnabled;
 }
 
-bool SnglSrvcMPBttn::updIsOn(){
-    bool result {false};
+bool VdblMPBttn::enable(){
+
+    return setIsEnabled(true);
+}
+
+bool VdblMPBttn::disable(){
+
+    return setIsEnabled(false);
+}
+
+//=========================================================================> Class methods delimiter
+TmVdblMPBttn::TmVdblMPBttn(uint8_t mpbttnPin, unsigned long int voidTime, bool pulledUp, bool typeNO, unsigned long int dbncTimeOrigSett, unsigned long int strtDelay, bool isOnDisabled)
+:VdblMPBttn(mpbttnPin, pulledUp, typeNO, dbncTimeOrigSett, strtDelay, isOnDisabled), _voidTime{voidTime}
+{
+}
+
+void TmVdblMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
+    TmVdblMPBttn *mpbObj = (TmVdblMPBttn*)pvTimerGetTimerID(mpbTmrCb);
+    mpbObj->updIsPressed();
+    mpbObj->updValidPressPend();
+    mpbObj->updIsVoided();
+    mpbObj->updIsOn();
+
+    return;
+}
+
+bool TmVdblMPBttn::begin(unsigned long int pollDelayMs){
+
+    if (!mpbPollTmrHndl){        
+        mpbPollTmrHndl = xTimerCreate(
+            _mpbPollTmrName,  //Timer name
+            pdMS_TO_TICKS(pollDelayMs),  //Timer period in ticks
+            pdTRUE,     //Autoreload true
+            this,       //TimerID: data passed to the callback funtion to work
+            TmVdblMPBttn::mpbPollCallback);
+        assert (mpbPollTmrHndl);
+    }
+    xTimerStart(mpbPollTmrHndl, portMAX_DELAY);
     
-    if (!_servicePend){
-        if (DbncdMPBttn::updIsOn()){
-            if (_released == true){
-                _servicePend = true;
-                _released = false;
+    return mpbPollTmrHndl != nullptr;
+}
+
+bool TmVdblMPBttn::updIsVoided(){
+    //if it's pressed
+        //if the pressing timer is running
+            // if the pressing timer is greater than the debounceTime + strtDelay + voidTime
+                //Set isVoided to true
+                //Set isOn to false (the updateIsOn() will have to check _isVoided to prevent reverting back on)
+    bool result {false};
+
+    if(_isPressed){
+        if(_voidTmrStrt == 0){    //It was not previously pressed
+            //Started to be pressed
+            _voidTmrStrt = xTaskGetTickCount() / portTICK_RATE_MS;
+        }
+        else{
+            if (((xTaskGetTickCount() / portTICK_RATE_MS) - _voidTmrStrt) >= (_voidTime)){ // + _dbncTimeTempSett + _strtDelay
                 result = true;
             }
         }
+    }
+    else{
+        _voidTmrStrt = 0;
+    }
+    _isVoided = result;
+
+    return _isVoided;
+}
+
+bool TmVdblMPBttn::updIsOn() {
+
+    if (!_isVoided){
+        if (_validPressPend){
+            _isOn = true;
+        }
         else{
-            _released = true;
+            _isOn = false;
         }
     }
     else{
-        result = true;
+        _isOn = false;
     }
 
-    return result;
+    return _isOn;
 }
-
-AutoRptCntlMPBttn::AutoRptCntlMPBttn(uint8_t mpbttnPin, bool pulledUp, bool typeNO, unsigned long int dbncTime, unsigned long int rptRate, bool autoRptOn)
-:DbncdMPBttn(mpbttnPin, pulledUp, typeNO, dbncTime), _autoRptOn {autoRptOn}
-{
-    if (rptRate <_minRptRate)
-        _rptRate = _minRptRate;
-    else
-        _rptRate = rptRate;    
-}
-
-bool AutoRptCntlMPBttn::setAutoRptRate(unsigned long int newRptRate){
-    bool result {false};
-
-    if (newRptRate >= _minRptRate){
-        _rptRate = newRptRate;
-        result = true;
-    }
-
-    return result;
-}
-bool AutoRptCntlMPBttn::notifySrvd(){
-    bool result {false};
-
-    if (_servicePend){
-        _servicePend = false;
-        if(_autoRptOn){
-            _rearmed = true;
-            _dbncTimerStrt = millis();
-            _wasPressed = true;
-        }
-        result = true;
-    }
-
-    return result;
-}
-
-bool AutoRptCntlMPBttn::updValidPress()
-{
-    bool result {false};
-    
-    updIsPressed();
-
-    int pinState {digitalRead(_mpbttnPin)};
-    bool nowPushed {_isPressed};    //Button is pushed == true
-    if (!_servicePend){
-        //There's no Service pending of being treated
-        if (nowPushed){
-            if (_autoRptOn || (!_autoRptOn && _rearmed) ){
-                if(_wasPressed){
-                    //It was already being pushed, timer is already running
-                    if ((millis() - _dbncTimerStrt) >= _dbncTimeOrigSett){
-                        _servicePend = true;
-                        _rearmed = false;
-                    }
-                }
-                else{
-                    //It wasn't already pushed, timer must be started and status changed
-                    _dbncTimerStrt = millis();
-                    _wasPressed = true;
-                }
-            }
-        }
-        else{
-            _wasPressed = false;
-            if (!_autoRptOn)
-                _rearmed = true;
-        }
-        result = true;
-    }
-    else{
-        //Could not be treated as a Service is pending of treatment        
-    }
-
-    return result;
-}
-
-*/
 

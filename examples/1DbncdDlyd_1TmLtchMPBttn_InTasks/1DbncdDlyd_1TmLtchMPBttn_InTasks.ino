@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <mpbToSwitch.h>
 
-//1Dbncd1LtchdInTasks.ino
+//1DbncdDlyd_1TmVdblMPBttn_InTasks.ino
 
 // put Types definitions here:
 struct bttnAsArg{
@@ -18,7 +18,7 @@ const uint8_t blueLed{GPIO_NUM_21};
 const uint8_t redSwitch{GPIO_NUM_26};
 const uint8_t redLed{GPIO_NUM_19};
 
-LtchMPBttn blueBttn (blueSwitch);
+TmVdblMPBttn blueBttn (blueSwitch, 2000);
 DbncdDlydMPBttn redBttn (redSwitch, true, true, 0, 250);
 
 bttnAsArg blueBttnArg {&blueBttn, blueLed};

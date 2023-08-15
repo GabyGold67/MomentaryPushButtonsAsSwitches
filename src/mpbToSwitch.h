@@ -13,7 +13,6 @@ protected:
     unsigned long int _dbncTimeOrigSett{};
 
     volatile bool _isPressed{false};
-    volatile bool _wasPressed{false};
     volatile bool _validPressPend{false};
     volatile bool _isOn{false};
     unsigned long int _dbncTimeTempSett{};
@@ -50,8 +49,6 @@ public:
     DbncdDlydMPBttn(uint8_t mpbttnPin, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0);
     unsigned long int getStrtDelay();
     boolean setStrtDelay(unsigned long int newStrtDelay);
-    bool updIsOn();
-    bool updIsPressed();
     bool updValidPressPend();
     bool begin(unsigned long int pollDelayMs = 5);
 };
@@ -78,10 +75,13 @@ class TmVdblMPBttn: public VdblMPBttn{
     static void mpbPollCallback(TimerHandle_t mpbTmrCb);
 protected:
     unsigned long int _voidTime;
+    unsigned long int _voidTmrStrt{0};
 
 public:
-    TmVdblMPBttn(uint8_t mpbttnPin, unsigned long int voidTime, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0);
-
+    TmVdblMPBttn(uint8_t mpbttnPin, unsigned long int voidTime, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0, bool isOnDisabled = false);
+    bool begin(unsigned long int pollDelayMs = 5);
+    bool updIsVoided();
+    bool updIsOn();
 };
 
 class LtchMPBttn: public DbncdDlydMPBttn{
