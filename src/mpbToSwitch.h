@@ -56,6 +56,34 @@ public:
     bool begin(unsigned long int pollDelayMs = 5);
 };
 
+class VdblMPBttn: public DbncdDlydMPBttn{
+    //static void mpbPollCallback(TimerHandle_t mpbTmrCb);
+protected:
+    bool _isEnabled{true};
+    bool _isOnDisabled{false};
+    bool _isVoided{false};
+public:
+    VdblMPBttn(uint8_t mpbttnPin, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0, bool isOnDisabled = false);
+    bool getIsVoided();
+    bool setIsVoided(bool voidValue);
+    bool getIsEnabled();
+    bool setIsEnabled(bool enabledValue);
+    bool enable();
+    bool disable();
+
+    virtual bool updIsVoided() = 0;
+};
+
+class TmVdblMPBttn: public VdblMPBttn{
+    static void mpbPollCallback(TimerHandle_t mpbTmrCb);
+protected:
+    unsigned long int _voidTime;
+
+public:
+    TmVdblMPBttn(uint8_t mpbttnPin, unsigned long int voidTime, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0);
+
+};
+
 class LtchMPBttn: public DbncdDlydMPBttn{
     static void mpbPollCallback(TimerHandle_t mpbTmrCb);
 
