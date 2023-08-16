@@ -4,6 +4,7 @@
 #include "Arduino.h"
 
 #define _HwMinDbncTime 20   //Documented minimum wait time for a MPB signal to stabilize
+
 class DbncdMPBttn{
     static void mpbPollCallback(TimerHandle_t mpbTmrCb);
 protected:
@@ -82,6 +83,7 @@ public:
     bool begin(unsigned long int pollDelayMs = 5);
     bool updIsVoided();
     bool updIsOn();
+    bool setIsVoided(bool voidValue);
 };
 
 class LtchMPBttn: public DbncdDlydMPBttn{

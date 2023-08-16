@@ -475,8 +475,7 @@ XtrnUnltchMPBttn::XtrnUnltchMPBttn(uint8_t mpbttnPin, uint8_t unltchPin,
 
 }
 
-bool XtrnUnltchMPBttn::begin(unsigned long int pollDelayMs)
-{
+bool XtrnUnltchMPBttn::begin(unsigned long int pollDelayMs){
 
     if (!mpbPollTmrHndl){        
         mpbPollTmrHndl = xTimerCreate(
@@ -597,6 +596,15 @@ bool TmVdblMPBttn::begin(unsigned long int pollDelayMs){
     xTimerStart(mpbPollTmrHndl, portMAX_DELAY);
     
     return mpbPollTmrHndl != nullptr;
+}
+
+bool TmVdblMPBttn::setIsVoided(bool voidValue){
+    if(voidValue){
+        _voidTmrStrt = (xTaskGetTickCount() / portTICK_RATE_MS) -(_voidTime + 1);
+    }
+    _isVoided = voidValue;
+
+    return _isVoided;
 }
 
 bool TmVdblMPBttn::updIsVoided(){

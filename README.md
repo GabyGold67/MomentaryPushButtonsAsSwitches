@@ -1,24 +1,15 @@
-# **PushButtonsLib**
-An Arduino library to deal with Momentary Push Buttons (MPBs): debouncing, mandatory unpressing, time voiding and ignoring. It builds on the MPB clean signal to simulate other common types of switches in software.
+# **mpbToSwitch Library**
+An Arduino-ESP32 library that builds physical electric switches replacements out of simple push buttons. By using just a push button (a.k.a. Momentary Buttons) -or two depending on the desired switch needs- the classes implemented in the library will set an internal ON flag depending different conditions to implement the behavior of a range of industry standard switches.  
+The benefits of the use of this kind of objects is not just economical, as push buttons come in a wide range of prices and qualities. In a home automation project, for example, detecting trough the use that an installed switch is not the best choice when a physical switch is involved requires the change of the switch: buying a different one, uninstalling the first, maybe modifying the cabling, installing the second... in this case is just changing the class of the object, modifying the instantiation parameters and the switch is already changed.  
 
-The switches to simulate are:  
-* MPB (a.k.a. Momentary switch, a.k.a. Pushbutton),  
-* Toggle (a.k.a. alternate, a.k.a. latched),  
-* Timed toggle (with/without-near to-end warning, with/without external hint),  
-* External released toggle (a.k.a. Emergency latched),  
-* Inverter (single or multipole),  
-* 3-ways (a.k.a. staircase),  
-* multiPole (independent or as an option to other switches?).  
+The library implements the following switches:  
+* Momentary Button (a.k.a. Momentary switch, a.k.a. Pushbutton), keeps the ON state since the moment the signal is stable (debouncing process) and until the moment the switch is released. It's implemented in the DbncdMPBttn class.
+* Delayed Momentary Button, keeps the ON state since the moment the signal is stable (debouncing process), plus a delay added, and until the moment the switch is released. The reasons to add the delay are design related an are usually used to avoid unintentional presses, or to give some equipment (load) that need time between repeated activations de benefit of the pause. If the push button is released before the delay configured no press is registered at all. The delay time in this class as in the other that implement it, can be zero (0). It's implemented in the DbncdDlydMPBttn class.  
+* Time Voidable Momentary Button, keeps the ON state since the moment the signal is stable (debouncing process), plus a delay added, and until the moment the switch is released, or until a given time in the ON state is reached. Then the switch will return to the Off position until the push button is released and pushed back. This kind of switches are used to activate limited resources related devices, and a physical switch blocking is highly undesired. Water valves, door unlocking mechanisms, hands-off security mechanisms, defrosting heating devices are some of the usual uses for these switches. It's implemented in the TmVdblMPBttn class.  
+* Toggle switch (a.k.a. alternate, a.k.a. latched), keeps the ON state since the moment the signal is stable (debouncing process), and keeps the ON state after the momentary switch is released and until it is pressed once again. So this simulates a simple On-Off switch like the ones used to turn a room light on or off. It's implemented in the LtchMPBttn class.  
+* Timer toggle (a.k.a. staircase timer switch), keeps the ON state since the moment the signal is stable, and keeps the state during a set time, the switch time is set at instantiation, and can be modified. The switch implementation gives the option to allow to reset the time counter before it gets to the end, the option to give a warning when the time is close to the end (remaining time is defined as a percentage of the total time and configurable), and the possibility to keep the warning signal on while the switch is off, just like the light hint in a staircase timer switch. It's implemented in the TmLtchMPBttn class.  
+* External released toggle (a.k.a. Emergency latched), keeps the ON state since the moment the signal is stable, and until an external signal is received. This kind of switch is used when an "out of normal situation" demands the push of the switch on but a higher authority is needed to reset it to Off from a different signal source. Fire, smoke or intrusion alarms are some examples of the use of this switch. It's implemented in the TmLtchMPBttn class.    
+* More switches classes are already under development to be added. Documentation is being added also.  
 
-Classes implemented:
-DbncdMPBttn: The MPB debounced, debounce time configurable from 20 milisecs up, the ON signal is true from the programmed debounce time setted up to the MPB release.  
-
-DbncdDlydMPBttn: Identical to the DbncdMPBttn, but an adittional parameter is included for a delay adition from the debounce time and before the ON signal is raised. If the MPB is released before the delay time exhaustion the ON signal will never be rised.  
-
-LtchMPBttn: Similar to the DbncdDlydMPBttn but after a validated press the ON signal is kept raised until a second validated press is received.
-
-
-The master idea is to poll a MPB object instead of a physical pin, even using the physical pinNumber transparently. Polling the object will return a clean signal 
-from a MPB debounced, delay corrected, simulating button press and button release for the MPB to act as different kind of physical switches.
-The Off/On status of the switch will be updated and logically calculated by a timer triggered callback (FreeRTOS).
-The switches will have the possibility to be updated from a begin() and until an end(), and suspend() and resume() polling
+Implemented originally for the ESP-FreeRTOS the created objects must use the .begin() method provided to create a timer, if there are no other objects from the provided classes created, or add themselves to the one created by other object. The timer will periodically check the input pins associated to the objects and refresh the object input situation. The classes provide a callback function to keep the behavior of the objects updated, a valid approach is to create a task for each object to repeatedly refresh the status in an unattended fashion. Examples are provided for each of the classes, usually as pairs in each example to show possible interactions between different objects, the possible implementations with tasks or with a refreshing mechanism int the loop() (loop task).  
+The object input status checking can be paused, restarted and even ended. If all the created objects status checking is ended the timer will be deleted, to release resources.

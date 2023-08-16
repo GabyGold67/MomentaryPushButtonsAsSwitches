@@ -11,6 +11,7 @@ DbncdDlydMPBttn KEYWORD1
 LtchMPBttn  KEYWORD1
 TmLtchMPBttn    KEYWORD1
 XtrnUnltchMPBttn    KEYWORD1
+TmVdblMPBttn    KEYWORD1
 
 ###############################################
 # Methods and Functions (KEYWORD2)
@@ -40,7 +41,8 @@ setTmerRstbl    KEYWORD2
 setWnngPinOut   KEYWORD2
 updWrnngOn  KEYWORD2
 
-
+setIsVoided KEYWORD2
+updIsVoided KEYWORD2
 
 ###############################################
 # Constants (LITERAL1)

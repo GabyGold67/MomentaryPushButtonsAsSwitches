@@ -5,6 +5,22 @@ _ May the begin() method be reformatted as a class method template for each clas
 
 _ May the mpbPollCallback reformatted as a class method template for each class in the library?
 
+_ The Time Latched class must include the possibility of leaving the near end warning turned on as a pilot light
+
+_ TmLtchMPBttn must add method to set a new active time
+
+_ TmVdblMPBttn must add method to set a new voiding time
+
+
+The switches to simulate are:  
+
+Classes implemented:
+DbncdMPBttn: The MPB debounced, debounce time configurable from 20 milisecs up, the ON signal is true from the programmed debounce time setted up to the MPB release.  
+
+DbncdDlydMPBttn: Identical to the DbncdMPBttn, but an adittional parameter is included for a delay adition from the debounce time and before the ON signal is raised. If the MPB is released before the delay time exhaustion the ON signal will never be rised.  
+
+LtchMPBttn: Similar to the DbncdDlydMPBttn but after a validated press the ON signal is kept raised until a second validated press is received.
+
 
 
 Class Candidate 01
