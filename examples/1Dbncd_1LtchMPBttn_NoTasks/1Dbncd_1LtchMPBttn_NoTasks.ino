@@ -5,10 +5,10 @@
 
 const uint8_t redLed{GPIO_NUM_19};
 const uint8_t blueLed{GPIO_NUM_21};
-const uint8_t blueSwitch{GPIO_NUM_25};
+const uint8_t xumpbSwitchPin{GPIO_NUM_25};
 const uint8_t redSwitch{GPIO_NUM_26};
 
-LtchMPBttn blueBttn (blueSwitch, true, true, 20, 50);
+LtchMPBttn blueBttn (xumpbSwitchPin, true, true, 20, 50);
 DbncdMPBttn redBttn (redSwitch);
 
 void setup() {

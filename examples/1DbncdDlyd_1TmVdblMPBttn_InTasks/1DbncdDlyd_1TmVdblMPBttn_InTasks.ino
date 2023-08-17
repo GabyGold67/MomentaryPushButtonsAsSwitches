@@ -13,12 +13,12 @@ struct bttnAsArg{
 static void updLEDStruc(void* argp);
 
 // put Global declarations here: 
-const uint8_t blueSwitch{GPIO_NUM_25};
+const uint8_t xumpbSwitchPin{GPIO_NUM_25};
 const uint8_t blueLed{GPIO_NUM_21};
 const uint8_t redSwitch{GPIO_NUM_26};
 const uint8_t redLed{GPIO_NUM_19};
 
-TmVdblMPBttn blueBttn (blueSwitch, 3000, true, true,0, 0, false);
+TmVdblMPBttn blueBttn (xumpbSwitchPin, 3000, true, true,0, 0, false);
 DbncdDlydMPBttn redBttn (redSwitch, true, true, 0, 150);
 
 bttnAsArg blueBttnArg {&blueBttn, blueLed};

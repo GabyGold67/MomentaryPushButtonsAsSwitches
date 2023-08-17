@@ -3,13 +3,13 @@
 
 //1Dbncd_1DbncdDlyd_NoTasks.ino
 
-const uint8_t redLed{GPIO_NUM_19};
-const uint8_t blueLed{GPIO_NUM_21};
-const uint8_t blueSwitch{GPIO_NUM_25};
-const uint8_t redSwitch{GPIO_NUM_26};
+const uint8_t ddmpbLoadPin{GPIO_NUM_19};
+const uint8_t dmpbLoadPin{GPIO_NUM_21};
+const uint8_t dmpbSwitchPin{GPIO_NUM_25};
+const uint8_t ddmpbSwitchPin{GPIO_NUM_26};
 
-DbncdDlydMPBttn blueBttn (blueSwitch, true, true, 20, 1000);
-DbncdMPBttn redBttn (redSwitch);
+DbncdDlydMPBttn blueBttn (dmpbSwitchPin, true, true, 20, 1000);
+DbncdMPBttn redBttn (ddmpbSwitchPin);
 
 const unsigned int toggleCount {5};
 
@@ -19,8 +19,8 @@ unsigned int blueAloneCount {0};
 bool blueFlips{false};
 
 void setup() {
-  pinMode(redLed, OUTPUT);
-  pinMode(blueLed, OUTPUT);
+  pinMode(ddmpbLoadPin, OUTPUT);
+  pinMode(dmpbLoadPin, OUTPUT);
 
   blueBttn.begin();
   redBttn.begin();
@@ -28,7 +28,7 @@ void setup() {
 
 void loop() {
   if (blueBttn.getIsOn()){
-    digitalWrite(blueLed, HIGH);
+    digitalWrite(dmpbLoadPin, HIGH);
     if (!blueFlips){
       if(redCount == toggleCount){
         blueFlips = true;
@@ -43,21 +43,21 @@ void loop() {
     }
   }
   else{
-    digitalWrite(blueLed, LOW);
+    digitalWrite(dmpbLoadPin, LOW);
     if(blueFlips){
       blueFlips = false;
     }      
   }
 
   if (redBttn.getIsOn()){
-    digitalWrite(redLed, HIGH);
+    digitalWrite(ddmpbLoadPin, HIGH);
     if (!redFlips){
       redFlips = true;
       redCount++;
     }
   }
   else {
-    digitalWrite(redLed, LOW);
+    digitalWrite(ddmpbLoadPin, LOW);
     if(redFlips){
       redFlips = false;  
       if (redCount == toggleCount){

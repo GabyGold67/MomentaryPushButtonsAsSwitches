@@ -11,6 +11,10 @@ _ TmLtchMPBttn must add method to set a new active time
 
 _ TmVdblMPBttn must add method to set a new voiding time
 
+_ All classes and methods related to times must check a valid range input
+
+
+
 
 The switches to simulate are:  
 
