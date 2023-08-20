@@ -17,6 +17,7 @@
   _ 1 led with it's corresponding resistor between GND and loadPin
 
   Pressing the push button connected to xumpSwitch will turn the led on and keep it lit after it is released until the push button connected to releaseSwitch is pushed
+  The task is created to keep the load (led) updated according to the _isOn attribute of the switch (using the getIsOn() methods)
 */
 
 // put Types definitions here:

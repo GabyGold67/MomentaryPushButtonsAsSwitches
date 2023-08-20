@@ -3,35 +3,35 @@
 
 //1Dbncd_1LtchMPBttn_NoTasks.ino
 
-const uint8_t redLed{GPIO_NUM_19};
-const uint8_t blueLed{GPIO_NUM_21};
-const uint8_t xumpbSwitchPin{GPIO_NUM_25};
-const uint8_t redSwitch{GPIO_NUM_26};
+const uint8_t dbncdLoad{GPIO_NUM_19};
+const uint8_t ltchdLed{GPIO_NUM_21};
+const uint8_t ltchdSwitchPin{GPIO_NUM_25};
+const uint8_t dbncdSwitchPin{GPIO_NUM_26};
 
-LtchMPBttn blueBttn (xumpbSwitchPin, true, true, 20, 50);
-DbncdMPBttn redBttn (redSwitch);
+LtchMPBttn ltchdBttn (ltchdSwitchPin, true, true, 20, 50);
+DbncdMPBttn dbncdBttn (dbncdSwitchPin);
 
 void setup() {
   // put your setup code here, to run once:
-  pinMode(redLed, OUTPUT);
-  pinMode(blueLed, OUTPUT);
+  pinMode(dbncdLoad, OUTPUT);
+  pinMode(ltchdLed, OUTPUT);
 
-  blueBttn.begin();
-  redBttn.begin();
+  ltchdBttn.begin();
+  dbncdBttn.begin();
 }
 
 void loop() {
-  if (blueBttn.getIsOn()){
-    digitalWrite(blueLed, HIGH);
+  if (ltchdBttn.getIsOn()){
+    digitalWrite(ltchdLed, HIGH);
   }
   else{
-    digitalWrite(blueLed, LOW);
+    digitalWrite(ltchdLed, LOW);
   }
 
-  if (redBttn.getIsOn()){
-    digitalWrite(redLed, HIGH);
+  if (dbncdBttn.getIsOn()){
+    digitalWrite(dbncdLoad, HIGH);
   }
   else {
-    digitalWrite(redLed, LOW);
+    digitalWrite(dbncdLoad, LOW);
   }      
 }

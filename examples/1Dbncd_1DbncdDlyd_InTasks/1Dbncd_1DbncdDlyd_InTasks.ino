@@ -15,10 +15,12 @@
   _ 1 push button between GND and dmpbSwitchPin
   _ 1 push button between GND and ddmpbSwitchPin
   _ 1 led with it's corresponding resistor between GND and dmpbLoadPin
-  _ 1 led with it's corresponding resistor between GND and loadPin
+  _ 1 led with it's corresponding resistor between GND and ddmpbLoadPin
 
   Pressing the push button connected to dmpbSwitchPin will turn the led immediately on and keep it lit while it's being pressed
   Pressing the push button connected to ddmpbSwitchPin will turn the led on after a 500 miliseconds  delay and keep it lit while it's being pressed
+
+  Two tasks are created to keep the load (leds) updated according to the _isOn attribute of the switches (using the getIsOn() methods)
 */
 
 // put Types definitions here:
