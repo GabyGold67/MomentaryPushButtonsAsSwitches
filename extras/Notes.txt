@@ -12,6 +12,7 @@ _ All classes and methods related to times must check a valid range input
 
 _ Double check consecuences of wrnngPrctg = 0!!
 
+Pilot light electrical devices for switch wall plates in residential and commercial locations. These illuminated switches are useful in situations where you want to be alerted that a device or load is on. You'll find pilot lighted rocker switches, Despard switches, toggle switches, single pole and 3 way switches. (Not made in 4-way.) Note that pilot switches are lighted when ON. 15 amp and 20 amp versions available in red, clear, and white. 
 
 
 The switches to simulate are:  
