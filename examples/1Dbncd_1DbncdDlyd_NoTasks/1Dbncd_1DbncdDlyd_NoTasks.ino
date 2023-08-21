@@ -18,12 +18,12 @@
   _ 1 led with it's corresponding resistor between GND and ddmpbLoadPin
 
   Pressing the push button connected to dmpbSwitchPin will turn the led immediately on and keep it lit while it's being pressed. After 5 times the led is lit the 
-  button status checking is paused, until the other push button accumulates 5 pushes. The pushes don't need to be consecutive, the other button might be pushed betwen this 
+  button status checking is paused, until the other push button accumulates 5 pushes. The pushes don't need to be consecutive, the other button might be pushed between this 
   button pushes, when this one accumulates 5 the other must also accumulate 5 to resume this button activities.
   Pressing the push button connected to ddmpbSwitchPin will turn the led on after a 500 miliseconds  delay and keep it lit while it's being pressed
 
-  The input signals comming from the push buttons are not processed by tasks, but in the loop() routine as is usual in Arduino style sketches
-   (and yes, loop() is the loopTask() disguised in the Ardu-ESP)
+  The input signals coming from the push buttons are not processed by tasks, but in the loop() routine as is usual in Arduino style sketches, just to show there's no need to
+   build specific tasks to process the class objects signals, although the "superloop" disadvantages will be back (and yes, loop() is the loopTask() disguised in the Ardu-ESP)
 */
 
 const uint8_t dmpbLoadPin{GPIO_NUM_21};

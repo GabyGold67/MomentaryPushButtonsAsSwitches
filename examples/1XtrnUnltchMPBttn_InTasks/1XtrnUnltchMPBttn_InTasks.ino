@@ -52,7 +52,7 @@ void setup() {
           updOutPin,  //function to be called
           "UpdateOutputPin",  //Name of the task
           2048,   //Stack size (in bytes in ESP32, words in FreeRTOS), the minimum value is in the config file, for this is 768 bytes
-          &xumpBttnArg,  //Pointer to the parameters for the function to work with, change to &blueBttnArg
+          &xumpBttnArg,  //Pointer to the parameters for the function to work with
           1,      //Priority level given to the task
           &xumpBttnHndl, //Task handle
           app_cpu //Run in one core for demo purposes (ESP32 only)

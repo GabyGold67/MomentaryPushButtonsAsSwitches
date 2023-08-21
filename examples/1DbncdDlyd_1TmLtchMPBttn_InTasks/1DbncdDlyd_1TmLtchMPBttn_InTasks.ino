@@ -1,7 +1,31 @@
 #include <Arduino.h>
 #include <mpbToSwitch.h>
 
-//1DbncdDlyd_1TmLtchMPBttn_InTasks.ino
+/*
+  mpbToSwitch Library for
+    Framework: Arduino
+    Platform: ESP32
+
+  1DbncdDlyd_1TmLtchMPBttn_InTasks.ino
+  Created by Gabriel D. Goldman, August, 2023.
+  Updated by Gabriel D. Goldman, August 20, 2023.
+  Released into the public domain in accordance with "GPL-3.0-or-later" license terms.
+
+  Example file to demonstrate DbncdMPBttn and TmLtchMPBttn classes, required hardware and connections:
+  _ 1 push button between GND and dbncdSwitchPin
+  _ 1 push button between GND and tlmpbSwitchPin
+  _ 1 led with it's corresponding resistor between GND and dbncdLoad
+  _ 1 led with it's corresponding resistor between GND and tlmpLoadPin
+
+  Pressing the push button connected to dbncdSwitchPin will turn the led immediately on and keep it lit while it's being pressed.
+  Pressing the push button connected to tlmpbSwitchPin will turn the led on after a 50 miliseconds delay and keep it lit until the setted time is reached,
+  the time will be reset if the mpb is pressed while the timer hasn't expired. In this sample 4000 milliseconds is the set time to keep the led on, and a 
+  25% parameter is given as a warning setup: when the timer has only 25% of the time left a second pin will be rised to alert the time is running out.
+  Please note that because of that seconde pin needed por warning a different struct is defined to be passed to the corresponding task.
+
+  The input signals comming from the push buttons are processed by tasks, so the loop() function is unnecesary to keep the loads status updated. For demonstration purposes
+   the loop() is removed from the task list the scheduler must provide processing time at all (using vTaskDelete())
+*/
 
 // put Types definitions here:
 struct bttnAsArg{
@@ -19,57 +43,57 @@ static void updLEDStruc(void* argp);
 static void updLEDnWrnStruc(void* argp);
 
 // put Global declarations here: 
-const uint8_t xumpbSwitchPin{GPIO_NUM_25};
-const uint8_t blueLed{GPIO_NUM_21};
-const uint8_t redSwitch{GPIO_NUM_26};
-const uint8_t redLed{GPIO_NUM_19};
+const uint8_t tlmpbSwitchPin{GPIO_NUM_25};
+const uint8_t tlmpLoadPin{GPIO_NUM_21};
+const uint8_t dmpbSwitchPin{GPIO_NUM_26};
+const uint8_t dmpbLoadPin{GPIO_NUM_19};
 const uint8_t wnngLed{GPIO_NUM_15};
 
-TmLtchMPBttn blueBttn (xumpbSwitchPin, 4000, 25, true, true, 20, 50);
-DbncdMPBttn redBttn (redSwitch);
+TmLtchMPBttn tlBttn (tlmpbSwitchPin, 4000, 25, true, true, 20, 50);
+DbncdMPBttn dBttn (dmpbSwitchPin);
 
-bttnNWarnAsArg blueBttnArg {&blueBttn, blueLed, wnngLed};
-bttnAsArg redBttnArg {&redBttn, redLed};
+bttnNWarnAsArg tlBttnArg {&tlBttn, tlmpLoadPin, wnngLed};
+bttnAsArg dBttnArg {&dBttn, dmpbLoadPin};
 
 void setup() {
   // put your setup code here, to run once:
   int app_cpu = xPortGetCoreID();
   BaseType_t rc;
 
-  pinMode(blueLed, OUTPUT);
-  blueBttn.setWnngPinOut(wnngLed);
-  TaskHandle_t blueBttnHndl;
-  blueBttn.begin();
+  pinMode(tlmpLoadPin, OUTPUT);
+  tlBttn.setWnngPinOut(wnngLed);
+  TaskHandle_t tlBttnHndl;
+  tlBttn.begin();
 
 //Task to run forever
   rc = xTaskCreatePinnedToCore(
           updLEDnWrnStruc,  //function to be called
-          "UpdBlueLed",  //Name of the task
+          "UpdTlLed",  //Name of the task
           2048,   //Stack size (in bytes in ESP32, words in FreeRTOS), the minimum value is in the config file, for this is 768 bytes
-          &blueBttnArg,  //Pointer to the parameters for the function to work with, change to &blueBttnArg
+          &tlBttnArg,  //Pointer to the parameters for the function to work with, change to &tlBttnArg
           1,      //Priority level given to the task
-          &blueBttnHndl, //Task handle
+          &tlBttnHndl, //Task handle
           app_cpu //Run in one core for demo purposes (ESP32 only)
   );
   assert(rc == pdPASS);
-  assert(blueBttnHndl);
+  assert(tlBttnHndl);
 
-  pinMode(redLed, OUTPUT);
-  redBttn.begin();
-  TaskHandle_t redBttnHndl;
+  pinMode(dmpbLoadPin, OUTPUT);
+  dBttn.begin();
+  TaskHandle_t dBttnHndl;
 
 //Task to run forever
   rc = xTaskCreatePinnedToCore(
           updLEDStruc,  //function to be called
-          "UpdRedLed",  //Name of the task
+          "UpdDbncLed",  //Name of the task
           2048,   //Stack size (in bytes in ESP32, words in FreeRTOS), the minimum value is in the config file, for this is 768 bytes
-          &redBttnArg,  //Pointer to the parameters for the function to work with
+          &dBttnArg,  //Pointer to the parameters for the function to work with
           1,      //Priority level given to the task
-          &redBttnHndl, //Task handle
+          &dBttnHndl, //Task handle
           app_cpu //Run in one core for demo purposes (ESP32 only)
   );
   assert(rc == pdPASS);
-  assert(redBttnHndl);
+  assert(dBttnHndl);
 }
 
 void loop() {
