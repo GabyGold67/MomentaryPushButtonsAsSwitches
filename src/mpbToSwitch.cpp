@@ -1,4 +1,4 @@
-#include "mpbToSwitch.h"
+#include <mpbToSwitch.h>
 
 DbncdMPBttn::DbncdMPBttn(uint8_t mpbttnPin, bool pulledUp, bool typeNO, unsigned long int dbncTimeOrigSett)
 : _mpbttnPin{mpbttnPin}, _pulledUp{pulledUp}, _typeNO{typeNO}, _dbncTimeOrigSett{dbncTimeOrigSett}
@@ -65,6 +65,7 @@ bool DbncdMPBttn::updIsPressed(){
     bool tmpPinLvl {digitalRead(_mpbttnPin)};
     
     if (_typeNO == true){
+        //For NO MPBs
         if (_pulledUp == false){
             if (tmpPinLvl == HIGH)
                 result = true;
@@ -117,7 +118,8 @@ bool DbncdMPBttn::updValidPressPend(){
         }
     }
     else{
-        _dbncTimerStrt = 0;
+        if(_dbncTimerStrt > 0)
+            _dbncTimerStrt = 0;
     }
     _validPressPend = result;
 
@@ -229,7 +231,8 @@ bool DbncdDlydMPBttn::updValidPressPend(){
         }
     }
     else{
-        _dbncTimerStrt = 0;
+        if(_dbncTimerStrt > 0)
+            _dbncTimerStrt = 0;
     }
     _validPressPend = result;
 
@@ -301,13 +304,13 @@ bool LtchMPBttn::updIsOn(){
 
     if(_validPressPend){
         if (!_isOn){
-            _isOn = !_isOn;
+            _isOn = true;
             _validPressPend = false;
         }
     }
     else if(_unlatchPending){
         if (_isOn){
-            _isOn = !_isOn;
+            _isOn = false;
             _unlatchPending = false;
         }
     }
@@ -349,8 +352,10 @@ bool LtchMPBttn::updValidPressPend(){
         }
     }
     else{
-        _dbncTimerStrt = 0;
-        _releasePending = false;
+        if(_dbncTimerStrt > 0)
+            _dbncTimerStrt = 0;
+        if(_releasePending)
+            _releasePending = false;
     }
 
    return _validPressPend;
@@ -411,7 +416,7 @@ bool TmLtchMPBttn::updIsOn() {
     }
     else if(_unlatchPending){
         if (_isOn){
-            _isOn = !_isOn;
+            _isOn = false;
             _unlatchPending = false;
         }
     }

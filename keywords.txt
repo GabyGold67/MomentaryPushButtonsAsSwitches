@@ -16,7 +16,8 @@ TmVdblMPBttn    KEYWORD1
 ###############################################
 # Methods and Functions (KEYWORD2)
 ###############################################
-
+# DbncdMPBttn
+#############
 begin   KEYWORD2
 end KEYWORD2
 getCurDbncTime  KEYWORD2
@@ -28,21 +29,39 @@ setDbncTime KEYWORD2
 updIsOn    KEYWORD2
 updIsPressed    KEYWORD2
 updValidPressPend   KEYWORD2
-
+################
+#DbncdDlydMPBttn
+################
 getStrtDelay    KEYWORD2
 setStrtDelay    KEYWORD2
-
+###########
+#LtchMPBttn
+###########
 setUnlatchPend  KEYWORD2
 updUnlatchPend  KEYWORD2
-
+#############
+#TmLtchMPBttn
+#############
 getWrnngOn  KEYWORD2
 getWrnngPin KEYWORD2
 setTmerRstbl    KEYWORD2
 setWnngPinOut   KEYWORD2
 updWrnngOn  KEYWORD2
-
+###########
+#VdblMPBttn
+###########
+disable KEYWORD2
+enable  KEYWORD2
+getIsEnabled    KEYWORD2
+getIsVoided KEYWORD2
+setIsEnabled    KEYWORD2
 setIsVoided KEYWORD2
 updIsVoided KEYWORD2
+#############
+#TmVdblMPBttn
+#############
+getVoidTime KEYWORD2
+setVoidTime KEYWORD2
 
 ###############################################
 # Constants (LITERAL1)

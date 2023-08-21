@@ -1,7 +1,7 @@
 #ifndef _MPBTOSWITCH_H_
 #define _MPBTOSWITCH_H_
 
-#include "Arduino.h"
+#include <Arduino.h>
 
 #define _HwMinDbncTime 20   //Documented minimum wait time for a MPB signal to stabilize
 
