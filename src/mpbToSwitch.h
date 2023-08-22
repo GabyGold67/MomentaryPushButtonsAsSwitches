@@ -76,7 +76,7 @@ class TmLtchMPBttn: public LtchMPBttn{
     static void mpbPollCallback(TimerHandle_t mpbTmrCb);
 
 protected:
-    uint8_t _wnngPinOut {0};    //Must be moved to the HAL
+    uint8_t _wnngPinOut {0};    //Must be moved to the HIL
     bool _tmRstbl {true};
     bool _wrnngOn {false};
     bool _keepWrnngAsHint{false};
@@ -87,9 +87,9 @@ protected:
 public:
     TmLtchMPBttn(uint8_t mpbttnPin, unsigned long int actTime, unsigned int wrnngPrctg = 0, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0);
     bool getWrnngOn();
-    uint8_t getWrnngPin();      //Must be moved to the HAL
+    uint8_t getWrnngPin();      //Must be moved to the HIL
     bool setTmerRstbl(bool isRstbl);
-    bool setWnngPinOut(uint8_t wrnngPinOut);    //Must be moved to the HAL
+    bool setWnngPinOut(uint8_t wrnngPinOut);    //Must be moved to the HIL
     bool updWrnngOn();
 
     bool begin(unsigned long int pollDelayMs = 5);

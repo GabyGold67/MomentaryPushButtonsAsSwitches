@@ -18,3 +18,79 @@ The benefits of the use of those simulated switches/objects are not just economi
 
 The timer will periodically check the input pins associated to the objects and refresh the object input situation. The classes provide a callback function to keep the behavior of the objects updated, a valid approach is to create a task for each object to repeatedly refresh the status in an unattended fashion. Examples are provided for each of the classes, usually as pairs in each example to show possible interactions between different objects, the possible implementations with tasks or with a refreshing mechanism int the loop() (loopTask).  
 The object input status checking can be paused, restarted and even ended. If the object's status checking is ended the timer entry will be deleted, to release resources.
+
+
+# **Included Methods for DbncdMPBttn class**
+
+|Method | Parameters|
+|---|---|
+|**_DbncdMPBttn_** |uint8_t **mpbttnPin**(, bool **pulledUp**(, bool **typeNO**(, unsigned long int **dbncTimeOrigSett**)))|
+|**begin()**|(unsigned long int **pollDelayMs**)|
+|**end()**|None|
+|**getCurDbncTime()**|None|
+|**getIsOn()**|None|
+|**pause()**|None|
+|**resetDbncTime()**|None|
+|**resume()**|None|
+|**setDbncTime()**|unsigned long int **newDbncTime**|
+|**updIsOn()**|None|
+|**updIsPressed()**|None|
+|**updValidPressPend()**|None| 
+---  
+---  
+# **Added Methods for DbncdDlydMPBttn class**
+
+|Method | Parameters|
+|---|---|
+|**_DbncdDlydMPBttn_** |uint8_t **mpbttnPin**(, bool **pulledUp**(, bool **typeNO**(, unsigned long int **dbncTimeOrigSett**(, unsigned long int **strtDelay**))))|
+|**getStrtDelay()**|None|
+|**setStrtDelay()**|(unsigned long int **newStrtDelay**)|
+
+---  
+---  
+# **Added Methods for LtchMPBttn class**
+
+|Method | Parameters|
+|---|---|
+|**_LtchMPBttn_** |uint8_t **mpbttnPin**(, bool **pulledUp**(, bool **typeNO**(, unsigned long int **dbncTimeOrigSett**(, unsigned long int **strtDelay**))))|
+|**setUnlatchPend()**|None|
+|**updUnlatchPend()**|None|
+
+---  
+---  
+# **Added Methods for TmLtchMPBttn class**
+
+|Method | Parameters|
+|---|---|
+|**_TmLtchMPBttn_** |uint8_t **mpbttnPin**, unsigned long int **actTime**(, unsigned int **wrnngPrctg**(, bool **pulledUp**(, bool **typeNO**(, unsigned long int **dbncTimeOrigSett**(, unsigned long int **strtDelay**)))))|
+|**getWrnngOn()**|None|
+|**getWrnngPin()**|None|
+|**setTmrRestbl()**|bool **isRstbl**|
+|**setWnngPinOut()**|uint8_t **wrnngPinOut**|
+|**updWrnngOn()**|None|
+
+---  
+---  
+# **Added Methods for XtrnUnLtchMPBttn class**
+
+|Method | Parameters|
+|---|---|
+|**_XtrnUnLtchMPBttn_** |uint8_t **mpbttnPin**, uint8_t **unltchPin**(, bool **pulledUp**(, bool **typeNO**(, unsigned long int **dbncTimeOrigSett**(, unsigned long int **strtDelay**(, bool **upulledUp**(, bool **utypeNO**(, unsigned long int **udbncTimeOrigSett**(, unsigned long int **ustrtDelay**))))))))|
+|**updUnlatchPend()**|None|
+
+---  
+---  
+# **Added Methods for TmVdblMPBttn class**
+
+|Method | Parameters|
+|---|---|
+|**_TmVdblMPBttn_** |uint8_t **mpbttnPin**, unsigned long int **voidTime**(, bool **pulledUp**(, bool **typeNO**(, unsigned long int **dbncTimeOrigSett**(, unsigned long int **strtDelay**(, bool **isOnDisabled**)))))|
+|**disable()**|None|
+|**enable()**|None|
+|**getIsEnabled()**|None|
+|**getIsVoided()**|None|
+|**getVoidTime()**|None|
+|**setIsEnabled()**|bool **enabledValue**|
+|**setIsVoided()**|bool **voidValue**|
+|**setVoidTime()**|None|
+|**updIsVoided()**|None|
