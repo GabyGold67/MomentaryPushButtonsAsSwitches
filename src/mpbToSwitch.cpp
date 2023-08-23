@@ -493,10 +493,15 @@ XtrnUnltchMPBttn::XtrnUnltchMPBttn(uint8_t mpbttnPin, uint8_t unltchPin,
         bool pulledUp,  bool typeNO,  unsigned long int dbncTimeOrigSett,  unsigned long int strtDelay,
         bool upulledUp, bool utypeNO, unsigned long int udbncTimeOrigSett, unsigned long int ustrtDelay)
 :LtchMPBttn(mpbttnPin, pulledUp, typeNO, dbncTimeOrigSett, strtDelay), _unLtchBttn(unltchPin, upulledUp, utypeNO, udbncTimeOrigSett, ustrtDelay)
-
 {
 
 }
+
+// XtrnUnltchMPBttn::XtrnUnltchMPBttn(uint8_t mpbttnPin, DbncdDlydMPBttn unltchBttn, bool pulledUp, bool typeNO, unsigned long int dbncTimeOrigSett, unsigned long int strtDelay)
+// :LtchMPBttn(mpbttnPin, pulledUp, typeNO, dbncTimeOrigSett, strtDelay)
+// {
+
+// }
 
 bool XtrnUnltchMPBttn::begin(unsigned long int pollDelayMs){
 

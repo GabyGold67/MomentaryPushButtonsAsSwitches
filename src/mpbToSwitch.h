@@ -111,6 +111,9 @@ public:
         bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0,
         bool upulledUp = true, bool utypeNO = true, unsigned long int udbncTimeOrigSett = 0, unsigned long int ustrtDelay = 0);
 
+    // XtrnUnltchMPBttn(uint8_t mpbttnPin, DbncdDlydMPBttn unltchBttn, 
+    //     bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0);
+
     bool begin(unsigned long int pollDelayMs = 5);
     bool updUnlatchPend();
 };
