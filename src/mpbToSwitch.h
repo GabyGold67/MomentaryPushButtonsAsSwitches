@@ -31,8 +31,8 @@ public:
     bool init(const uint8_t &mpbttnPin, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0);
     bool resetDbncTime();
     bool setDbncTime(const unsigned long int &newDbncTime);
-    bool updIsPressed();
     bool updIsOn();
+    bool updIsPressed();
     bool updValidPressPend();
 
     bool begin(const unsigned long int &pollDelayMs = 5);
@@ -81,21 +81,35 @@ class TmLtchMPBttn: public LtchMPBttn{
 
 protected:
     bool _tmRstbl {true};
+    unsigned long int _srvcTime {};
+    unsigned long int _srvcTimerStrt{0};
+public:
+    TmLtchMPBttn(const uint8_t &mpbttnPin, const unsigned long int &actTime, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0);
+    unsigned long int getActTime();
+    bool setActTime(const unsigned long int &newActTime);
+    bool setTmerRstbl(const bool &isRstbl);
+
+    bool begin(const unsigned long int &pollDelayMs = 5);
+    bool updIsOn();
+    bool updIsPressed();
+    bool updValidPressPend();
+    bool updUnlatchPend();
+};
+
+class HntdTmLtchMPBttn: public TmLtchMPBttn{
+    static void mpbPollCallback(TimerHandle_t mpbTmrCb);
+
+protected:
     bool _wrnngOn {false};
     bool _keepPilot{false};
     bool _pilotOn{false};
     unsigned int _wrnngPrctg {0};
     unsigned long int _wrnngMs{0};
-    unsigned long int _srvcTime {};
-    unsigned long int _srvcTimerStrt{0};
 public:
-    TmLtchMPBttn(const uint8_t &mpbttnPin, const unsigned long int &actTime, const unsigned int &wrnngPrctg = 0, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0);
-    unsigned long int getActTime();
+    HntdTmLtchMPBttn(const uint8_t &mpbttnPin, const unsigned long int &actTime, const unsigned int &wrnngPrctg = 0, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0);
     bool getPilotOn();
     bool getWrnngOn();
-    bool setActTime(const unsigned long int &newActTime);
     bool setKeepPilot(const bool &keepPilot);
-    bool setTmerRstbl(const bool &isRstbl);
 
     bool begin(const unsigned long int &pollDelayMs = 5);
     bool updIsOn();

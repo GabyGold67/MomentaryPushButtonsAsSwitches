@@ -43,10 +43,16 @@ updUnlatchPend  KEYWORD2
 #############
 #TmLtchMPBttn
 #############
-getWrnngOn  KEYWORD2
-getWrnngPin KEYWORD2
+getActTime  KEYWORD2
+setActTime  KEYWORD2
 setTmerRstbl    KEYWORD2
-setWnngPinOut   KEYWORD2
+#################
+#HntdTmLtchMPBttn
+#################
+getPilotOn  KEYWORD2
+getWrnngOn  KEYWORD2
+setKeepPilot    KEYWORD2
+updPilotOn  KEYWORD2
 updWrnngOn  KEYWORD2
 ###########
 #VdblMPBttn
