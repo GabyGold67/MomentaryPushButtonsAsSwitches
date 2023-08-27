@@ -22,6 +22,7 @@ begin   KEYWORD2
 end KEYWORD2
 getCurDbncTime  KEYWORD2
 getIsOn KEYWORD2
+init    KEYWORD2
 pause   KEYWORD2
 resetDbncTime   KEYWORD2
 resume  KEYWORD2

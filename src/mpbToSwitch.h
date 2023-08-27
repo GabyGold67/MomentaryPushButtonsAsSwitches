@@ -16,24 +16,26 @@ protected:
     volatile bool _isPressed{false};
     volatile bool _validPressPend{false};
     volatile bool _isOn{false};
-    unsigned long int _dbncTimeTempSett{};
-    unsigned long int _dbncTimerStrt{};
+    unsigned long int _dbncTimeTempSett{0};
+    unsigned long int _dbncTimerStrt{0};
     const unsigned long int _stdMinDbncTime {_HwMinDbncTime};
     TimerHandle_t mpbPollTmrHndl {nullptr};
     char _mpbPollTmrName [17] {'\0'};
 
     bool getIsPressed();
 public:    
-    DbncdMPBttn(uint8_t mpbttnPin, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0);
+    DbncdMPBttn();
+    DbncdMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0);
     unsigned long int getCurDbncTime();
     bool getIsOn ();
+    bool init(const uint8_t &mpbttnPin, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0);
     bool resetDbncTime();
     bool setDbncTime(const unsigned long int &newDbncTime);
     bool updIsPressed();
     bool updIsOn();
     bool updValidPressPend();
 
-    bool begin(unsigned long int pollDelayMs = 5);
+    bool begin(const unsigned long int &pollDelayMs = 5);
     bool pause();
     bool resume();
     bool end();
@@ -45,11 +47,13 @@ class DbncdDlydMPBttn: public DbncdMPBttn{
 protected:    
     unsigned long int _strtDelay {0};
 public:
-    DbncdDlydMPBttn(uint8_t mpbttnPin, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0);
+    DbncdDlydMPBttn();
+    DbncdDlydMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0);
     unsigned long int getStrtDelay();
-    boolean setStrtDelay(unsigned long int newStrtDelay);
+    bool init(const uint8_t &mpbttnPin, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0);
+    boolean setStrtDelay(const unsigned long int &newStrtDelay);
 
-    bool begin(unsigned long int pollDelayMs = 5);
+    bool begin(const unsigned long int &pollDelayMs = 5);
     bool updIsOn();
     bool updIsPressed();
     bool updValidPressPend();
@@ -62,11 +66,11 @@ protected:
     bool _releasePending{false};
     bool _unlatchPending{false};
 public:
-    LtchMPBttn(uint8_t mpbttnPin, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0);
+    LtchMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0);
     bool setUnlatchPend();
     bool updUnlatchPend();
 
-    bool begin(unsigned long int pollDelayMs = 5);
+    bool begin(const unsigned long int &pollDelayMs = 5);
     bool updIsOn();
     bool updIsPressed();
     bool updValidPressPend();
@@ -76,27 +80,30 @@ class TmLtchMPBttn: public LtchMPBttn{
     static void mpbPollCallback(TimerHandle_t mpbTmrCb);
 
 protected:
-    uint8_t _wnngPinOut {0};    //Must be moved to the HIL
     bool _tmRstbl {true};
     bool _wrnngOn {false};
-    bool _keepWrnngAsHint{false};
+    bool _keepPilot{false};
+    bool _pilotOn{false};
     unsigned int _wrnngPrctg {0};
     unsigned long int _wrnngMs{0};
     unsigned long int _srvcTime {};
     unsigned long int _srvcTimerStrt{0};
 public:
-    TmLtchMPBttn(uint8_t mpbttnPin, unsigned long int actTime, unsigned int wrnngPrctg = 0, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0);
+    TmLtchMPBttn(const uint8_t &mpbttnPin, const unsigned long int &actTime, const unsigned int &wrnngPrctg = 0, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0);
+    unsigned long int getActTime();
+    bool getPilotOn();
     bool getWrnngOn();
-    uint8_t getWrnngPin();      //Must be moved to the HIL
-    bool setTmerRstbl(bool isRstbl);
-    bool setWnngPinOut(uint8_t wrnngPinOut);    //Must be moved to the HIL
-    bool updWrnngOn();
+    bool setActTime(const unsigned long int &newActTime);
+    bool setKeepPilot(const bool &keepPilot);
+    bool setTmerRstbl(const bool &isRstbl);
 
-    bool begin(unsigned long int pollDelayMs = 5);
+    bool begin(const unsigned long int &pollDelayMs = 5);
     bool updIsOn();
     bool updIsPressed();
+    bool updPilotOn();
     bool updValidPressPend();
     bool updUnlatchPend();
+    bool updWrnngOn();
 };
 
 class XtrnUnltchMPBttn: public LtchMPBttn{
@@ -107,14 +114,14 @@ protected:
     bool _unltchTypeNO{};
     DbncdDlydMPBttn _unLtchBttn;
 public:
-    XtrnUnltchMPBttn(uint8_t mpbttnPin, uint8_t unltchPin, 
-        bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0,
-        bool upulledUp = true, bool utypeNO = true, unsigned long int udbncTimeOrigSett = 0, unsigned long int ustrtDelay = 0);
+    XtrnUnltchMPBttn(const uint8_t &mpbttnPin, const uint8_t &unltchPin, 
+        const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0,
+        const bool &upulledUp = true, const bool &utypeNO = true, const unsigned long int &udbncTimeOrigSett = 0, const unsigned long int &ustrtDelay = 0);
 
-    // XtrnUnltchMPBttn(uint8_t mpbttnPin, DbncdDlydMPBttn unltchBttn, 
-    //     bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0);
+     XtrnUnltchMPBttn(const uint8_t &mpbttnPin, const DbncdDlydMPBttn &unltchBttn, 
+        const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0);
 
-    bool begin(unsigned long int pollDelayMs = 5);
+    bool begin(const unsigned long int &pollDelayMs = 5);
     bool updUnlatchPend();
 };
 
@@ -126,11 +133,11 @@ protected:
     bool _isOnDisabled{false};
     bool _isVoided{false};
 public:
-    VdblMPBttn(uint8_t mpbttnPin, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0, bool isOnDisabled = false);
+    VdblMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0, const bool &isOnDisabled = false);
     bool getIsVoided();
-    bool setIsVoided(bool voidValue);
+    bool setIsVoided(const bool &voidValue);
     bool getIsEnabled();
-    bool setIsEnabled(bool enabledValue);
+    bool setIsEnabled(const bool &enabledValue);
     bool enable();
     bool disable();
 
@@ -144,12 +151,12 @@ protected:
     unsigned long int _voidTmrStrt{0};
 
 public:
-    TmVdblMPBttn(uint8_t mpbttnPin, unsigned long int voidTime, bool pulledUp = true, bool typeNO = true, unsigned long int dbncTimeOrigSett = 0, unsigned long int strtDelay = 0, bool isOnDisabled = false);
+    TmVdblMPBttn(const uint8_t &mpbttnPin, const unsigned long int &voidTime, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0, const bool &isOnDisabled = false);
     unsigned long int getVoidTime();
-    bool setVoidTime(unsigned long int newVoidTime);
+    bool setVoidTime(const unsigned long int &newVoidTime);
 
-    bool begin(unsigned long int pollDelayMs = 5);
-    bool setIsVoided(bool voidValue);
+    bool begin(const unsigned long int &pollDelayMs = 5);
+    bool setIsVoided(const bool &voidValue);
     bool updIsPressed();
     bool updIsVoided();
     bool updValidPressPend();
