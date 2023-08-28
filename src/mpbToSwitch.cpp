@@ -23,17 +23,17 @@ DbncdMPBttn::DbncdMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp, const b
 
 }
 
-unsigned long int DbncdMPBttn::getCurDbncTime(){
+const unsigned long int DbncdMPBttn::getCurDbncTime() const{
 
     return _dbncTimeTempSett;
 }
 
-bool DbncdMPBttn::getIsPressed(){
+const bool DbncdMPBttn::getIsPressed() const {
 
     return _isPressed;
 }
 
-bool DbncdMPBttn::getIsOn (){
+const bool DbncdMPBttn::getIsOn() const {
 
     return _isOn;
 }
@@ -337,6 +337,11 @@ bool LtchMPBttn::begin(const unsigned long int &pollDelayMs){
     return mpbPollTmrHndl != nullptr;
 }
 
+const bool LtchMPBttn::getUnlatchPend() const{
+
+    return _unlatchPending;
+}
+
 bool LtchMPBttn::setUnlatchPend(){
 
     if(!_unlatchPending){
@@ -425,7 +430,7 @@ TmLtchMPBttn::TmLtchMPBttn(const uint8_t &mpbttnPin, const unsigned long int &ac
 {
 }
 
-unsigned long int TmLtchMPBttn::getActTime(){
+const unsigned long int TmLtchMPBttn::getActTime() const{
 
     return _srvcTime;
 }
@@ -555,12 +560,12 @@ bool HntdTmLtchMPBttn::updWrnngOn(){
     return _wrnngOn;
 }
 
-bool HntdTmLtchMPBttn::getWrnngOn(){
+const bool HntdTmLtchMPBttn::getWrnngOn() const{
     
     return _wrnngOn;
 }
 
-bool HntdTmLtchMPBttn::getPilotOn(){
+const bool HntdTmLtchMPBttn::getPilotOn() const{
 
     return _pilotOn;
 }
@@ -679,7 +684,12 @@ VdblMPBttn::VdblMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp, const boo
 {
 }
 
-bool VdblMPBttn::getIsVoided(){
+const bool VdblMPBttn::getIsEnabled() const{
+
+    return _isEnabled;
+}
+
+const bool VdblMPBttn::getIsVoided() const{
 
     return _isVoided;
 }
@@ -689,11 +699,6 @@ bool VdblMPBttn::setIsVoided(const bool &voidValue){
     _isVoided = voidValue;
 
     return _isVoided;
-}
-
-bool VdblMPBttn::getIsEnabled(){
-
-    return _isEnabled;
 }
 
 bool VdblMPBttn::setIsEnabled(const bool &newEnabledValue){
@@ -739,6 +744,11 @@ void TmVdblMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
     mpbObj->updIsOn();
 
     return;
+}
+
+const unsigned long int TmVdblMPBttn::getVoidTime() const{
+
+    return _voidTime;
 }
 
 bool TmVdblMPBttn::begin(const unsigned long int &pollDelayMs){

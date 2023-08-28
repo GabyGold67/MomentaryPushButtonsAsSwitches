@@ -59,6 +59,7 @@ The object input status checking can be paused, restarted and even ended. If the
 |Method | Parameters|
 |---|---|
 |**_LtchMPBttn_** |uint8_t **mpbttnPin**(, bool **pulledUp**(, bool **typeNO**(, unsigned long int **dbncTimeOrigSett**(, unsigned long int **strtDelay**))))|
+|**getUnlatchPend()**|None|
 |**setUnlatchPend()**|None|
 |**updUnlatchPend()**|None|
 

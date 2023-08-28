@@ -38,6 +38,7 @@ setStrtDelay    KEYWORD2
 ###########
 #LtchMPBttn
 ###########
+getUnlatchPend  KEYWORD2
 setUnlatchPend  KEYWORD2
 updUnlatchPend  KEYWORD2
 #############
