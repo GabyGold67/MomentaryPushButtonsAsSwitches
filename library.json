@@ -1,9 +1,9 @@
 {
     "name": "mpbToSwitch",
-    "version": "1.0.2",
+    "version": "2.0.0",
     
-    "description": "Add any kind of switch to a project by using momentary push buttons and this library to replace the internal mechanism of each of them, starting from a Debounced Push Button and extending to Delayed Start Push Button, Toggle (Latched) Push Button, Time Latched Push Button, External Release Latched Push Button." ,
-    "keywords": "momentary, push, button, debounce, switch, latch, release, warning, security, staircase",
+    "description": "Add any kind of switch to a project by using simple momentary push buttons and this library to simulate the internal mechanism of each of them, starting from a Debounced Push Button and extending to Delayed Start Push Button, Toggle (Latched) Push Button, Time Latched Push Button, External Release Latched Push Button." ,
+    "keywords": "momentary, push, button, debounce, switch, latch, toggle, release, warning, security, staircase, timer",
     
     "repository":
     {
