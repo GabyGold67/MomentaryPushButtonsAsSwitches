@@ -113,6 +113,7 @@ public:
     HntdTmLtchMPBttn(const uint8_t &mpbttnPin, const unsigned long int &actTime, const unsigned int &wrnngPrctg = 0, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0);
     const bool getPilotOn() const;
     const bool getWrnngOn() const;
+    bool setActTime(const unsigned long int &newActTime);
     bool setKeepPilot(const bool &keepPilot);
     bool updPilotOn();
     bool updWrnngOn();

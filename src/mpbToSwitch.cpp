@@ -570,6 +570,18 @@ const bool HntdTmLtchMPBttn::getPilotOn() const{
     return _pilotOn;
 }
 
+bool HntdTmLtchMPBttn::setActTime(const unsigned long int &newActTime){
+    bool result {true};
+
+    if (newActTime != _srvcTime){
+    result = TmLtchMPBttn::setActTime(newActTime);
+    if (result)
+        _wrnngMs = (_srvcTime * _wrnngPrctg) / 100;  //If the _srvcTime was changed, the _wrnngMs must be updated as it's a percentage of the first 
+    }
+
+    return result;
+}
+
 bool HntdTmLtchMPBttn::setKeepPilot(const bool &keepPilot){
     _keepPilot = keepPilot;
     

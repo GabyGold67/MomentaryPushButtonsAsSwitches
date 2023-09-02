@@ -57,10 +57,10 @@ const uint8_t dmpbLoadPin{GPIO_NUM_19};
 const uint8_t tlmpbWnngPin{GPIO_NUM_15};
 const uint8_t tlmpbPilotPin{GPIO_NUM_18};
 
-HntdTmLtchMPBttn tlBttn (tlmpbSwitchPin, 4000, 25, true, true, 20, 50);
+HntdTmLtchMPBttn htlBttn (tlmpbSwitchPin, 4000, 25, true, true, 20, 50);
 DbncdMPBttn dBttn (dmpbSwitchPin);
 
-bttnNWarnAsArg tlBttnArg {&tlBttn, tlmpLoadPin, tlmpbWnngPin};
+bttnNWarnAsArg tlBttnArg {&htlBttn, tlmpLoadPin, tlmpbWnngPin};
 bttnAsArg dBttnArg {&dBttn, dmpbLoadPin};
 
 void setup() {
@@ -71,10 +71,10 @@ void setup() {
   pinMode(tlmpLoadPin, OUTPUT);
   pinMode(tlmpbWnngPin, OUTPUT);
   pinMode(tlmpbPilotPin, OUTPUT);
-  tlBttn.setKeepPilot(true);
+  htlBttn.setKeepPilot(true);
 
   TaskHandle_t tlBttnHndl;
-  tlBttn.begin();
+  htlBttn.begin();
 
 //Task to run forever
   rc = xTaskCreatePinnedToCore(
@@ -93,7 +93,7 @@ void setup() {
   dBttn.begin();
   TaskHandle_t dBttnHndl;
 
-//Task to run forever
+//Create a Task to run forever
   rc = xTaskCreatePinnedToCore(
           updLEDStruc,  //function to be called
           "UpdDbncLed",  //Name of the task
