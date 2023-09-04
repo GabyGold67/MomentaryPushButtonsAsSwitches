@@ -1,33 +1,22 @@
 #include <switchHIL.h>
 
+
+//Declare function prototypes
+static void udpSwitchStatus(void* argp);
+
 //Declare an array of pointers to superclass objects, initialize with nullptr
-static HILSwitches *actSwtchsArr[MAX_SWITCHES] {};
+// static HILSwitches *actSwtchsArr[MAX_SWITCHES] {};
 
 HILSwitches::HILSwitches(){ //This default constructor of this superclass will be called first each time the constructor of the subclasses are invoked, 
                             //so it will check for the task that refreshes the outputs to be created
-    // if (!sHilTskHndl){  //The task has not been created yet, create it through a function that all switch classes must use
 
-    //     //Set the task to keep the outputs updated and set the function name to the updater function
-    //     rc = xTaskCreatePinnedToCore(
-    //       updSwitchStatus,  //function to be called
-    //       "UpdSwitchOutputs",  //Name of the task
-    //       2048,   //Stack size (in bytes in ESP32, words in FreeRTOS), the minimum value is in the config file, for this is 768 bytes
-    //       &myStairSwitch,  //Pointer to the parameters for the function to work with
-    //       _exePrty,      //Priority level given to the task
-    //       &sHilTskHndl, //Task handle
-    //       xPortGetCoreID() //Run in the App Core if it's a dual core mcu (ESP32 only)
-    //     );
-    // assert(rc == pdPASS);
-    // assert(sHilTskHndl);
-
-    // }
 }
 
 //=========================================================================> Class methods delimiter
 
 StrcsTmrSwitch::StrcsTmrSwitch(HntdTmLtchMPBttn &lgcMPB, uint8_t loadPin, uint8_t wnngPin, uint8_t pltPin)
-:_underlMPB{&lgcMPB}, _loadPin{loadPin}, _wrnngPin{wnngPin}, _pltPin{pltPin}
-{        
+:_underlMPB{&lgcMPB}, _loadPin {loadPin}, _wrnngPin{wnngPin}, _pltPin{pltPin}
+{     
     //Set the output pins to the required states
     digitalWrite(_loadPin, LOW);   //Ensure the pin signal is down before setting as output for safety. Usually unneded as all pins are initiated openC, 
     pinMode(_loadPin, OUTPUT);
@@ -44,20 +33,13 @@ StrcsTmrSwitch::StrcsTmrSwitch(HntdTmLtchMPBttn &lgcMPB, uint8_t loadPin, uint8_
         _actvPlt = true;
     }
 
-    // if (!sHilTskHndl){  //The task has not been created yet, create it through a function that all switch classes must use
-    //     createSwitchTask();
-    // }
-
     //Add a pointer to the switch instantiated to the array of pointers of switches whose outputs must be updated
-    for(int i {0}; i < MAX_SWITCHES; i++){
-        if(actSwtchsArr[i] == nullptr){
-            actSwtchsArr[i] = this;
-            switchesCount++;
-            break;
-        }
+    if(switchesCount < MAX_SWITCHES){
+        actSwtchsArr[switchesCount] = this;
+        switchesCount++;
     }
-    _underlMPB->begin(); //Set the logical underlying mpBttn to start updating it's inputs/output states
-    
+            
+    _underlMPB->begin(); //Set the logical underlying mpBttn to start updating it's inputs readings & output states
 }
 
 bool StrcsTmrSwitch::updOutputs(){
@@ -122,12 +104,12 @@ bool StrcsTmrSwitch::updOutputs(){
 bool StrcsTmrSwitch::setActvPilot(bool actvPilot){
     bool result {true};
 
-    if(actvPilot != _actvPlt){
-        if(_pltPin > 0)
+    if(_pltPin > 0){
+        if(actvPilot != _actvPlt)
             _actvPlt = actvPilot;
-        else
-            result = false;
     }
+    else
+        result = false;
     
     return result;
 }
@@ -135,12 +117,12 @@ bool StrcsTmrSwitch::setActvPilot(bool actvPilot){
 bool StrcsTmrSwitch::setActvWarning(bool actvWarning){
     bool result {true};
 
-    if(actvWarning != _actvWrnng){
-        if(_wrnngPin > 0)
+    if(_wrnngPin > 0){
+        if(actvWarning != _actvWrnng)
             _actvPlt = actvWarning;
-        else
-            result = false;
-    }
+    }    
+    else
+        result = false;
     
     return result;
 }
@@ -187,3 +169,49 @@ bool StrcsTmrSwitch::noBlinkWrnng(){
     return setBlnkWrnng(false);
 }
 
+//=========================================================================> Class methods delimiter
+
+DbncdDlydSwitch::DbncdDlydSwitch(DbncdDlydMPBttn &lgcMPB, uint8_t loadPin)
+:_underlMPB{&lgcMPB}, _loadPin{loadPin}
+{
+    //Set the output pins to the required states
+    digitalWrite(_loadPin, LOW);   //Ensure the pin signal is down before setting as output for safety. Usually unneded as all pins are initiated openC, 
+    pinMode(_loadPin, OUTPUT);
+
+    //This is a repeated code from other HILSwitches subclasses, refactoring needed!?
+    //Add a pointer to the switch instantiated to the array of pointers of switches whose outputs must be updated
+    if(switchesCount < MAX_SWITCHES){
+        actSwtchsArr[switchesCount] = this;
+        switchesCount++;
+    }
+    _underlMPB->begin(); //Set the logical underlying mpBttn to start updating it's inputs readings & output states
+}
+
+bool DbncdDlydSwitch::updOutputs(){
+    if(_underlMPB->getIsOn()){
+        if(digitalRead(_loadPin) != HIGH)
+            digitalWrite(_loadPin, HIGH);
+    }
+    else{
+        if(digitalRead(_loadPin) != LOW)
+            digitalWrite(_loadPin, LOW);
+    }
+
+    return true;
+}
+
+DbncdDlydMPBttn* DbncdDlydSwitch::getUnderlMPB(){
+    
+    return _underlMPB;
+}
+
+
+//==================================================================
+static void udpSwitchStatus(void* argp){
+  HILSwitches *mySwtch = (HILSwitches*)argp;  //Parameter casting: the parameter passed by the task is casted to its real type
+
+  for (;;){
+      mySwtch->updOutputs();
+  }
+}
+//==================================================================
