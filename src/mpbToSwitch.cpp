@@ -20,7 +20,6 @@ DbncdMPBttn::DbncdMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp, const b
 
     if(mpbttnPin > 0)
         pinMode(mpbttnPin, (pulledUp == true)?INPUT_PULLUP:INPUT_PULLDOWN);
-
 }
 
 const unsigned long int DbncdMPBttn::getCurDbncTime() const{
@@ -121,7 +120,6 @@ bool DbncdMPBttn::updIsPressed(){
 }
 
 bool DbncdMPBttn::updIsOn(){
-
     if (_validPressPend){
         _isOn = true;
     }
@@ -306,7 +304,6 @@ bool DbncdDlydMPBttn::begin(const unsigned long int &pollDelayMs){
 }
 
 void DbncdDlydMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
-
     DbncdDlydMPBttn *mpbObj = (DbncdDlydMPBttn*)pvTimerGetTimerID(mpbTmrCb);
     mpbObj->updIsPressed();
     mpbObj->updValidPressPend();
@@ -322,7 +319,6 @@ LtchMPBttn::LtchMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp, const boo
 }
 
 bool LtchMPBttn::begin(const unsigned long int &pollDelayMs){
-
     if (!mpbPollTmrHndl){        
         mpbPollTmrHndl = xTimerCreate(
             _mpbPollTmrName,  //Timer name
@@ -343,7 +339,6 @@ const bool LtchMPBttn::getUnlatchPend() const{
 }
 
 bool LtchMPBttn::setUnlatchPend(){
-
     if(!_unlatchPending){
         _unlatchPending = true;
         _validPressPend = false;
@@ -353,7 +348,6 @@ bool LtchMPBttn::setUnlatchPend(){
 }
 
 bool LtchMPBttn::updIsOn(){
-
     if(_validPressPend){
         if (!_isOn){
             _isOn = true;
@@ -376,7 +370,6 @@ bool LtchMPBttn::updIsPressed(){
 }
 
 bool LtchMPBttn::updUnlatchPend(){
-
     if(_validPressPend){
         if (_isOn){
             _unlatchPending = true;
@@ -388,7 +381,6 @@ bool LtchMPBttn::updUnlatchPend(){
 }
 
 bool LtchMPBttn::updValidPressPend(){
-
     if(_isPressed){
         if(!_releasePending){
             if(_dbncTimerStrt == 0){    //It was not previously pressed
@@ -413,8 +405,7 @@ bool LtchMPBttn::updValidPressPend(){
    return _validPressPend;
 }
 
-void LtchMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
-    
+void LtchMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){    
     LtchMPBttn *obj = (LtchMPBttn*)pvTimerGetTimerID(mpbTmrCb);
     obj->updIsPressed();
     obj->updValidPressPend();
@@ -468,7 +459,6 @@ bool TmLtchMPBttn::updUnlatchPend(){
 }
 
 bool TmLtchMPBttn::updIsOn() {
-
     if(_validPressPend){
         if (!_isOn){
             _srvcTimerStrt = xTaskGetTickCount() / portTICK_RATE_MS;
@@ -502,7 +492,6 @@ void TmLtchMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
 }
 
 bool TmLtchMPBttn::begin(const unsigned long int &pollDelayMs){
-
     if (!mpbPollTmrHndl){        
         mpbPollTmrHndl = xTimerCreate(
             _mpbPollTmrName,  //Timer name
@@ -546,7 +535,6 @@ bool HntdTmLtchMPBttn::updPilotOn(){
 }
 
 bool HntdTmLtchMPBttn::updWrnngOn(){
-
     if(_wrnngPrctg > 0){
         if (_isOn)
             if (((xTaskGetTickCount() / portTICK_RATE_MS) - _srvcTimerStrt) >= (_srvcTime - _wrnngMs))
@@ -589,7 +577,6 @@ bool HntdTmLtchMPBttn::setKeepPilot(const bool &keepPilot){
 }
 
 bool HntdTmLtchMPBttn::begin(const unsigned long int &pollDelayMs){
-
     if (!mpbPollTmrHndl){        
         mpbPollTmrHndl = xTimerCreate(
             _mpbPollTmrName,  //Timer name
@@ -652,7 +639,6 @@ XtrnUnltchMPBttn::XtrnUnltchMPBttn(const uint8_t &mpbttnPin, const DbncdDlydMPBt
 }
 
 bool XtrnUnltchMPBttn::begin(const unsigned long int &pollDelayMs){
-
     if (!mpbPollTmrHndl){        
         mpbPollTmrHndl = xTimerCreate(
             _mpbPollTmrName,  //Timer name
@@ -707,14 +693,12 @@ const bool VdblMPBttn::getIsVoided() const{
 }
 
 bool VdblMPBttn::setIsVoided(const bool &voidValue){
-
     _isVoided = voidValue;
 
     return _isVoided;
 }
 
 bool VdblMPBttn::setIsEnabled(const bool &newEnabledValue){
-
     if (!newEnabledValue){
         if(_isEnabled){
             if(_isOnDisabled)
@@ -764,7 +748,6 @@ const unsigned long int TmVdblMPBttn::getVoidTime() const{
 }
 
 bool TmVdblMPBttn::begin(const unsigned long int &pollDelayMs){
-
     if (!mpbPollTmrHndl){        
         mpbPollTmrHndl = xTimerCreate(
             _mpbPollTmrName,  //Timer name
@@ -799,7 +782,6 @@ bool TmVdblMPBttn::updValidPressPend(){
 }
 
 bool TmVdblMPBttn::updIsOn() {
-
     if (!_isVoided){
         if (_validPressPend){
             _isOn = true;

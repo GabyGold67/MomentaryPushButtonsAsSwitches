@@ -39,7 +39,6 @@ public:
     bool pause();
     bool resume();
     bool end();
-
 };
 
 class DbncdDlydMPBttn: public DbncdMPBttn{
