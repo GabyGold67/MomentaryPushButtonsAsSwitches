@@ -170,10 +170,9 @@ protected:
     unsigned long int _voidTmrStrt{0};
 
 public:
-    TmVdblMPBttn(const uint8_t &mpbttnPin, const unsigned long int &voidTime, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0, const bool &isOnDisabled = false);
+    TmVdblMPBttn(const uint8_t &mpbttnPin, unsigned long int voidTime, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0, const bool &isOnDisabled = false);
     const unsigned long int getVoidTime() const;
     bool setVoidTime(const unsigned long int &newVoidTime);
-
     bool setIsVoided(const bool &voidValue);
     bool updIsOn();
     bool updIsPressed();

@@ -324,7 +324,7 @@ bool LtchMPBttn::begin(const unsigned long int &pollDelayMs){
             _mpbPollTmrName,  //Timer name
             pdMS_TO_TICKS(pollDelayMs),  //Timer period in ticks
             pdTRUE,     //Autoreload true
-            this,       //TimerID: data passed to the callback funtion to work
+            this,       //TimerID: data passed to the callback function to work
             LtchMPBttn::mpbPollCallback);
         assert (mpbPollTmrHndl);
     }
@@ -497,7 +497,7 @@ bool TmLtchMPBttn::begin(const unsigned long int &pollDelayMs){
             _mpbPollTmrName,  //Timer name
             pdMS_TO_TICKS(pollDelayMs),  //Timer period in ticks
             pdTRUE,     //Autoreload true
-            this,       //TimerID: data passed to the callback funtion to work
+            this,       //TimerID: data passed to the callback function to work
             TmLtchMPBttn::mpbPollCallback);
         assert (mpbPollTmrHndl);
     }
@@ -727,7 +727,7 @@ bool VdblMPBttn::disable(){
 }
 
 //=========================================================================> Class methods delimiter
-TmVdblMPBttn::TmVdblMPBttn(const uint8_t &mpbttnPin, const unsigned long int &voidTime, const bool &pulledUp, const bool &typeNO, const unsigned long int &dbncTimeOrigSett, const unsigned long int &strtDelay, const bool &isOnDisabled)
+TmVdblMPBttn::TmVdblMPBttn(const uint8_t &mpbttnPin, unsigned long int voidTime, const bool &pulledUp, const bool &typeNO, const unsigned long int &dbncTimeOrigSett, const unsigned long int &strtDelay, const bool &isOnDisabled)
 :VdblMPBttn(mpbttnPin, pulledUp, typeNO, dbncTimeOrigSett, strtDelay, isOnDisabled), _voidTime{voidTime}
 {
 }
@@ -745,6 +745,17 @@ void TmVdblMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
 const unsigned long int TmVdblMPBttn::getVoidTime() const{
 
     return _voidTime;
+}
+
+bool TmVdblMPBttn::setVoidTime(const unsigned long int &newVoidTime){
+    bool result{false};
+
+    if(newVoidTime > 0){
+        _voidTime = newVoidTime;
+        result = true;
+    }
+    
+    return result;
 }
 
 bool TmVdblMPBttn::begin(const unsigned long int &pollDelayMs){
