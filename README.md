@@ -58,6 +58,20 @@ The object created.
 **`DbncdMPBttn myDDButton(21, true, true, 100);`**
 
 ---
+---
+### **begin**(unsigned long int pollDelayMs)
+### Description:  
+Attaches
+### Parameters:  
+**pollDelayMs:** unsigned long integer (ulong), passes the ue provided in the class, that is 50 milliseconds as it is a empirical value obtained in various published tests.  
+
+### Return value:  
+Eee
+
+### Use example:  
+**`myDDButton.begin(20);`**
+
+---
 
 ---  
 # **Added Methods for DbncdDlydMPBttn class**
