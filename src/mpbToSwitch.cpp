@@ -14,8 +14,8 @@ DbncdMPBttn::DbncdMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp, const b
     strcat(_mpbPollTmrName, mpbttnPinChar);
     strcat(_mpbPollTmrName, "_tmr");
 
-    if(_dbncTimeOrigSett < _stdMinDbncTime)
-        _dbncTimeOrigSett = _stdMinDbncTime;
+    if(_dbncTimeOrigSett < _stdMinDbncTime) //Best practice would impose failing the constructor (throwing an exeption or building a "zombie" object)
+        _dbncTimeOrigSett = _stdMinDbncTime;    //this tolerant approach taken for developers benefit, but object will be no faithful to the instantiation parameters
     _dbncTimeTempSett = _dbncTimeOrigSett;
 
     if(mpbttnPin > 0)
@@ -163,7 +163,7 @@ bool DbncdMPBttn::begin(const unsigned long int &pollDelayMs) {
                 pdMS_TO_TICKS(pollDelayMs),  //Timer period in ticks
                 pdTRUE,     //Autoreload true
                 this,       //TimerID: data passed to the callback funtion to work
-                DbncdMPBttn::mpbPollCallback);
+                DbncdMPBttn::mpbPollCallback);  //Callback function
             assert (mpbPollTmrHndl);
         }
         xTimerStart(mpbPollTmrHndl, portMAX_DELAY);
@@ -319,18 +319,22 @@ LtchMPBttn::LtchMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp, const boo
 }
 
 bool LtchMPBttn::begin(const unsigned long int &pollDelayMs){
-    if (!mpbPollTmrHndl){        
-        mpbPollTmrHndl = xTimerCreate(
-            _mpbPollTmrName,  //Timer name
-            pdMS_TO_TICKS(pollDelayMs),  //Timer period in ticks
-            pdTRUE,     //Autoreload true
-            this,       //TimerID: data passed to the callback function to work
-            LtchMPBttn::mpbPollCallback);
-        assert (mpbPollTmrHndl);
-    }
-    xTimerStart(mpbPollTmrHndl, portMAX_DELAY);
+    if (pollDelayMs > 0){
+        if (!mpbPollTmrHndl){        
+            mpbPollTmrHndl = xTimerCreate(
+                _mpbPollTmrName,  //Timer name
+                pdMS_TO_TICKS(pollDelayMs),  //Timer period in ticks
+                pdTRUE,     //Autoreload true
+                this,       //TimerID: data passed to the callback function to work
+                LtchMPBttn::mpbPollCallback);
+            assert (mpbPollTmrHndl);
+        }
+        xTimerStart(mpbPollTmrHndl, portMAX_DELAY);
 
-    return mpbPollTmrHndl != nullptr;
+        return mpbPollTmrHndl != nullptr;
+    }
+
+    return false;
 }
 
 const bool LtchMPBttn::getUnlatchPend() const{
@@ -419,6 +423,9 @@ void LtchMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
 TmLtchMPBttn::TmLtchMPBttn(const uint8_t &mpbttnPin, const unsigned long int &actTime, const bool &pulledUp, const bool &typeNO, const unsigned long int &dbncTimeOrigSett, const unsigned long int &strtDelay)
 :LtchMPBttn(mpbttnPin, pulledUp, typeNO, dbncTimeOrigSett, strtDelay), _srvcTime{actTime}
 {
+    if(_srvcTime < 100) //Best practice would impose failing the constructor (throwing an exeption or building a "zombie" object)
+        _srvcTime = 100;    //this tolerant approach taken for developers benefit, but object will be no faithful to the instantiation parameters
+
 }
 
 const unsigned long int TmLtchMPBttn::getActTime() const{
@@ -429,7 +436,7 @@ const unsigned long int TmLtchMPBttn::getActTime() const{
 bool TmLtchMPBttn::setActTime(const unsigned long int &newActTime){
     bool result {false};
 
-    if (newActTime > 1000){
+    if (newActTime > 100){  //The minimum activation time is 100 millisecs
         _srvcTime = newActTime;
         result = true;
     }
