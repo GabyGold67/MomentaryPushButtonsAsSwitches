@@ -54,7 +54,7 @@ const uint8_t tlmpbSwitchPin{GPIO_NUM_25};
 const uint8_t tlmpLoadPin{GPIO_NUM_21};
 const uint8_t dmpbSwitchPin{GPIO_NUM_26};
 const uint8_t dmpbLoadPin{GPIO_NUM_19};
-const uint8_t tlmpbWnngPin{GPIO_NUM_15};
+const uint8_t tlmpbWnngPin{GPIO_NUM_17};
 const uint8_t tlmpbPilotPin{GPIO_NUM_18};
 
 HntdTmLtchMPBttn htlBttn (tlmpbSwitchPin, 4000, 25, true, true, 20, 50);

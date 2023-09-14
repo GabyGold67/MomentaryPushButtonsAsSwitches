@@ -46,8 +46,7 @@ public:
     bool resume();
     bool end();
     
-    bool setTaskToNotifyHndl(TaskHandle_t newHandle);
-    const TaskHandle_t getTaskToNotifyHndl() const;
+    bool setTaskToNotify(TaskHandle_t newHandle);
 };
 
 class DbncdDlydMPBttn: public DbncdMPBttn{

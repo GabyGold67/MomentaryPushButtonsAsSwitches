@@ -22,11 +22,15 @@ begin   KEYWORD2
 end KEYWORD2
 getCurDbncTime  KEYWORD2
 getIsOn KEYWORD2
+getOutputsChange  KEYWORD2
+getTaskToNotify   KEYWORD2
 init    KEYWORD2
 pause   KEYWORD2
 resetDbncTime   KEYWORD2
 resume  KEYWORD2
 setDbncTime KEYWORD2
+setOutputsChange  KEYWORD2
+setTaskToNotify   KEYWORD2
 updIsOn    KEYWORD2
 updIsPressed    KEYWORD2
 updValidPressPend   KEYWORD2

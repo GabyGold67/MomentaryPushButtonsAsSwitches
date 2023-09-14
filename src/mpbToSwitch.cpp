@@ -232,15 +232,10 @@ bool DbncdMPBttn::end(){
     return result;
 }
 
-bool DbncdMPBttn::setTaskToNotifyHndl(TaskHandle_t newHandle){
+bool DbncdMPBttn::setTaskToNotify(TaskHandle_t newHandle){
     _HILTaskToNotifyHndl = newHandle;
 
     return true;
-}
-
-const TaskHandle_t DbncdMPBttn::getTaskToNotifyHndl() const{
-
-    return _HILTaskToNotifyHndl;
 }
 
 void DbncdMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
