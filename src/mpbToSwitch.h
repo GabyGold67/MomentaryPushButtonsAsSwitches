@@ -4,6 +4,7 @@
 #include <Arduino.h>
 
 #define _HwMinDbncTime 20   //Documented minimum wait time for a MPB signal to stabilize
+#define _StdPollDelay 10
 
 class DbncdMPBttn{
     static void mpbPollCallback(TimerHandle_t mpbTmrCb);
@@ -21,6 +22,8 @@ protected:
     const unsigned long int _stdMinDbncTime {_HwMinDbncTime};
     TimerHandle_t mpbPollTmrHndl {nullptr};
     char _mpbPollTmrName [17] {'\0'};
+    volatile bool _outputsChange {false};
+    TaskHandle_t _HILTaskToNotifyHndl {nullptr};
 
     const bool getIsPressed() const;
 public:    
@@ -28,17 +31,23 @@ public:
     DbncdMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0);
     const unsigned long int getCurDbncTime() const;
     const bool getIsOn () const;
+    const bool getOutputsChange() const;
+    const TaskHandle_t getTaskToNotify() const;
     bool init(const uint8_t &mpbttnPin, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0);
     bool resetDbncTime();
     bool setDbncTime(const unsigned long int &newDbncTime);
+    bool setOutputsChange(bool newOutputChange);
     bool updIsOn();
     bool updIsPressed();
     bool updValidPressPend();
 
-    bool begin(const unsigned long int &pollDelayMs = 5);
+    bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
     bool pause();
     bool resume();
     bool end();
+    
+    bool setTaskToNotifyHndl(TaskHandle_t newHandle);
+    const TaskHandle_t getTaskToNotifyHndl() const;
 };
 
 class DbncdDlydMPBttn: public DbncdMPBttn{
@@ -56,7 +65,7 @@ public:
     bool updIsPressed();
     bool updValidPressPend();
 
-    bool begin(const unsigned long int &pollDelayMs = 5);
+    bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
 };
 
 class LtchMPBttn: public DbncdDlydMPBttn{
@@ -75,7 +84,7 @@ public:
     bool updIsPressed();
     bool updValidPressPend();
 
-    bool begin(const unsigned long int &pollDelayMs = 5);
+    bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
 };
 
 class TmLtchMPBttn: public LtchMPBttn{
@@ -96,7 +105,7 @@ public:
     bool updValidPressPend();
     bool updUnlatchPend();
 
-    bool begin(const unsigned long int &pollDelayMs = 5);
+    bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
 };
 
 class HntdTmLtchMPBttn: public TmLtchMPBttn{
@@ -113,7 +122,7 @@ public:
     const bool getPilotOn() const;
     const bool getWrnngOn() const;
     bool setActTime(const unsigned long int &newActTime);
-    bool setKeepPilot(const bool &keepPilot);
+    bool setKeepPilot(const bool &newKeepPilot);
     bool updPilotOn();
     bool updWrnngOn();
 
@@ -122,7 +131,7 @@ public:
     bool updValidPressPend();
     bool updUnlatchPend();
 
-    bool begin(const unsigned long int &pollDelayMs = 5);
+    bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
 };
 
 class XtrnUnltchMPBttn: public LtchMPBttn{
@@ -140,7 +149,7 @@ public:
      XtrnUnltchMPBttn(const uint8_t &mpbttnPin, const DbncdDlydMPBttn &unltchBttn, 
         const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0);
 
-    bool begin(const unsigned long int &pollDelayMs = 5);
+    bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
     bool updUnlatchPend();
 };
 
@@ -155,8 +164,8 @@ public:
     VdblMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0, const bool &isOnDisabled = false);
     const bool getIsEnabled() const;
     const bool getIsVoided() const;
-    bool setIsEnabled(const bool &enabledValue);
-    bool setIsVoided(const bool &voidValue);
+    bool setIsEnabled(const bool &newEnabledValue);
+    bool setIsVoided(const bool &newVoidValue);
     bool enable();
     bool disable();
 
@@ -173,13 +182,13 @@ public:
     TmVdblMPBttn(const uint8_t &mpbttnPin, unsigned long int voidTime, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0, const bool &isOnDisabled = false);
     const unsigned long int getVoidTime() const;
     bool setVoidTime(const unsigned long int &newVoidTime);
-    bool setIsVoided(const bool &voidValue);
+    bool setIsVoided(const bool &newVoidValue);
     bool updIsOn();
     bool updIsPressed();
     bool updIsVoided();
     bool updValidPressPend();
 
-    bool begin(const unsigned long int &pollDelayMs = 5);
+    bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
 };
 
 #endif

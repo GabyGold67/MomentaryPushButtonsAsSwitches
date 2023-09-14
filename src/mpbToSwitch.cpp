@@ -37,11 +37,21 @@ const bool DbncdMPBttn::getIsOn() const {
     return _isOn;
 }
 
+const bool DbncdMPBttn::getOutputsChange() const{
+
+    return _outputsChange;
+}
+
+const TaskHandle_t DbncdMPBttn::getTaskToNotify() const{
+    
+    return _HILTaskToNotifyHndl;
+}
+
 bool DbncdMPBttn::init(const uint8_t &mpbttnPin, const bool &pulledUp, const bool &typeNO, const unsigned long int &dbncTimeOrigSett){
     char mpbttnPinChar[3]{};
 
     bool result {false};
-    if (_mpbPollTmrName[0] != '\0'){
+    if (_mpbPollTmrName[0] == '\0'){
         _mpbttnPin = mpbttnPin;
         _pulledUp = pulledUp;
         _typeNO = typeNO;
@@ -78,6 +88,12 @@ bool DbncdMPBttn::setDbncTime(const unsigned long int &newDbncTime){
     }
 
     return result;
+}
+
+bool DbncdMPBttn::setOutputsChange(bool newOutputChange){
+    _outputsChange = newOutputChange;
+
+    return _outputsChange;
 }
 
 bool DbncdMPBttn::updIsPressed(){
@@ -121,10 +137,16 @@ bool DbncdMPBttn::updIsPressed(){
 
 bool DbncdMPBttn::updIsOn(){
     if (_validPressPend){
-        _isOn = true;
+        if(_isOn == false){
+            _isOn = true;
+            _outputsChange = true;
+        }
     }
     else{
-        _isOn = false;
+        if(_isOn == true){
+            _isOn = false;
+            _outputsChange = true;
+        }
     }
 
     return _isOn;
@@ -210,11 +232,27 @@ bool DbncdMPBttn::end(){
     return result;
 }
 
+bool DbncdMPBttn::setTaskToNotifyHndl(TaskHandle_t newHandle){
+    _HILTaskToNotifyHndl = newHandle;
+
+    return true;
+}
+
+const TaskHandle_t DbncdMPBttn::getTaskToNotifyHndl() const{
+
+    return _HILTaskToNotifyHndl;
+}
+
 void DbncdMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
     DbncdMPBttn *mpbObj = (DbncdMPBttn*)pvTimerGetTimerID(mpbTmrCb);
     mpbObj->updIsPressed();
     mpbObj->updValidPressPend();
     mpbObj->updIsOn();
+    if (mpbObj->getOutputsChange()){
+        if(mpbObj->getTaskToNotify() != nullptr)
+            xTaskNotifyGive(mpbObj->getTaskToNotify());
+        mpbObj->setOutputsChange(false);
+    }
 
     return;
 }
@@ -308,6 +346,11 @@ void DbncdDlydMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
     mpbObj->updIsPressed();
     mpbObj->updValidPressPend();
     mpbObj->updIsOn();
+    if (mpbObj->getOutputsChange()){
+        if(mpbObj->getTaskToNotify() != nullptr)
+            xTaskNotifyGive(mpbObj->getTaskToNotify());
+        mpbObj->setOutputsChange(false);
+    }
 
     return;
 }
@@ -356,12 +399,14 @@ bool LtchMPBttn::updIsOn(){
         if (!_isOn){
             _isOn = true;
             _validPressPend = false;
+            _outputsChange = true;
         }
     }
     else if(_unlatchPending){
         if (_isOn){
             _isOn = false;
             _unlatchPending = false;
+            _outputsChange = true;
         }
     }
 
@@ -410,11 +455,16 @@ bool LtchMPBttn::updValidPressPend(){
 }
 
 void LtchMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){    
-    LtchMPBttn *obj = (LtchMPBttn*)pvTimerGetTimerID(mpbTmrCb);
-    obj->updIsPressed();
-    obj->updValidPressPend();
-    obj->updUnlatchPend();
-    obj->updIsOn();
+    LtchMPBttn *mpbObj = (LtchMPBttn*)pvTimerGetTimerID(mpbTmrCb);
+    mpbObj->updIsPressed();
+    mpbObj->updValidPressPend();
+    mpbObj->updUnlatchPend();
+    mpbObj->updIsOn();
+    if (mpbObj->getOutputsChange()){
+        if(mpbObj->getTaskToNotify() != nullptr)
+            xTaskNotifyGive(mpbObj->getTaskToNotify());
+        mpbObj->setOutputsChange(false);
+    }
 
     return;
 }
@@ -470,6 +520,7 @@ bool TmLtchMPBttn::updIsOn() {
         if (!_isOn){
             _srvcTimerStrt = xTaskGetTickCount() / portTICK_RATE_MS;
             _isOn = true;
+            _outputsChange = true;
         }
         else{
             if (_tmRstbl){
@@ -482,6 +533,7 @@ bool TmLtchMPBttn::updIsOn() {
         if (_isOn){
             _isOn = false;
             _unlatchPending = false;
+            _outputsChange = true;
         }
     }
 
@@ -494,6 +546,11 @@ void TmLtchMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
     mpbObj->updValidPressPend();
     mpbObj->updUnlatchPend();
     mpbObj->updIsOn();
+    if (mpbObj->getOutputsChange()){
+        if(mpbObj->getTaskToNotify() != nullptr)
+            xTaskNotifyGive(mpbObj->getTaskToNotify());
+        mpbObj->setOutputsChange(false);
+    }
 
     return;
 }
@@ -528,14 +585,20 @@ HntdTmLtchMPBttn::HntdTmLtchMPBttn(const uint8_t &mpbttnPin, const unsigned long
 
 bool HntdTmLtchMPBttn::updPilotOn(){
     if (_keepPilot){
-        if(!_isOn && !_pilotOn)
+        if(!_isOn && !_pilotOn){
                 _pilotOn = true;
-        else if(_isOn && _pilotOn)
+                _outputsChange = true;
+            }
+        else if(_isOn && _pilotOn){
             _pilotOn = false;
-    }
+            _outputsChange = true;
+        }
+}
     else{
-        if(_pilotOn)
+        if(_pilotOn){
             _pilotOn = false;
+            _outputsChange = true;
+        }
     }
 
     return _pilotOn;
@@ -545,11 +608,21 @@ bool HntdTmLtchMPBttn::updWrnngOn(){
     if(_wrnngPrctg > 0){
         if (_isOn)
             if (((xTaskGetTickCount() / portTICK_RATE_MS) - _srvcTimerStrt) >= (_srvcTime - _wrnngMs))
-                _wrnngOn = true;            
-            else
-                _wrnngOn = false;            
+                if(_wrnngOn == false){
+                    _wrnngOn = true;            
+                    _outputsChange = true;
+                }
+            else{
+                if(_wrnngOn == true){
+                    _wrnngOn = false;            
+                    _outputsChange = true;                    
+                }
+            }
         else
-            _wrnngOn = false;
+            if(_wrnngOn == true){
+                _wrnngOn = false;
+                _outputsChange = true;                    
+                }
     }
     
     return _wrnngOn;
@@ -569,16 +642,16 @@ bool HntdTmLtchMPBttn::setActTime(const unsigned long int &newActTime){
     bool result {true};
 
     if (newActTime != _srvcTime){
-    result = TmLtchMPBttn::setActTime(newActTime);
-    if (result)
-        _wrnngMs = (_srvcTime * _wrnngPrctg) / 100;  //If the _srvcTime was changed, the _wrnngMs must be updated as it's a percentage of the first 
+        result = TmLtchMPBttn::setActTime(newActTime);
+        if (result)
+            _wrnngMs = (_srvcTime * _wrnngPrctg) / 100;  //If the _srvcTime was changed, the _wrnngMs must be updated as it's a percentage of the first 
     }
 
     return result;
 }
 
-bool HntdTmLtchMPBttn::setKeepPilot(const bool &keepPilot){
-    _keepPilot = keepPilot;
+bool HntdTmLtchMPBttn::setKeepPilot(const bool &newKeepPilot){
+    _keepPilot = newKeepPilot;
     
     return _keepPilot;
 }
@@ -626,6 +699,11 @@ void HntdTmLtchMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
     mpbObj->updIsOn();
     mpbObj->updWrnngOn();
     mpbObj->updPilotOn();
+    if (mpbObj->getOutputsChange()){
+        if(mpbObj->getTaskToNotify() != nullptr)
+            xTaskNotifyGive(mpbObj->getTaskToNotify());
+        mpbObj->setOutputsChange(false);
+    }
 
     return;
 }
@@ -679,6 +757,11 @@ void XtrnUnltchMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
     mpbObj->updValidPressPend();
     mpbObj->updUnlatchPend();
     mpbObj->updIsOn();
+    if (mpbObj->getOutputsChange()){
+        if(mpbObj->getTaskToNotify() != nullptr)
+            xTaskNotifyGive(mpbObj->getTaskToNotify());
+        mpbObj->setOutputsChange(false);
+    }
 
     return;
 }
@@ -699,8 +782,8 @@ const bool VdblMPBttn::getIsVoided() const{
     return _isVoided;
 }
 
-bool VdblMPBttn::setIsVoided(const bool &voidValue){
-    _isVoided = voidValue;
+bool VdblMPBttn::setIsVoided(const bool &newVoidValue){
+    _isVoided = newVoidValue;
 
     return _isVoided;
 }
@@ -708,16 +791,26 @@ bool VdblMPBttn::setIsVoided(const bool &voidValue){
 bool VdblMPBttn::setIsEnabled(const bool &newEnabledValue){
     if (!newEnabledValue){
         if(_isEnabled){
-            if(_isOnDisabled)
-                _isOn = true;
-            else
-                _isOn = false;
+            if(_isOnDisabled){
+                if(_isOn == false){
+                    _isOn = true;
+                    _outputsChange = true;
+                }
+            }
+            else{
+                if (_isOn == true){
+                    _isOn = false;
+                    _outputsChange = true;
+                }
+            }
             pause();
         }            
     }
     else{
         resume();
     }
+    if(_isEnabled != newEnabledValue)
+        _outputsChange = true;
     _isEnabled = newEnabledValue;
 
     return _isEnabled;
@@ -745,6 +838,11 @@ void TmVdblMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
     mpbObj->updValidPressPend();
     mpbObj->updIsVoided();
     mpbObj->updIsOn();
+    if (mpbObj->getOutputsChange()){
+        if(mpbObj->getTaskToNotify() != nullptr)
+            xTaskNotifyGive(mpbObj->getTaskToNotify());
+        mpbObj->setOutputsChange(false);
+    }
 
     return;
 }
@@ -785,11 +883,13 @@ bool TmVdblMPBttn::updIsPressed(){
     return DbncdDlydMPBttn::updIsPressed();
 }
 
-bool TmVdblMPBttn::setIsVoided(const bool &voidValue){
-    if(voidValue){
+bool TmVdblMPBttn::setIsVoided(const bool &newVoidValue){
+    if(newVoidValue){
         _voidTmrStrt = (xTaskGetTickCount() / portTICK_RATE_MS) -(_voidTime + 1);
     }
-    _isVoided = voidValue;
+    if(_isVoided != newVoidValue)
+        _outputsChange = true;
+    _isVoided = newVoidValue;
 
     return _isVoided;
 }
@@ -802,14 +902,23 @@ bool TmVdblMPBttn::updValidPressPend(){
 bool TmVdblMPBttn::updIsOn() {
     if (!_isVoided){
         if (_validPressPend){
-            _isOn = true;
+            if(_isOn == false){
+                _isOn = true;
+                _outputsChange = true;                        
+            }
         }
         else{
-            _isOn = false;
+            if(_isOn == true){
+                _isOn = false;
+                _outputsChange = true;
+            }
         }
     }
     else{
-        _isOn = false;
+        if (_isOn == true){
+            _isOn = false;
+            _outputsChange = true;
+        }
     }
 
     return _isOn;
@@ -837,6 +946,9 @@ bool TmVdblMPBttn::updIsVoided(){
     else{
         _voidTmrStrt = 0;
     }
+    if(_isVoided != result)
+        _outputsChange = true;
+
     _isVoided = result;
 
     return _isVoided;
