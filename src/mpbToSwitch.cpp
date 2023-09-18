@@ -27,14 +27,14 @@ const unsigned long int DbncdMPBttn::getCurDbncTime() const{
     return _dbncTimeTempSett;
 }
 
-const bool DbncdMPBttn::getIsPressed() const {
-
-    return _isPressed;
-}
-
 const bool DbncdMPBttn::getIsOn() const {
 
     return _isOn;
+}
+
+const bool DbncdMPBttn::getIsPressed() const {
+
+    return _isPressed;
 }
 
 const bool DbncdMPBttn::getOutputsChange() const{
@@ -44,7 +44,7 @@ const bool DbncdMPBttn::getOutputsChange() const{
 
 const TaskHandle_t DbncdMPBttn::getTaskToNotify() const{
     
-    return _HILTaskToNotifyHndl;
+    return _taskToNotifyHndl;
 }
 
 bool DbncdMPBttn::init(const uint8_t &mpbttnPin, const bool &pulledUp, const bool &typeNO, const unsigned long int &dbncTimeOrigSett){
@@ -179,18 +179,18 @@ bool DbncdMPBttn::begin(const unsigned long int &pollDelayMs) {
     bool result {false};
     
     if (pollDelayMs > 0){
-        if (!mpbPollTmrHndl){        
-            mpbPollTmrHndl = xTimerCreate(
+        if (!_mpbPollTmrHndl){        
+            _mpbPollTmrHndl = xTimerCreate(
                 _mpbPollTmrName,  //Timer name
                 pdMS_TO_TICKS(pollDelayMs),  //Timer period in ticks
                 pdTRUE,     //Autoreload true
                 this,       //TimerID: data passed to the callback funtion to work
                 DbncdMPBttn::mpbPollCallback);  //Callback function
-            assert (mpbPollTmrHndl);
+            assert (_mpbPollTmrHndl);
         }
-        xTimerStart(mpbPollTmrHndl, portMAX_DELAY);
+        xTimerStart(_mpbPollTmrHndl, portMAX_DELAY);
 
-        if (mpbPollTmrHndl != nullptr)
+        if (_mpbPollTmrHndl != nullptr)
             result = true;
     }
 
@@ -200,8 +200,8 @@ bool DbncdMPBttn::begin(const unsigned long int &pollDelayMs) {
 bool DbncdMPBttn::pause(){
     bool result {false};
 
-    if (mpbPollTmrHndl){
-        xTimerStop(mpbPollTmrHndl, portMAX_DELAY);
+    if (_mpbPollTmrHndl){
+        xTimerStop(_mpbPollTmrHndl, portMAX_DELAY);
         result = true;
     }
 
@@ -211,8 +211,8 @@ bool DbncdMPBttn::pause(){
 bool DbncdMPBttn::resume(){
     bool result {false};
 
-    if (mpbPollTmrHndl){
-        xTimerReset( mpbPollTmrHndl, portMAX_DELAY);    //Equivalent to xTimerStart()
+    if (_mpbPollTmrHndl){
+        xTimerReset( _mpbPollTmrHndl, portMAX_DELAY);    //Equivalent to xTimerStart()
         result = true;
     }
 
@@ -222,10 +222,10 @@ bool DbncdMPBttn::resume(){
 bool DbncdMPBttn::end(){
     bool result {false};
 
-    if (mpbPollTmrHndl){
-        xTimerStop(mpbPollTmrHndl, portMAX_DELAY);
-        xTimerDelete(mpbPollTmrHndl, portMAX_DELAY);
-        mpbPollTmrHndl = nullptr;
+    if (_mpbPollTmrHndl){
+        xTimerStop(_mpbPollTmrHndl, portMAX_DELAY);
+        xTimerDelete(_mpbPollTmrHndl, portMAX_DELAY);
+        _mpbPollTmrHndl = nullptr;
         result = true;
     }
 
@@ -233,7 +233,7 @@ bool DbncdMPBttn::end(){
 }
 
 bool DbncdMPBttn::setTaskToNotify(TaskHandle_t newHandle){
-    _HILTaskToNotifyHndl = newHandle;
+    _taskToNotifyHndl = newHandle;
 
     return true;
 }
@@ -319,18 +319,18 @@ bool DbncdDlydMPBttn::updValidPressPend(){
 
 bool DbncdDlydMPBttn::begin(const unsigned long int &pollDelayMs){
     if (pollDelayMs > 0){
-        if (!mpbPollTmrHndl){        
-            mpbPollTmrHndl = xTimerCreate(
+        if (!_mpbPollTmrHndl){        
+            _mpbPollTmrHndl = xTimerCreate(
                 _mpbPollTmrName,  //Timer name
                 pdMS_TO_TICKS(pollDelayMs),  //Timer period in ticks
                 pdTRUE,     //Autoreload true
                 this,       //TimerID: data passed to the callback funtion to work
                 DbncdDlydMPBttn::mpbPollCallback);
-            assert (mpbPollTmrHndl);
+            assert (_mpbPollTmrHndl);
         }
-        xTimerStart(mpbPollTmrHndl, portMAX_DELAY);
+        xTimerStart(_mpbPollTmrHndl, portMAX_DELAY);
 
-        return mpbPollTmrHndl != nullptr;
+        return _mpbPollTmrHndl != nullptr;
     }
 
     return false;
@@ -358,18 +358,18 @@ LtchMPBttn::LtchMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp, const boo
 
 bool LtchMPBttn::begin(const unsigned long int &pollDelayMs){
     if (pollDelayMs > 0){
-        if (!mpbPollTmrHndl){        
-            mpbPollTmrHndl = xTimerCreate(
+        if (!_mpbPollTmrHndl){        
+            _mpbPollTmrHndl = xTimerCreate(
                 _mpbPollTmrName,  //Timer name
                 pdMS_TO_TICKS(pollDelayMs),  //Timer period in ticks
                 pdTRUE,     //Autoreload true
                 this,       //TimerID: data passed to the callback function to work
                 LtchMPBttn::mpbPollCallback);
-            assert (mpbPollTmrHndl);
+            assert (_mpbPollTmrHndl);
         }
-        xTimerStart(mpbPollTmrHndl, portMAX_DELAY);
+        xTimerStart(_mpbPollTmrHndl, portMAX_DELAY);
 
-        return mpbPollTmrHndl != nullptr;
+        return _mpbPollTmrHndl != nullptr;
     }
 
     return false;
@@ -551,18 +551,18 @@ void TmLtchMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
 }
 
 bool TmLtchMPBttn::begin(const unsigned long int &pollDelayMs){
-    if (!mpbPollTmrHndl){        
-        mpbPollTmrHndl = xTimerCreate(
+    if (!_mpbPollTmrHndl){        
+        _mpbPollTmrHndl = xTimerCreate(
             _mpbPollTmrName,  //Timer name
             pdMS_TO_TICKS(pollDelayMs),  //Timer period in ticks
             pdTRUE,     //Autoreload true
             this,       //TimerID: data passed to the callback function to work
             TmLtchMPBttn::mpbPollCallback);
-        assert (mpbPollTmrHndl);
+        assert (_mpbPollTmrHndl);
     }
-    xTimerStart(mpbPollTmrHndl, portMAX_DELAY);
+    xTimerStart(_mpbPollTmrHndl, portMAX_DELAY);
 
-    return mpbPollTmrHndl != nullptr;
+    return _mpbPollTmrHndl != nullptr;
 }
 
 bool TmLtchMPBttn::setTmerRstbl(const bool &isRstbl){
@@ -588,7 +588,7 @@ bool HntdTmLtchMPBttn::updPilotOn(){
             _pilotOn = false;
             _outputsChange = true;
         }
-}
+    }
     else{
         if(_pilotOn){
             _pilotOn = false;
@@ -652,18 +652,18 @@ bool HntdTmLtchMPBttn::setKeepPilot(const bool &newKeepPilot){
 }
 
 bool HntdTmLtchMPBttn::begin(const unsigned long int &pollDelayMs){
-    if (!mpbPollTmrHndl){        
-        mpbPollTmrHndl = xTimerCreate(
+    if (!_mpbPollTmrHndl){        
+        _mpbPollTmrHndl = xTimerCreate(
             _mpbPollTmrName,  //Timer name
             pdMS_TO_TICKS(pollDelayMs),  //Timer period in ticks
             pdTRUE,     //Autoreload true
             this,       //TimerID: data passed to the callback funtion to work
             HntdTmLtchMPBttn::mpbPollCallback);
-        assert (mpbPollTmrHndl);
+        assert (_mpbPollTmrHndl);
     }
-    xTimerStart(mpbPollTmrHndl, portMAX_DELAY);
+    xTimerStart(_mpbPollTmrHndl, portMAX_DELAY);
 
-    return mpbPollTmrHndl != nullptr;
+    return _mpbPollTmrHndl != nullptr;
 }
 
 bool HntdTmLtchMPBttn::updIsPressed(){
@@ -719,20 +719,20 @@ XtrnUnltchMPBttn::XtrnUnltchMPBttn(const uint8_t &mpbttnPin, const DbncdDlydMPBt
 }
 
 bool XtrnUnltchMPBttn::begin(const unsigned long int &pollDelayMs){
-    if (!mpbPollTmrHndl){        
-        mpbPollTmrHndl = xTimerCreate(
+    if (!_mpbPollTmrHndl){        
+        _mpbPollTmrHndl = xTimerCreate(
             _mpbPollTmrName,  //Timer name
             pdMS_TO_TICKS(pollDelayMs),  //Timer period in ticks
             pdTRUE,     //Autoreload true
             this,       //TimerID: data passed to the callback funtion to work
             XtrnUnltchMPBttn::mpbPollCallback);
-        assert (mpbPollTmrHndl);
+        assert (_mpbPollTmrHndl);
     }
-    xTimerStart(mpbPollTmrHndl, portMAX_DELAY);
+    xTimerStart(_mpbPollTmrHndl, portMAX_DELAY);
     
     _unLtchBttn.begin();
 
-    return mpbPollTmrHndl != nullptr;
+    return _mpbPollTmrHndl != nullptr;
 }
 
 bool XtrnUnltchMPBttn::updUnlatchPend(){
@@ -765,6 +765,9 @@ void XtrnUnltchMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
 VdblMPBttn::VdblMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp, const bool &typeNO, const unsigned long int &dbncTimeOrigSett, const unsigned long int &strtDelay, const bool &isOnDisabled)
 :DbncdDlydMPBttn(mpbttnPin, pulledUp, typeNO, dbncTimeOrigSett, strtDelay), _isOnDisabled{isOnDisabled}
 {
+}
+
+VdblMPBttn::~VdblMPBttn(){
 }
 
 const bool VdblMPBttn::getIsEnabled() const{
@@ -827,6 +830,9 @@ TmVdblMPBttn::TmVdblMPBttn(const uint8_t &mpbttnPin, unsigned long int voidTime,
 {
 }
 
+TmVdblMPBttn::~TmVdblMPBttn(){
+}
+
 void TmVdblMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
     TmVdblMPBttn *mpbObj = (TmVdblMPBttn*)pvTimerGetTimerID(mpbTmrCb);
     mpbObj->updIsPressed();
@@ -859,18 +865,18 @@ bool TmVdblMPBttn::setVoidTime(const unsigned long int &newVoidTime){
 }
 
 bool TmVdblMPBttn::begin(const unsigned long int &pollDelayMs){
-    if (!mpbPollTmrHndl){        
-        mpbPollTmrHndl = xTimerCreate(
+    if (!_mpbPollTmrHndl){        
+        _mpbPollTmrHndl = xTimerCreate(
             _mpbPollTmrName,  //Timer name
             pdMS_TO_TICKS(pollDelayMs),  //Timer period in ticks
             pdTRUE,     //Autoreload true
             this,       //TimerID: data passed to the callback funtion to work
             TmVdblMPBttn::mpbPollCallback);
-        assert (mpbPollTmrHndl);
+        assert (_mpbPollTmrHndl);
     }
-    xTimerStart(mpbPollTmrHndl, portMAX_DELAY);
+    xTimerStart(_mpbPollTmrHndl, portMAX_DELAY);
     
-    return mpbPollTmrHndl != nullptr;
+    return _mpbPollTmrHndl != nullptr;
 }
 
 bool TmVdblMPBttn::updIsPressed(){

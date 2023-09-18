@@ -20,10 +20,10 @@ protected:
     unsigned long int _dbncTimeTempSett{0};
     unsigned long int _dbncTimerStrt{0};
     const unsigned long int _stdMinDbncTime {_HwMinDbncTime};
-    TimerHandle_t mpbPollTmrHndl {nullptr};
+    TimerHandle_t _mpbPollTmrHndl {nullptr};
     char _mpbPollTmrName [17] {'\0'};
     volatile bool _outputsChange {false};
-    TaskHandle_t _HILTaskToNotifyHndl {nullptr};
+    TaskHandle_t _taskToNotifyHndl {nullptr};
 
     const bool getIsPressed() const;
 public:    
@@ -161,6 +161,7 @@ protected:
     bool _isVoided{false};
 public:
     VdblMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0, const bool &isOnDisabled = false);
+    virtual ~VdblMPBttn();
     const bool getIsEnabled() const;
     const bool getIsVoided() const;
     bool setIsEnabled(const bool &newEnabledValue);
@@ -179,12 +180,13 @@ protected:
 
 public:
     TmVdblMPBttn(const uint8_t &mpbttnPin, unsigned long int voidTime, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0, const bool &isOnDisabled = false);
+    virtual ~TmVdblMPBttn();
     const unsigned long int getVoidTime() const;
     bool setVoidTime(const unsigned long int &newVoidTime);
     bool setIsVoided(const bool &newVoidValue);
     bool updIsOn();
     bool updIsPressed();
-    bool updIsVoided();
+    virtual bool updIsVoided();
     bool updValidPressPend();
 
     bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
