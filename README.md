@@ -32,6 +32,8 @@ So this library implements the inner mechanisms of some switches, the hardware i
 |**end()**|None|
 |**getCurDbncTime()**|None|
 |**getIsOn()**|None|
+|**getOutputsChange()**|None|
+|**getTaskToNotify()**|None|
 |**init()** |uint8_t **mpbttnPin**(, bool **pulledUp**(, bool **typeNO**(, unsigned long int **dbncTimeOrigSett**)))|
 |**pause()**|None|
 |**resetDbncTime()**|None|
@@ -44,9 +46,21 @@ So this library implements the inner mechanisms of some switches, the hardware i
 |**updValidPressPend()**|None|  
 
 ---
+### **DbncdMPBttn**()
+### Description:  
+Default Class Constructor, creates an instance of the class. This constructor is provided as a tool to create "yet to know parameters" objects, blank objects to use in copies, pointers, etc. The init() method is provided to configure the required attributes to the objects created by this constructor, if needed.  
+### Parameters:  
+**None**
+### Return value:  
+The object created.
+
+### Use example:  
+**`DbncdMPBttn myDButton();`**
+
+---
 ### **DbncdMPBttn**(uint8_t **mpbttnPin**, bool **pulledUp**, bool **typeNO**, unsigned long int **dbncTimeOrigSett**)
 ### Description:  
-Class constructor, creates an instance of the class for each **Debounced Momentary Push Button**. There's no need to configure the input pin before calling the method, as the constructor takes care of the task.  
+Class constructor, creates an instance of the class. There's no need to configure the input pin before calling the method, as the constructor takes care of the task.  
 ### Parameters:  
 **mpbttnPin:** uint8_t (unsigned char), passes the pin number that is connected to the push button. The pin must be free to be used as a digital input.  
 **pulledUp:** optional boolean, indicates if the input pin must be configured as INPUT_PULLUP (true, default value), or INPUT_PULLDOWN(false), to calculate correctly the expected voltage level in the input pin. The pin is configured by the constructor so no previous programming is needed. The pin must be free to be used as a digital input.  
@@ -81,7 +95,7 @@ Detaches the object from the timer that monitors the input pin and updates the o
 
 ### Return value:  
 true: the object detachment procedure and timer entry removal was successful.  
-false: the object detachment and/or entry removal was rejected by the system.  
+false: the object detachment and/or entry removal was rejected by the O.S..  
 ### Use example:  
 **`myDButton.end();`**
 
@@ -99,7 +113,7 @@ unsigned long integer: The current debounce time, in milliseconds, being used in
 ---
 ### **getIsOn**();
 ### Description:
-Returns the current value of the **On** flag, either On or Off.  
+Returns the current value of the **isOn** flag, either On (true) or Off (false).  
 ### Parameters:  
 **None**  
 ### Return value:  
@@ -107,9 +121,28 @@ true: the implemented switch is in **On** state.
 false: the implemented switch is in **Off** state.  
 ### Use example:  
 **`bool lightStatus = myDButton.getIsOn();`**
+---
+### **getOutputsChange**();
+### Description:
+Returns the current value of the flag indicating if there have been changes in the outputs since last FreeRTOS notification to the task referenced to keep outputs updated.  
+### Parameters:  
+**None**  
+### Return value:  
+true: there have been output changes to notify to the task.  
+false: there have been no output changes to notify to the task.  
+### Use example:  
+**`bool outputStatus = myDButton.getOutputsChange();`**
 
 ---
-
+### **getTaskToNotify**();
+### Description:
+Returns the current value of the TaskHandle of the task to be notified by the object when its outputsChange flag value changed (indicating if there have been changes in the outputs since last FreeRTOS notification). When the object is created, this value is set to **nullptr** and a valid TaskHandle_t value might be set by using the setTaskToNotify() method. The task notifying mechanism will not be used while the task handle keeps the nullptr value.  
+### Parameters:  
+**None**  
+### Return value:  
+TaskHandle_t value pointing to the task implemented to be notified of the change of values of the flags of the objet if it was set to some value not equal to nullptr, or nullptr otherwise.  
+### Use example:  
+**`TaskHandle_t taskNotified = myDButton.getTaskToNotify();`**
 ---  
 # **Added Methods for DbncdDlydMPBttn class**
 
@@ -124,7 +157,7 @@ false: the implemented switch is in **Off** state.
 ---  
 ### **DbncdDlydMPBttn**(uint8_t **mpbttnPin**, bool **pulledUp**, bool **typeNO**, unsigned long int **dbncTimeOrigSett**, unsigned long int **strtDelay**)
 ### Description:  
-Class constructor, create an instance of the class for each **Debounced Delayed Momentary Push Button**. There's no need to configure the input pin before calling the method, as the constructor takes care of the task.  
+Class constructor, creates an instance of the class for each **Debounced Delayed Momentary Push Button**. There's no need to configure the input pin before calling the method, as the constructor takes care of the task.  
 ### Parameters:  
 **mpbttnPin:** uint8_t (unsigned char), passes the pin number that is connected to the push button. The pin must be free to be used as a digital input.  
 **pulledUp:** optional boolean, indicates if the input pin must be configured as INPUT_PULLUP (true, default value), or INPUT_PULLDOWN(false), to calculate correctly the expected voltage level in the input pin. The pin is configured by the constructor so no previous programming is needed. The pin must be free to be used as a digital input.  

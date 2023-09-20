@@ -233,9 +233,13 @@ bool DbncdMPBttn::end(){
 }
 
 bool DbncdMPBttn::setTaskToNotify(TaskHandle_t newHandle){
-    _taskToNotifyHndl = newHandle;
+    bool result {true};
 
-    return true;
+    _taskToNotifyHndl = newHandle;
+    if (newHandle == nullptr)
+        result = false;
+
+    return result;
 }
 
 void DbncdMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
