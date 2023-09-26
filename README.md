@@ -225,9 +225,11 @@ The object created.
 |**disable()**|None|
 |**enable()**|None|
 |**getIsEnabled()**|None|
+|**getIsOnDisabled()**|None|
 |**getIsVoided()**|None|
 |**getVoidTime()**|None|
 |**setIsEnabled()**|bool **enabledValue**|
+|**setIsOnDisabled()**|bool **isOnDisabledValue**|
 |**setIsVoided()**|bool **voidValue**|
 |**setVoidTime()**|None|
 |**updIsVoided()**|None|

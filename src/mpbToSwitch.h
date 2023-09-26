@@ -163,8 +163,10 @@ public:
     VdblMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0, const bool &isOnDisabled = false);
     virtual ~VdblMPBttn();
     const bool getIsEnabled() const;
+    const bool getIsOnDisabled() const;
     const bool getIsVoided() const;
     bool setIsEnabled(const bool &newEnabledValue);
+    bool setIsOnDisabled(const bool &newIsOnDisabled);
     bool setIsVoided(const bool &newVoidValue);
     bool enable();
     bool disable();
@@ -174,10 +176,10 @@ public:
 
 class TmVdblMPBttn: public VdblMPBttn{
     static void mpbPollCallback(TimerHandle_t mpbTmrCb);
+    
 protected:
     unsigned long int _voidTime;
     unsigned long int _voidTmrStrt{0};
-
 public:
     TmVdblMPBttn(const uint8_t &mpbttnPin, unsigned long int voidTime, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0, const bool &isOnDisabled = false);
     virtual ~TmVdblMPBttn();

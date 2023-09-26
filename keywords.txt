@@ -65,8 +65,10 @@ updWrnngOn  KEYWORD2
 disable KEYWORD2
 enable  KEYWORD2
 getIsEnabled    KEYWORD2
+getIsOnDisabled   KEYWORD2
 getIsVoided KEYWORD2
 setIsEnabled    KEYWORD2
+setIsOnDisabled   KEYWORD2
 setIsVoided KEYWORD2
 updIsVoided KEYWORD2
 #############
