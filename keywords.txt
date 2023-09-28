@@ -19,6 +19,7 @@ TmVdblMPBttn    KEYWORD1
 # DbncdMPBttn
 #############
 begin   KEYWORD2
+clrStatus   KEYWORD2
 end KEYWORD2
 getCurDbncTime  KEYWORD2
 getIsOn KEYWORD2
