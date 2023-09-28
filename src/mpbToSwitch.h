@@ -29,6 +29,7 @@ protected:
 public:    
     DbncdMPBttn();
     DbncdMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0);
+    void clrStatus();
     const unsigned long int getCurDbncTime() const;
     const bool getIsOn () const;
     const bool getOutputsChange() const;
@@ -162,6 +163,7 @@ protected:
 public:
     VdblMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0, const bool &isOnDisabled = false);
     virtual ~VdblMPBttn();
+    void clrStatus();
     const bool getIsEnabled() const;
     const bool getIsOnDisabled() const;
     const bool getIsVoided() const;
@@ -186,6 +188,11 @@ public:
     const unsigned long int getVoidTime() const;
     bool setVoidTime(const unsigned long int &newVoidTime);
     bool setIsVoided(const bool &newVoidValue);
+    void clrStatus();
+    const unsigned long int getVoidTime() const;
+    bool setIsEnabled(const bool &newEnabledValue);
+    bool setIsVoided(const bool &newVoidValue);
+    bool setVoidTime(const unsigned long int &newVoidTime);
     bool updIsOn();
     bool updIsPressed();
     virtual bool updIsVoided();

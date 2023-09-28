@@ -22,6 +22,22 @@ DbncdMPBttn::DbncdMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp, const b
         pinMode(mpbttnPin, (pulledUp == true)?INPUT_PULLUP:INPUT_PULLDOWN);
 }
 
+void DbncdMPBttn::clrStatus(){
+    /*To Resume operation after a pause() without risking generating false "Valid presses" and "On" situations,
+    several attributes must be resetted to "Start" values
+    _isPressed -> false
+    _isOn -> false
+    _validPressPend -> false
+    _dbncTimerStrt -> 0
+    */
+    _isPressed = false;
+    _isOn = false;
+    _validPressPend = false;
+    _dbncTimerStrt = 0;
+    
+    return;
+}
+
 const unsigned long int DbncdMPBttn::getCurDbncTime() const{
 
     return _dbncTimeTempSett;
@@ -777,6 +793,17 @@ VdblMPBttn::VdblMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp, const boo
 VdblMPBttn::~VdblMPBttn(){
 }
 
+void VdblMPBttn::clrStatus(){
+    /*To Resume operation after a pause() without risking generating false "Valid presses" and "On" situations,
+    several attributes must be resetted to "Start" values
+    */
+    DbncdMPBttn::clrStatus();
+    setIsVoided(false);
+    _outputsChange = true;
+
+    return;
+}
+
 const bool VdblMPBttn::getIsEnabled() const{
 
     return _isEnabled;
@@ -790,6 +817,34 @@ const bool VdblMPBttn::getIsOnDisabled() const{
 const bool VdblMPBttn::getIsVoided() const{
 
     return _isVoided;
+}
+
+bool VdblMPBttn::setIsEnabled(const bool &newEnabledValue){
+    if(_isEnabled != newEnabledValue){
+        if (!newEnabledValue){  //Changed to !Enabled (i.e. Disabled)
+            pause();    //It's pausing the timer that keeps the inputs updated and calculates and updates the output flags... Flags must be updated for the disabled condition
+            clrStatus();
+            if(_isOnDisabled){  //Set the _isOn flag to expected value 
+                if(_isOn == false)
+                    _isOn = true;
+            }
+            else{
+                if (_isOn == true)
+                    _isOn = false;
+            }
+            if(getTaskToNotify() != nullptr)
+                xTaskNotifyGive(getTaskToNotify());
+            setOutputsChange(false);
+        }
+        else{
+            clrStatus();
+            resume();   //It's resuming the timer that keeps the inputs updated and calculates and updates the output flags... before this some conditions of timers and flags had to be insured
+        }
+        _isEnabled = newEnabledValue;
+        _outputsChange = true;
+    }
+    
+    return _isEnabled;
 }
 
 bool VdblMPBttn::setIsOnDisabled(const bool &newIsOnDisabled){
@@ -882,9 +937,38 @@ bool TmVdblMPBttn::begin(const unsigned long int &pollDelayMs){
     return _mpbPollTmrHndl != nullptr;
 }
 
+void TmVdblMPBttn::clrStatus(){
+    /*To Resume operation after a pause() without risking generating false "Valid presses" and "On" situations,
+    several attributes must be resetted to "Start" values
+    */
+
+    VdblMPBttn::clrStatus();
+    _voidTmrStrt = 0;
+
+    _outputsChange = true;
+    return;
+}
+
 const unsigned long int TmVdblMPBttn::getVoidTime() const{
 
     return _voidTime;
+}
+
+bool TmVdblMPBttn::setIsEnabled(const bool &newEnabledValue){
+    if(_isEnabled != newEnabledValue){
+        VdblMPBttn::setIsEnabled(newEnabledValue);
+
+        if (newEnabledValue){  //Changed to Enabled
+            clrStatus();
+            setIsVoided(true);  //For safety reasons if the mpb was disabled and re-enabled, it is set as voided, so if it was pressed when is was re-enabled there's no risk
+                                // of activating somethin unexpectedly. It'll have to be released and then pressed back to intentionally set it to ON.
+            resume();   //It's resuming the timer that keeps the inputs updated and calculates and updates the output flags... before this some conditions of timers and flags had to be insured
+        }
+        _isEnabled = newEnabledValue;
+        _outputsChange = true;
+    }
+    
+    return _isEnabled;
 }
 
 bool TmVdblMPBttn::setIsVoided(const bool &newVoidValue){
