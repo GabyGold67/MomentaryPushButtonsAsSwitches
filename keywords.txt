@@ -10,6 +10,7 @@ DbncdMPBttn	KEYWORD1
 DbncdDlydMPBttn KEYWORD1
 LtchMPBttn  KEYWORD1
 TmLtchMPBttn    KEYWORD1
+HntdTmLtchMPBttn  KEYWORD1
 XtrnUnltchMPBttn    KEYWORD1
 TmVdblMPBttn    KEYWORD1
 
