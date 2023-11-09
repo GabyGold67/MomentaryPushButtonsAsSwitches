@@ -38,7 +38,7 @@ public:
     bool resetDbncTime();
     bool setDbncTime(const unsigned long int &newDbncTime);
     bool setOutputsChange(bool newOutputChange);
-    
+
     bool updIsOn();
     bool updIsPressed();
     bool updValidPressPend();
@@ -50,6 +50,8 @@ public:
     
     bool setTaskToNotify(TaskHandle_t newHandle);
 };
+
+//==========================================================>>
 
 class DbncdDlydMPBttn: public DbncdMPBttn{
     static void mpbPollCallback(TimerHandle_t mpbTmrCb);
@@ -87,6 +89,8 @@ public:
     bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
 };
 
+//==========================================================>>
+
 class TmLtchMPBttn: public LtchMPBttn{
     static void mpbPollCallback(TimerHandle_t mpbTmrCb);
 protected:
@@ -106,6 +110,8 @@ public:
 
     bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
 };
+
+//==========================================================>>
 
 class HntdTmLtchMPBttn: public TmLtchMPBttn{
     static void mpbPollCallback(TimerHandle_t mpbTmrCb);
@@ -132,6 +138,8 @@ public:
     bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
 };
 
+//==========================================================>>
+
 class XtrnUnltchMPBttn: public LtchMPBttn{
     static void mpbPollCallback(TimerHandle_t mpbTmrCb);
 protected:
@@ -149,6 +157,8 @@ public:
     bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
     bool updUnlatchPend();
 };
+
+//==========================================================>>
 
 class VdblMPBttn: public DbncdDlydMPBttn{
     static void mpbPollCallback(TimerHandle_t mpbTmrCb);
@@ -170,6 +180,8 @@ public:
     bool setIsVoided(const bool &newVoidValue);
     virtual bool updIsVoided() = 0;
 };
+
+//==========================================================>>
 
 class TmVdblMPBttn: public VdblMPBttn{
     static void mpbPollCallback(TimerHandle_t mpbTmrCb);    

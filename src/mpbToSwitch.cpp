@@ -8,18 +8,24 @@ DbncdMPBttn::DbncdMPBttn()
 DbncdMPBttn::DbncdMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp, const bool &typeNO, const unsigned long int &dbncTimeOrigSett)
 : _mpbttnPin{mpbttnPin}, _pulledUp{pulledUp}, _typeNO{typeNO}, _dbncTimeOrigSett{dbncTimeOrigSett}
 {
-    char mpbttnPinChar[3]{};
-    sprintf(mpbttnPinChar, "%0.2d", (int)_mpbttnPin);
-    strcpy(_mpbPollTmrName, "PollMpbPin");
-    strcat(_mpbPollTmrName, mpbttnPinChar);
-    strcat(_mpbPollTmrName, "_tmr");
 
-    if(_dbncTimeOrigSett < _stdMinDbncTime) //Best practice would impose failing the constructor (throwing an exeption or building a "zombie" object)
-        _dbncTimeOrigSett = _stdMinDbncTime;    //this tolerant approach taken for developers benefit, but object will be no faithful to the instantiation parameters
-    _dbncTimeTempSett = _dbncTimeOrigSett;
+    if(mpbttnPin > 0){
+        char mpbttnPinChar[3]{};
+        sprintf(mpbttnPinChar, "%0.2d", (int)_mpbttnPin);
+        strcpy(_mpbPollTmrName, "PollMpbPin");
+        strcat(_mpbPollTmrName, mpbttnPinChar);
+        strcat(_mpbPollTmrName, "_tmr");
 
-    if(mpbttnPin > 0)
+        if(_dbncTimeOrigSett < _stdMinDbncTime) //Best practice would impose failing the constructor (throwing an exeption or building a "zombie" object)
+            _dbncTimeOrigSett = _stdMinDbncTime;    //this tolerant approach taken for developers benefit, but object will be no faithful to the instantiation parameters
+        _dbncTimeTempSett = _dbncTimeOrigSett;
         pinMode(mpbttnPin, (pulledUp == true)?INPUT_PULLUP:INPUT_PULLDOWN);
+    }
+    else{
+        _pulledUp = true;
+        _typeNO = true;
+        _dbncTimeOrigSett = 0;
+    }
 }
 
 void DbncdMPBttn::clrStatus(){
@@ -62,24 +68,25 @@ bool DbncdMPBttn::init(const uint8_t &mpbttnPin, const bool &pulledUp, const boo
     char mpbttnPinChar[3]{};
 
     bool result {false};
-    if (_mpbPollTmrName[0] == '\0'){
-        _mpbttnPin = mpbttnPin;
-        _pulledUp = pulledUp;
-        _typeNO = typeNO;
-        _dbncTimeOrigSett = dbncTimeOrigSett;
+    if((_mpbttnPin == 0) && (mpbttnPin > 0)){
+        if (_mpbPollTmrName[0] == '\0'){
+            _mpbttnPin = mpbttnPin;
+            _pulledUp = pulledUp;
+            _typeNO = typeNO;
+            _dbncTimeOrigSett = dbncTimeOrigSett;
 
-        sprintf(mpbttnPinChar, "%0.2d", (int)_mpbttnPin);
-        strcpy(_mpbPollTmrName, "PollMpbPin");
-        strcat(_mpbPollTmrName, mpbttnPinChar);
-        strcat(_mpbPollTmrName, "_tmr");
+            sprintf(mpbttnPinChar, "%0.2d", (int)_mpbttnPin);
+            strcpy(_mpbPollTmrName, "PollMpbPin");
+            strcat(_mpbPollTmrName, mpbttnPinChar);
+            strcat(_mpbPollTmrName, "_tmr");
 
-        if(_dbncTimeOrigSett < _stdMinDbncTime)
-            _dbncTimeOrigSett = _stdMinDbncTime;
-        _dbncTimeTempSett = _dbncTimeOrigSett;
+            if(_dbncTimeOrigSett < _stdMinDbncTime)
+                _dbncTimeOrigSett = _stdMinDbncTime;
+            _dbncTimeTempSett = _dbncTimeOrigSett;
 
-        if(mpbttnPin > 0)
             pinMode(mpbttnPin, (pulledUp == true)?INPUT_PULLUP:INPUT_PULLDOWN);
-        result = true;
+            result = true;
+        }
     }
     
     return result;
