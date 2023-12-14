@@ -6,9 +6,9 @@
     Framework: Arduino
     Platform: ESP32
 
-  1XtrnUnltchMPBttn_InTasks.ino
+  1XtrnUnltchMPBttn_InTasks_a.ino
   Created by Gabriel D. Goldman, August, 2023.
-  Updated by Gabriel D. Goldman, August 17, 2023.
+  Updated by Gabriel D. Goldman, November, 2023.
   Released into the public domain in accordance with "GPL-3.0-or-later" license terms.
 
   Example file to demonstrate XtrnUnltchMPBttn class, required hardware and connections:
@@ -34,7 +34,7 @@ const uint8_t xumpSwitchPin{GPIO_NUM_25};
 const uint8_t loadPin{GPIO_NUM_21};
 const uint8_t releaseSwitch{GPIO_NUM_26};
 
-XtrnUnltchMPBttn xumpBttn (xumpSwitchPin, releaseSwitch, 4000, 25, true, true, 20, 50);
+XtrnUnltchMPBttn xumpBttn (xumpSwitchPin, releaseSwitch, true, true, 500, 25, true, true, 20, 50);
 
 bttnAsArg xumpBttnArg {&xumpBttn, loadPin};
 

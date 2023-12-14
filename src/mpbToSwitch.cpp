@@ -732,15 +732,58 @@ void HntdTmLtchMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCb){
 XtrnUnltchMPBttn::XtrnUnltchMPBttn(const uint8_t &mpbttnPin, const uint8_t &unltchPin, 
         const bool &pulledUp,  const bool &typeNO,  const unsigned long int &dbncTimeOrigSett,  const unsigned long int &strtDelay,
         const bool &upulledUp, const bool &utypeNO, const unsigned long int &udbncTimeOrigSett, const unsigned long int &ustrtDelay)
-:LtchMPBttn(mpbttnPin, pulledUp, typeNO, dbncTimeOrigSett, strtDelay), _unLtchBttn(unltchPin, upulledUp, utypeNO, udbncTimeOrigSett, ustrtDelay)
+:LtchMPBttn(mpbttnPin, pulledUp, typeNO, dbncTimeOrigSett, strtDelay)
+{
+    _unLtchBttn = new DbncdDlydMPBttn(unltchPin, upulledUp, utypeNO, udbncTimeOrigSett, ustrtDelay);
+}
+XtrnUnltchMPBttn::XtrnUnltchMPBttn(const uint8_t &mpbttnPin,  DbncdDlydMPBttn* unLtchBttn,
+        const bool &pulledUp,  const bool &typeNO,  const unsigned long int &dbncTimeOrigSett,  const unsigned long int &strtDelay)
+:LtchMPBttn(mpbttnPin, pulledUp, typeNO, dbncTimeOrigSett, strtDelay), _unLtchBttn{unLtchBttn}
+{
+
+}
+XtrnUnltchMPBttn::XtrnUnltchMPBttn(const uint8_t &mpbttnPin,  
+        const bool &pulledUp,  const bool &typeNO,  const unsigned long int &dbncTimeOrigSett,  const unsigned long int &strtDelay)
+:LtchMPBttn(mpbttnPin, pulledUp, typeNO, dbncTimeOrigSett, strtDelay)
 {
 
 }
 
-XtrnUnltchMPBttn::XtrnUnltchMPBttn(const uint8_t &mpbttnPin, const DbncdDlydMPBttn &unltchBttn, const bool &pulledUp, const bool &typeNO, const unsigned long int &dbncTimeOrigSett, const unsigned long int &strtDelay)
-:LtchMPBttn(mpbttnPin, pulledUp, typeNO, dbncTimeOrigSett, strtDelay)
-{
+bool XtrnUnltchMPBttn::unlatch(){
+    if(_isOn){
+        _unlatchPending = false;
+        _validPressPend = false;
+        _isOn = false;
+        _outputsChange = true;
+    }
 
+   return _isOn;
+}
+
+bool XtrnUnltchMPBttn::updIsOn()
+{
+   if (_unlatchPending)
+   {
+      if (_isOn)
+      {
+         _isOn = false;
+         _outputsChange = true;
+      }
+      _unlatchPending = false;
+      _validPressPend = false;
+   }
+   else if (_validPressPend)
+   {
+      if (!_isOn)
+      {
+         _isOn = true;
+         _outputsChange = true;
+      }
+      _validPressPend = false;
+      _unlatchPending = false;
+   }
+
+   return _isOn;
 }
 
 bool XtrnUnltchMPBttn::begin(const unsigned long int &pollDelayMs){
@@ -755,16 +798,19 @@ bool XtrnUnltchMPBttn::begin(const unsigned long int &pollDelayMs){
     }
     xTimerStart(_mpbPollTmrHndl, portMAX_DELAY);
     
-    _unLtchBttn.begin();
+    if(_unLtchBttn != nullptr)
+        _unLtchBttn->begin();
 
     return _mpbPollTmrHndl != nullptr;
 }
 
 bool XtrnUnltchMPBttn::updUnlatchPend(){
-    if(_isOn){
-        if (_unLtchBttn.getIsOn()){
-            _unlatchPending = true;
-            _validPressPend = false;
+    if(_isOn){        
+        if(_unLtchBttn != nullptr){
+            if (_unLtchBttn->getIsOn()){
+                _unlatchPending = true;
+                _validPressPend = false;
+            }
         }
     }
 

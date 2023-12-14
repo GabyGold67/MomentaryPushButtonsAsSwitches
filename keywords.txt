@@ -47,6 +47,10 @@ setStrtDelay    KEYWORD2
 getUnlatchPend  KEYWORD2
 setUnlatchPend  KEYWORD2
 updUnlatchPend  KEYWORD2
+#################
+#XtrnUnltchMPBttn
+#################
+unlatch  KEYWORD2
 #############
 #TmLtchMPBttn
 #############

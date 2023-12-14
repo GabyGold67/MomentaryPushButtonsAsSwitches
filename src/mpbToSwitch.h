@@ -145,16 +145,20 @@ class XtrnUnltchMPBttn: public LtchMPBttn{
 protected:
     bool _unltchPulledUp{};
     bool _unltchTypeNO{};
-    DbncdDlydMPBttn _unLtchBttn;
+    DbncdDlydMPBttn* _unLtchBttn {nullptr};
 public:
     XtrnUnltchMPBttn(const uint8_t &mpbttnPin, const uint8_t &unltchPin, 
         const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0,
         const bool &upulledUp = true, const bool &utypeNO = true, const unsigned long int &udbncTimeOrigSett = 0, const unsigned long int &ustrtDelay = 0);
+    XtrnUnltchMPBttn(const uint8_t &mpbttnPin,  DbncdDlydMPBttn* unLtchBttn,
+        const bool &pulledUp,  const bool &typeNO,  const unsigned long int &dbncTimeOrigSett,  const unsigned long int &strtDelay);
+    XtrnUnltchMPBttn(const uint8_t &mpbttnPin,  
+        const bool &pulledUp,  const bool &typeNO,  const unsigned long int &dbncTimeOrigSett,  const unsigned long int &strtDelay);
 
-     XtrnUnltchMPBttn(const uint8_t &mpbttnPin, const DbncdDlydMPBttn &unltchBttn, 
-        const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0);
 
     bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
+    bool unlatch();
+    bool updIsOn();
     bool updUnlatchPend();
 };
 
