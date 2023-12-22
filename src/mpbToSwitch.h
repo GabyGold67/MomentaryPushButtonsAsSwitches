@@ -5,9 +5,9 @@
 
 #define _HwMinDbncTime 20   //Documented minimum wait time for a MPB signal to stabilize
 #define _StdPollDelay 10
-
+#define _MinSrvcTime 100
 class DbncdMPBttn{
-    static void mpbPollCallback(TimerHandle_t mpbTmrCb);
+    static void mpbPollCallback(TimerHandle_t mpbTmrCbArg);
 protected:
     uint8_t _mpbttnPin{};
     bool _pulledUp{};
@@ -37,7 +37,8 @@ public:
     bool init(const uint8_t &mpbttnPin, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0);
     bool resetDbncTime();
     bool setDbncTime(const unsigned long int &newDbncTime);
-    bool setOutputsChange(bool newOutputChange);
+    bool setOutputsChange(bool newOutputsChange);
+    bool setTaskToNotify(TaskHandle_t newHandle);
 
     bool updIsOn();
     bool updIsPressed();
@@ -46,15 +47,13 @@ public:
     bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
     bool pause();
     bool resume();
-    bool end();
-    
-    bool setTaskToNotify(TaskHandle_t newHandle);
+    bool end();    
 };
 
 //==========================================================>>
 
 class DbncdDlydMPBttn: public DbncdMPBttn{
-    static void mpbPollCallback(TimerHandle_t mpbTmrCb);
+    static void mpbPollCallback(TimerHandle_t mpbTmrCbArg);
 protected:    
     unsigned long int _strtDelay {0};
 public:
@@ -64,18 +63,19 @@ public:
     bool init(const uint8_t &mpbttnPin, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0);
     boolean setStrtDelay(const unsigned long int &newStrtDelay);
 
-    bool updIsOn();
-    bool updIsPressed();
     bool updValidPressPend();
 
     bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
 };
 
+//==========================================================>>
+
 class LtchMPBttn: public DbncdDlydMPBttn{
-    static void mpbPollCallback(TimerHandle_t mpbTmrCb);
+    static void mpbPollCallback(TimerHandle_t mpbTmrCbArg);
 protected:
     bool _releasePending{false};
     bool _unlatchPending{false};
+    bool unlatch();
 public:
     LtchMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0);
     const bool getUnlatchPend() const;
@@ -83,7 +83,7 @@ public:
     bool updUnlatchPend();
 
     bool updIsOn();
-    bool updIsPressed();
+    // bool updIsPressed();
     bool updValidPressPend();
 
     bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
@@ -92,20 +92,20 @@ public:
 //==========================================================>>
 
 class TmLtchMPBttn: public LtchMPBttn{
-    static void mpbPollCallback(TimerHandle_t mpbTmrCb);
+    static void mpbPollCallback(TimerHandle_t mpbTmrCbArg);
 protected:
     bool _tmRstbl {true};
     unsigned long int _srvcTime {};
     unsigned long int _srvcTimerStrt{0};
 public:
     TmLtchMPBttn(const uint8_t &mpbttnPin, const unsigned long int &actTime, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0);
-    const unsigned long int getActTime() const;
-    bool setActTime(const unsigned long int &newActTime);
-    bool setTmerRstbl(const bool &isRstbl);
+    const unsigned long int getSvcTime() const;
+    bool setSvcTime(const unsigned long int &newActTime);
+    bool setTmerRstbl(const bool &newIsRstbl);
 
     bool updIsOn();
-    bool updIsPressed();
-    bool updValidPressPend();
+    // bool updIsPressed();
+    // bool updValidPressPend();
     bool updUnlatchPend();
 
     bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
@@ -114,7 +114,7 @@ public:
 //==========================================================>>
 
 class HntdTmLtchMPBttn: public TmLtchMPBttn{
-    static void mpbPollCallback(TimerHandle_t mpbTmrCb);
+    static void mpbPollCallback(TimerHandle_t mpbTmrCbArg);
 protected:
     bool _wrnngOn {false};
     bool _keepPilot{false};
@@ -125,15 +125,15 @@ public:
     HntdTmLtchMPBttn(const uint8_t &mpbttnPin, const unsigned long int &actTime, const unsigned int &wrnngPrctg = 0, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0);
     const bool getPilotOn() const;
     const bool getWrnngOn() const;
-    bool setActTime(const unsigned long int &newActTime);
+    bool setSvcTime(const unsigned long int &newActTime);
     bool setKeepPilot(const bool &newKeepPilot);
     bool updPilotOn();
     bool updWrnngOn();
 
-    bool updIsOn();
-    bool updIsPressed();
-    bool updValidPressPend();
-    bool updUnlatchPend();
+    // bool updIsOn();
+    // bool updIsPressed();
+    // bool updValidPressPend();
+    // bool updUnlatchPend();
 
     bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
 };
@@ -141,11 +141,12 @@ public:
 //==========================================================>>
 
 class XtrnUnltchMPBttn: public LtchMPBttn{
-    static void mpbPollCallback(TimerHandle_t mpbTmrCb);
+    static void mpbPollCallback(TimerHandle_t mpbTmrCbArg);
 protected:
     bool _unltchPulledUp{};
     bool _unltchTypeNO{};
     DbncdDlydMPBttn* _unLtchBttn {nullptr};
+    bool unlatch();
 public:
     XtrnUnltchMPBttn(const uint8_t &mpbttnPin, const uint8_t &unltchPin, 
         const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0,
@@ -157,7 +158,6 @@ public:
 
 
     bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
-    bool unlatch();
     bool updIsOn();
     bool updUnlatchPend();
 };
@@ -165,7 +165,7 @@ public:
 //==========================================================>>
 
 class VdblMPBttn: public DbncdDlydMPBttn{
-    static void mpbPollCallback(TimerHandle_t mpbTmrCb);
+    static void mpbPollCallback(TimerHandle_t mpbTmrCbArg);
 protected:
     bool _isEnabled{true};
     bool _isOnDisabled{false};
@@ -188,7 +188,7 @@ public:
 //==========================================================>>
 
 class TmVdblMPBttn: public VdblMPBttn{
-    static void mpbPollCallback(TimerHandle_t mpbTmrCb);    
+    static void mpbPollCallback(TimerHandle_t mpbTmrCbArg);    
 protected:
     unsigned long int _voidTime;
     unsigned long int _voidTmrStrt{0};

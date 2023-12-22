@@ -1,0 +1,49 @@
+v3.0.0:
+_ The default value of a non initialized input pin (_mpbttnPin) changes from 0x00 to 0xFF, as the Pin 0 (GPIO0) is usable in most development boards. Now (_mpbttnPin == 0xFF) expresses a non assigned pin.
+_ DbncdMPBttn::clrStatus() method now affects the _outputsChange flag if the _isOn flag is changed from true to false condition.
+_ All 'class'::begin() method now checks the xTimerCreate() AND xTimerStart() results independently using the FreeRTOS provided return values.
+_ All 'class'::pause() method now checks the xTimerStop() result to verify the outcome of the operation.
+_ All 'class'::resume() method now checks the xTimerReset() result to verify the outcome of the operation.
+_ All 'class'::end() method now checks the xTimerStop() and the xTimerDelete() results to verify the outcome of the operations.
+_ TmLtchMPBttn::setActTime() method name changed to TmLtchMPBttn::setSvcTime()
+_ HntdTmLtchMPBttn::setActTime() method name changed to HntdTmLtchMPBttn::setSvcTime()
+_ TmLtchMPBttn::getActTime() method name changed to TmLtchMPBttn::getSvcTime()
+_ HntdTmLtchMPBttn::getActTime() method name changed to HntdTmLtchMPBttn::getSvcTime()
+
+v2.3.1 Methods security and documentation added
+- dbncdMPBttn init() method limited to non initialized "zombie" instances.
+- README.md methods description added, WIP.
+
+v2.3.0  VdblMPBttn class methods added and general debugging
+- getIsOnDisabled() and setIsOnDisabled() methods added for dynamic modification of the objects created
+- setIsEnabled() method modified to set the isEnabled flag while keeping the other flags coherently modified
+- General debugging and trimming of all methods to work with the switchHIL library [https://github.com/GabyGold67/SwitchesHardwareInterfaceLayer](url)
+
+v2.2.0 Intertasks mechanism added
+_ xTaskNotifyGive() FreeRTOS macro support added to free the hardware implementation of the need to poll the objects created to update the outputs. The use of this mechanism is not mandatory, and will only be activated by providing the objects with the valid handle of the task to be notified when the status of the object changes (on/off/warnings/latches)
+_ Virtual destructors provided to avoid warnings messages from some compilers.
+_ Documentation added and updated for some classes and methods
+
+v2.1.1 Bug fixes, methods cleanup and documentation aded
+_ Minor bug fixes and optimizations performed
+_ Some code cleanup done for users benefit
+_ Some classes and methods documentation added.
+
+v2.0.0 Classes refactoring and addition
+_ Hierarchy refactoring for LtchMPBttn subclasses
+_ Const-correctness verification
+_ Default constructors and init() methods added for composed switches classes development
+
+v1.0.2 General cleanup and documentation update
+_ Readme.md file updated to include all current classes description
+_ General refactoring preparing for a two layer solution: addition of a HIL (Hardware Interface Layer)
+
+v1.0.1 Example files update
+_ Example names corrected according to Arduino Library Manager requirements
+_ General information added to each example
+_ New information added for clarification and better library use understanding
+
+Initial release
+_ readme.md with basic information
+_ Library files
+_ Examples with no inside information

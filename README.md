@@ -218,20 +218,21 @@ false: the objectobject's  timer couldn't be stopped by the O.S..
 
 ---  
 
-## **resetDbncTime**()
+## **resetDbncTime**()  
 ### Description:  
 Resets the debounce time of the object to the value used at instantiation. In case the value was not specified at instantiation the default debounce time value will be used. As the instantiation time might be changed with the **setDbncTime()**, this method reverts the value.   
 ### Parameters:  
 **None**  
 ### Return value:  
-true: the value could be reverted.
+true: the value could be reverted.  
 false: the value couldn't be reverted due to unexpected situations.  
 ### Use example:  
 **`myDButton.resetDbncTime();`**  
+
 ---  
 
-## **resume**()
-Restarts the software timer updating the calculation of the object internal flags. The timer will resume its function of computing the flags after a values  `.pause()` methodand will not be updated until the timer is restarted wit the
+## **resume**()  
+Restarts the software timer updating the calculation of the object internal flags. The timer will stop its function of computing the flags values after calling the `.pause()` method and will not be updated until the timer is restarted with this method.  
 ### Description:  
 ### Parameters:  
 **None**  
@@ -363,6 +364,7 @@ The object created.
 |---|---|
 |**_XtrnUnLtchMPBttn_** |uint8_t **mpbttnPin**, uint8_t **unltchPin**(, bool **pulledUp**(, bool **typeNO**(, unsigned long int **dbncTimeOrigSett**(, unsigned long int **strtDelay**(, bool **upulledUp**(, bool **utypeNO**(, unsigned long int **udbncTimeOrigSett**(, unsigned long int **ustrtDelay**))))))))|
 |**_XtrnUnLtchMPBttn_** |uint8_t **mpbttnPin**, DbncDlydMPBttn **unltchBttn**(, bool **pulledUp**(, bool **typeNO**(, unsigned long int **dbncTimeOrigSett**(, unsigned long int **strtDelay**))))|
+|**unlatch()**|None|
 
 ---  
 ---  
