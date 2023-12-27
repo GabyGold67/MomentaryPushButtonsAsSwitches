@@ -9,7 +9,7 @@
 
   1DbncdDlyd_1TmVdblMPBttn_InTasks.ino
   Created by Gabriel D. Goldman, August, 2023.
-  Updated by Gabriel D. Goldman, August 20, 2023.
+  Updated by Gabriel D. Goldman, November, 2023.
   Released into the public domain in accordance with "GPL-3.0-or-later" license terms.
 
   Example file to demonstrate DbncdMPBttn and TmVdblMPBttn classes, required hardware and connections:
@@ -19,8 +19,11 @@
   _ 1 led with it's corresponding resistor between GND and tvlmpbLoadPin
 
   Pressing the push button connected to dbncdSwitchPin will turn the led on after a 150 milliseconds delay and keep it lit while it's being pressed.
-  Pressing the push button connected to tvlmpbSwitchPin will turn the led on immediately and keep it lit until the setted limit time of 3000 milliseconds is reached,
-  or until it's released, whichever happens first. This push button must be released to reset the timer that limits the time it sends a on signal while being pushed.
+  Pressing the push button connected to tvlmpbSwitchPin will turn the led on immediately and keep it lit until:
+  _ the setted limit time of 3000 milliseconds is reached,
+  _ until it's released, 
+  _ until de DbncdMPBttn is pressed,
+  whichever happens first. This push button must be released to reset the timer that limits the time it sends an On signal while being pushed.
   This kind of switch avoids the tampering usually suffered by push buttons used to control limited resources, like water valves, heating devices, etc.
 
   The input signals comming from the push buttons are processed by tasks, so the loop() function is unnecesary to keep the loads status updated. For demonstration purposes

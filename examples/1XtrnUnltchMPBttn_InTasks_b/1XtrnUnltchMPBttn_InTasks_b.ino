@@ -6,7 +6,7 @@
     Framework: Arduino
     Platform: ESP32
 
-  1XtrnUnltchMPBttn_InTasks_b.ino
+  1XtrnUnltchMPBttn_InTasks_c.ino
   Created by Gabriel D. Goldman, August, 2023.
   Updated by Gabriel D. Goldman, November, 2023.
   Released into the public domain in accordance with "GPL-3.0-or-later" license terms.
@@ -26,6 +26,7 @@
 struct bttnAsArg{   //xTaskCreate accepts only one pointer to a parameter, to use a composed data type a structure is built
   XtrnUnltchMPBttn* bttnArg;  //The switch created using the library
   uint8_t outLoadPinArg;      //The pin where the load (light, valve, lock) will be activated
+  DbncdDlydMPBttn* unltchArg;
 };
 
 // put function declarations here:
@@ -35,12 +36,10 @@ static void updOutPin(void* argp);
 const uint8_t xumpSwitchPin{GPIO_NUM_25};
 const uint8_t loadPin{GPIO_NUM_21};
 
+XtrnUnltchMPBttn xumpBttn (xumpSwitchPin, true, true, 500, 25);
 DbncdDlydMPBttn releaseSwitchObj(GPIO_NUM_26,true, true, 20, 50);
-DbncdDlydMPBttn* releaseSwitchPtr = &releaseSwitchObj;
 
-XtrnUnltchMPBttn xumpBttn (xumpSwitchPin, releaseSwitchPtr, true, true, 500, 25);
-
-bttnAsArg xumpBttnArg {&xumpBttn, loadPin};
+bttnAsArg xumpBttnArg {&xumpBttn, loadPin, &releaseSwitchObj};
 
 void setup() {
   // put your setup code here, to run once:
@@ -50,6 +49,7 @@ void setup() {
   pinMode(loadPin, OUTPUT);
   TaskHandle_t xumpBttnHndl;
   xumpBttn.begin();
+  releaseSwitchObj.begin();
 
 //Task to run forever
   rc = xTaskCreatePinnedToCore(
@@ -77,6 +77,9 @@ static void updOutPin(void* argp){
   bttnAsArg *myMPB = (bttnAsArg*)argp;
 
   for (;;){
+    if(myMPB->unltchArg->getIsOn()){
+      myMPB->bttnArg->unlatch();
+    }
     if (myMPB->bttnArg->getIsOn()){
       digitalWrite(myMPB->outLoadPinArg, HIGH);
     }

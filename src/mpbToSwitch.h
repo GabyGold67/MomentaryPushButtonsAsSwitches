@@ -6,6 +6,7 @@
 #define _HwMinDbncTime 20   //Documented minimum wait time for a MPB signal to stabilize
 #define _StdPollDelay 10
 #define _MinSrvcTime 100
+
 class DbncdMPBttn{
     static void mpbPollCallback(TimerHandle_t mpbTmrCbArg);
 protected:
@@ -29,6 +30,7 @@ protected:
 public:    
     DbncdMPBttn();
     DbncdMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0);
+    ~DbncdMPBttn();
     void clrStatus();
     const unsigned long int getCurDbncTime() const;
     const bool getIsOn () const;
@@ -83,7 +85,6 @@ public:
     bool updUnlatchPend();
 
     bool updIsOn();
-    // bool updIsPressed();
     bool updValidPressPend();
 
     bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
@@ -104,8 +105,6 @@ public:
     bool setTmerRstbl(const bool &newIsRstbl);
 
     bool updIsOn();
-    // bool updIsPressed();
-    // bool updValidPressPend();
     bool updUnlatchPend();
 
     bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
@@ -130,11 +129,6 @@ public:
     bool updPilotOn();
     bool updWrnngOn();
 
-    // bool updIsOn();
-    // bool updIsPressed();
-    // bool updValidPressPend();
-    // bool updUnlatchPend();
-
     bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
 };
 
@@ -146,19 +140,15 @@ protected:
     bool _unltchPulledUp{};
     bool _unltchTypeNO{};
     DbncdDlydMPBttn* _unLtchBttn {nullptr};
-    bool unlatch();
 public:
-    XtrnUnltchMPBttn(const uint8_t &mpbttnPin, const uint8_t &unltchPin, 
-        const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0,
-        const bool &upulledUp = true, const bool &utypeNO = true, const unsigned long int &udbncTimeOrigSett = 0, const unsigned long int &ustrtDelay = 0);
     XtrnUnltchMPBttn(const uint8_t &mpbttnPin,  DbncdDlydMPBttn* unLtchBttn,
         const bool &pulledUp,  const bool &typeNO,  const unsigned long int &dbncTimeOrigSett,  const unsigned long int &strtDelay);
     XtrnUnltchMPBttn(const uint8_t &mpbttnPin,  
         const bool &pulledUp,  const bool &typeNO,  const unsigned long int &dbncTimeOrigSett,  const unsigned long int &strtDelay);
 
-
     bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
     bool updIsOn();
+    bool unlatch();
     bool updUnlatchPend();
 };
 
@@ -203,7 +193,6 @@ public:
     bool updIsOn();
     bool updIsPressed();
     virtual bool updIsVoided();
-    bool updValidPressPend();
 
     bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
 };

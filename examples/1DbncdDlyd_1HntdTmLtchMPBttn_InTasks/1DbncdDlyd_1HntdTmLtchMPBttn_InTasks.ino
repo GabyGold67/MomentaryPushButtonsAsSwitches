@@ -25,8 +25,10 @@
   25% parameter is given as a warning setup: when the timer has only 25% of the time left a second pin will be rised to alert the time is running out.
   There is another optional pin output to manage a "Pilot Light signal", this pin will be rised when the pilotOn flag of the object is true, and is equivalent
   to the pilot lights (pilot hint) of some switches that iluminate the switch plate or through the button to make it easy to find them in darkness or make it easy to
-  walk in the darkness of the hallway when the controlled light is off. The flag is raised every time the flag _isOn is false,
-  so the physical implementation might set the warning and the pilot output pin to be the same without issues.
+  walk in the darkness of the hallway when the controlled light is off. The flag is raised every time the flag _isOn is false, and shows once again the flexibility of the software
+  solution over the hardware solution: it would be easy and affordable to make the "pilot hint" output as a negated "On" output, but once implemented there would be no easy way
+  of changing it without tampering the hardware. Here's just a matter of a parameter change.
+  Also the physical implementation might set the warning and the pilot output pin to be the same without issues.
   Please note that because of that second pin needed for warning -and a third to the pilot- a different struct is defined to be passed to the corresponding task.
   In this example just the second (warning) pin is included in the struct, the third pin state is modified from outside the struct, just for showing different options.
 
@@ -36,7 +38,7 @@
 
 // put Types definitions here:
 struct bttnAsArg{
-  DbncdMPBttn* bttnArg;
+  DbncdDlydMPBttn* bttnArg;
   uint8_t outLoadPinArg;
 };
 
@@ -58,7 +60,7 @@ const uint8_t tlmpbWnngPin{GPIO_NUM_17};
 const uint8_t tlmpbPilotPin{GPIO_NUM_18};
 
 HntdTmLtchMPBttn htlBttn (tlmpbSwitchPin, 4000, 25, true, true, 20, 50);
-DbncdMPBttn dBttn (dmpbSwitchPin);
+DbncdDlydMPBttn dBttn (dmpbSwitchPin);
 
 bttnNWarnAsArg tlBttnArg {&htlBttn, tlmpLoadPin, tlmpbWnngPin};
 bttnAsArg dBttnArg {&dBttn, dmpbLoadPin};
@@ -129,6 +131,10 @@ static void updLEDStruc(void* argp){
 
 static void updLEDnWrnStruc(void* argp){
   bttnNWarnAsArg *myMPB = (bttnNWarnAsArg*)argp;
+  bool prvWrnngStts {false};
+  bool curWrnngStts {false};
+  bool prvPltStts {false};
+  bool curPltStts {true};
 
   for (;;){
     if (myMPB->bttnArg->getIsOn()){
@@ -139,27 +145,31 @@ static void updLEDnWrnStruc(void* argp){
         //Turn off the Load
         digitalWrite(myMPB->outLoadPinArg, LOW);
     }
-
-    if (myMPB->bttnArg->getWrnngOn()){
-      //turn WrnngPin on
-      digitalWrite(myMPB->outWarnPinArg, HIGH);
-    }
-    else{
-      //turn WrnngPin off
-      digitalWrite(myMPB->outWarnPinArg, LOW);
-    }
     
-    if (myMPB->bttnArg->getPilotOn()){
-      //turn PilotPin on
-      //digitalWrite(myMPB->outPilotPinArg, HIGH);
-      digitalWrite(tlmpbPilotPin, HIGH);
+    curWrnngStts = myMPB->bttnArg->getWrnngOn();
+    if (curWrnngStts != prvWrnngStts){
+      if (curWrnngStts){
+        //turn WrnngPin on
+        digitalWrite(myMPB->outWarnPinArg, HIGH);
+      }
+      else{
+        //turn WrnngPin off
+        digitalWrite(myMPB->outWarnPinArg, LOW);
+      }
     }
-    else{
-      //turn PilotPin off
-      //digitalWrite(myMPB->outWarnPinArg, LOW);
-      digitalWrite(tlmpbPilotPin, LOW);
+    prvWrnngStts = curWrnngStts;
+    
+    curPltStts = myMPB->bttnArg->getPilotOn();
+    if(curPltStts != prvPltStts){
+      if (curPltStts){
+        //turn PilotPin on
+        digitalWrite(tlmpbPilotPin, HIGH);
+      }
+      else{
+        //turn PilotPin off
+        digitalWrite(tlmpbPilotPin, LOW);
+      }
     }
-
+    prvPltStts = curPltStts;
   }
-
 }

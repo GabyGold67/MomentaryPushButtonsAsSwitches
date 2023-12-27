@@ -6,7 +6,7 @@
     Framework: Arduino
     Platform: ESP32
 
-  1XtrnUnltchMPBttn_InTasks_a.ino
+  1XtrnUnltchMPBttn_InTasks_b.ino
   Created by Gabriel D. Goldman, August, 2023.
   Updated by Gabriel D. Goldman, November, 2023.
   Released into the public domain in accordance with "GPL-3.0-or-later" license terms.
@@ -18,6 +18,8 @@
 
   Pressing the push button connected to xumpSwitch will turn the led on and keep it lit after it is released until the push button connected to releaseSwitch is pushed
   The task is created to keep the load (led) updated according to the _isOn attribute of the switch (using the getIsOn() methods)
+  In this example the release mpb is a DbncdDlydMPBttn independently instantiated and passed as a pointer to the object.
+  Note that a pointer to any subclass object that implements the .getIsIn() method might be passed as well
 */
 
 // put Types definitions here:
@@ -32,9 +34,11 @@ static void updOutPin(void* argp);
 // put Global declarations here: 
 const uint8_t xumpSwitchPin{GPIO_NUM_25};
 const uint8_t loadPin{GPIO_NUM_21};
-const uint8_t releaseSwitch{GPIO_NUM_26};
 
-XtrnUnltchMPBttn xumpBttn (xumpSwitchPin, releaseSwitch, true, true, 500, 25, true, true, 20, 50);
+DbncdDlydMPBttn releaseSwitchObj(GPIO_NUM_26,true, true, 20, 50);
+DbncdDlydMPBttn* releaseSwitchPtr = &releaseSwitchObj;
+
+XtrnUnltchMPBttn xumpBttn (xumpSwitchPin, releaseSwitchPtr, true, true, 500, 25);
 
 bttnAsArg xumpBttnArg {&xumpBttn, loadPin};
 
@@ -59,6 +63,8 @@ void setup() {
   );
   assert(rc == pdPASS);
   assert(xumpBttnHndl);
+  
+  releaseSwitchObj.begin(); // As any other independent DbncdDlyd object it must be started to keep it's outputs taken care of!!
 
 }
 

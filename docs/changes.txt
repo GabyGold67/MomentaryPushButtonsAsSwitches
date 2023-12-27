@@ -9,6 +9,12 @@ _ TmLtchMPBttn::setActTime() method name changed to TmLtchMPBttn::setSvcTime()
 _ HntdTmLtchMPBttn::setActTime() method name changed to HntdTmLtchMPBttn::setSvcTime()
 _ TmLtchMPBttn::getActTime() method name changed to TmLtchMPBttn::getSvcTime()
 _ HntdTmLtchMPBttn::getActTime() method name changed to HntdTmLtchMPBttn::getSvcTime()
+_ Some unneeded derived methods deleted (Inheritance path checked)
+_ Constructor XtrnUnltchMPBttn(const uint8_t &mpbttnPin, const uint8_t &unltchPin, 
+        const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0,
+        const bool &upulledUp = true, const bool &utypeNO = true, const unsigned long int &udbncTimeOrigSett = 0, const unsigned long int &ustrtDelay = 0);
+deprecated, favoring the second alternative to it that expects a pointer to an existing DbncdDlydMPBttn (DbncdDlydMPBttn*). The deprecated method depended on too many parameters
+to instantiate an object and is very easily replaced by the abreviated option.
 
 v2.3.1 Methods security and documentation added
 - dbncdMPBttn init() method limited to non initialized "zombie" instances.
@@ -43,7 +49,7 @@ _ Example names corrected according to Arduino Library Manager requirements
 _ General information added to each example
 _ New information added for clarification and better library use understanding
 
-Initial release
-_ readme.md with basic information
+v1.0.0 Initial release
+_ README.md with basic information
 _ Library files
 _ Examples with no inside information
