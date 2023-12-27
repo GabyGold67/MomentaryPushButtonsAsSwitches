@@ -339,8 +339,8 @@ The object created.
 |Method | Parameters|
 |---|---|
 |**_TmLtchMPBttn_** |uint8_t **mpbttnPin**, unsigned long int **actTime**(, bool **pulledUp**(, bool **typeNO**(, unsigned long int **dbncTimeOrigSett**(, unsigned long int **strtDelay**))))|
-|**getActTime()**|None|
-|**setActTime()**|unsigned long int **newActTime**|
+|**getSvcTime()**|None|
+|**setSvcTime()**|unsigned long int **newSvcTime**|
 |**setTmerRstbl()**|bool **isRstbl**|
 
 ---  
@@ -362,8 +362,8 @@ The object created.
 
 |Method | Parameters|
 |---|---|
-|**_XtrnUnLtchMPBttn_** |uint8_t **mpbttnPin**, uint8_t **unltchPin**(, bool **pulledUp**(, bool **typeNO**(, unsigned long int **dbncTimeOrigSett**(, unsigned long int **strtDelay**(, bool **upulledUp**(, bool **utypeNO**(, unsigned long int **udbncTimeOrigSett**(, unsigned long int **ustrtDelay**))))))))|
-|**_XtrnUnLtchMPBttn_** |uint8_t **mpbttnPin**, DbncDlydMPBttn **unltchBttn**(, bool **pulledUp**(, bool **typeNO**(, unsigned long int **dbncTimeOrigSett**(, unsigned long int **strtDelay**))))|
+|**_XtrnUnLtchMPBttn_** |uint8_t **mpbttnPin**(, bool **pulledUp**(, bool **typeNO**(, unsigned long int **dbncTimeOrigSett**(, unsigned long int **strtDelay**))))|
+|**_XtrnUnLtchMPBttn_** |uint8_t **mpbttnPin**, DbncDlydMPBttn* **unltchBttn**(, bool **pulledUp**(, bool **typeNO**(, unsigned long int **dbncTimeOrigSett**(, unsigned long int **strtDelay**))))|
 |**unlatch()**|None|
 
 ---  

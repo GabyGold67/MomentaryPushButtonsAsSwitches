@@ -101,7 +101,7 @@ protected:
 public:
     TmLtchMPBttn(const uint8_t &mpbttnPin, const unsigned long int &actTime, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0);
     const unsigned long int getSvcTime() const;
-    bool setSvcTime(const unsigned long int &newActTime);
+    bool setSvcTime(const unsigned long int &newSvcTime);
     bool setTmerRstbl(const bool &newIsRstbl);
 
     bool updIsOn();
@@ -124,7 +124,7 @@ public:
     HntdTmLtchMPBttn(const uint8_t &mpbttnPin, const unsigned long int &actTime, const unsigned int &wrnngPrctg = 0, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0);
     const bool getPilotOn() const;
     const bool getWrnngOn() const;
-    bool setSvcTime(const unsigned long int &newActTime);
+    bool setSvcTime(const unsigned long int &newSvcTime);
     bool setKeepPilot(const bool &newKeepPilot);
     bool updPilotOn();
     bool updWrnngOn();
