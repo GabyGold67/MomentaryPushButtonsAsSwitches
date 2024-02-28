@@ -108,11 +108,13 @@ bool DbncdMPBttn::resetDbncTime(){
 bool DbncdMPBttn::setDbncTime(const unsigned long int &newDbncTime){
     bool result {false};
 
-    if (newDbncTime >= _stdMinDbncTime){
-        _dbncTimeTempSett = newDbncTime;
-        result = true;
+    if(newDbncTime != _dbncTimeTempSett){
+        if (newDbncTime >= _stdMinDbncTime){
+            _dbncTimeTempSett = newDbncTime;
+            result = true;
+        }
     }
-
+ 
     return result;
 }
 
