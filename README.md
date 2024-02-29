@@ -6,12 +6,17 @@ The instantiated switch state is updated independently by a standard FreeRTOS so
 Each class offers a wide range of methods to set, read and modify every significant aspect of each switch mechanism simulated, and the signal received from the push button is debounced for a correct behavior of the event processing.  
 
 The benefits of the use of those simulated switches mechanisms are not just economic, as push buttons come in a wide range of prices and qualities similar to the simulated hardware switches. In a domestic lighting project, for example, detecting after the implementation, through the daily use, that an installed switch was not the best choice when a physical switch is involved, requires for the correction to a best suited kind of switch a bunch of activities to get the change of the switch unit done:
-* Buying a different best suited switch.  
-* Uninstalling the first installed.  
+* Searching for the availability of a best suited switch to match our intended functionalities.    
+* Buying that different best suited switch.  
+* Uninstalling the first switch installed.  
 * Maybe modifying the cabling.  
 * Installing the new switch...  
 
-While with the simulated switches this situation might be solved by just changing the object class, or modifying the instantiation parameters if needed, and the switch is already changed!! Want to keep the timed **lights-on** longer? Just a parameter. Want to turn off the pilot light because it bothers? Another parameter. Want to be sure the door mechanism isn't kept unlocked with an adhesive tape? Change the switch class.  
+While with the simulated switches this situation might be solved by just changing the object class, or modifying the instantiation parameters if needed, and the switch is already changed!!  
+* Want to keep the timed **lights-on** longer? Just a parameter.  
+* Want to turn off the pilot light because it bothers? Another parameter.  
+* Want to be sure the door mechanism isn't kept unlocked with an adhesive tape? Change the switch class.  
+
 Just to add possibilities, consider that everywhere the **"Momentary Push Button"** is mentioned, any kind of momentary activation signal provider might be used instead: touch sensors, PIR sensors, RFID signals, fingerprint reader and so on...  
 
 ## The library implements the following switches mechanisms: ###  
@@ -22,14 +27,14 @@ Just to add possibilities, consider that everywhere the **"Momentary Push Button
 * **Hinted Timer toggled** (a.k.a. staircase timer switch)
 * **External released toggle** (a.k.a. Emergency latched)
 * **Time Voidable Momentary Button**  (a.k.a. anti-tampering switch)  
-(This is a subset of the classes implemented in the refactoored STM32 RTOS version of this library)  
+(This is a subset of the classes implemented in the refactored STM32 RTOS version of this library)  
 
-The system timer will periodically check the input pins associated to the objects and compute the object's output flags, the timer period for that checking is a general parameter that can be changed. The classes provide a callback function to keep the behavior of the objects updated, a valid approach is to create a task for each object to repeatedly check the status of the outputs associated with each switch in an unattended fashion, or to create a single task to update a number of switches, and act accordingly (turn on, turn off loads, or other actions). The classes implement a **xTaskNotifyGive()** FreeRTOS macro (a lightweight binary semaphore) to let those tasks implemented to be blocked until they receive the notification of a change, to avoid the tasks polling the objects constantly freeing resources and processor time. For those not interested in using this mechanism all the attributes of the classes are available without involving it.
-Examples are provided for each of the classes, usually as pairs in each example to show possible interactions between different objects, the possible implementations with tasks or with a refreshing mechanism in the loop() (loopTask), or any other thread created. The object input status checking can be paused, restarted and even ended. If the object's status checking is ended the timer entry will be deleted, to release resources.  
-So this library implements the inner mechanisms of some switches, the hardware interface (the load connection, warning outputs, etc.) might be developed differently for every project, or the **_switchHIL_** library (https://github.com/GabyGold67/SwitchesHardwareInterfaceLayer) might be used, as it implements **Hardware Interface Layers** for some usual switches, and for examples of implementations of some solutions.  
+The system timer will periodically check the input pins associated to the objects and compute the object's output flags, the timer period for that checking is a general parameter that can be changed. The classes provide a callback function to keep the behavior of the objects updated, a valid approach is to create a task for each object to keep status of the outputs associated with each switch updated , or to create a single task to update a number of switches, and act accordingly (turn On/ Off loads, turn On/Off warning signals or other actions). The classes implement a **xTaskNotifyGive()** FreeRTOS macro (a lightweight binary semaphore) to let those tasks implemented to be blocked until they receive the notification of a change, to avoid the tasks polling the objects constantly, freeing resources and processor time. For those not interested in using this mechanism all the attributes of the classes are available without involving it.
+Examples are provided for each of the classes, usually as pairs in each example to show possible interactions between different objects, the possible implementations with tasks or with a refreshing mechanism in the main loop() (loopTask), or any other thread created. The object input status checking can be paused, restarted and even ended. If the object's status checking is ended the timer entry will be deleted, to release resources.  
+So this library implements the inner mechanisms of some switches, the hardware interface (the load connection, warning outputs, etc.) might be developed differently for every project, or the **_switchHIL_** library (https://github.com/GabyGold67/SwitchesHardwareInterfaceLayer) might be used, as it implements **Hardware Interface Layers** for some usual switches, and for examples of implementations for some classic solutions.  
 
 # **DbncdMPBttn class**
-The **Debounced Momentary Button** keeps the ON state since the moment the signal is stable (debouncing process) and until the moment the switch is released.  
+The **Debounced Momentary Button** keeps the ON state since the moment the signal is stable (debouncing process) and until the moment the MPB is released.  
 
 ## **Included Methods for DbncdMPBttn class**
 |Method | Parameters|
@@ -95,12 +100,12 @@ Attaches the instantiated object to a timer that monitors the input pin and upda
 true: the object could be attached to a timer, or if it was already attached to a timer when the method was invoked.  
 false: the object could not create the needed timer, or the object could not be attached to it.  
 ### Use example:  
-**`myDButton.begin(20);`**  //Attaches de object to a monitoring timer set at 20 milliseconds between checkings.  
+**`myDButton.begin(20);`**  //Attaches de object to a monitoring timer set at 20 milliseconds between checkups.  
 
 ---  
 ## **clrStatus**()
 ### Description:  
-Resets some object's attributes to safely resume operations (using the **resume()** method) after a **pause()** without risking generating false "Valid presses" and "On" situations due to dangling flags or partially ran time counters.  
+Resets some object's attributes to safely resume operations -by using the **resume()** method- after a **pause()** without risking generating false "Valid presses" and "On" situations due to dangling flags or partially ran time counters.  
 ### Parameters:  
 **None**  
 ### Return value:  
@@ -134,7 +139,7 @@ unsigned long integer: The current debounce time, in milliseconds, being used in
 ---  
 ## **getIsOn**()  
 ### Description:  
-Returns the current value of the **isOn** flag, either true (On) or false (Off).  
+Returns the current value of the _**isOn**_ flag, either true (On) or false (Off). This flag alone might be considered the "Raison d'etre" of all this classes design: the isOn signal is not just the detection of an expected voltage value at a mcu pin, but the combination of that voltage, filtered and verified, for a determined period of time and until a new event modifies that situation.  
 ### Parameters:  
 **None**  
 ### Return value:  
@@ -146,19 +151,19 @@ false: the implemented switch is in **Off** state.
 ---  
 ## **getOutputsChange**()  
 ### Description:  
-Returns the current value of the flag indicating if there have been changes in the outputs since last flag resetting. The flag only signals changes have been done, nor which flags nor how many times changes have taken place.  
+Returns the current value of the flag indicating if there have been changes in the output flag/s since last flag resetting. The flag only signals changes have been done, nor which flags nor how many times changes have taken place.  
 ### Parameters:  
 **None**  
 ### Return value:  
-true: there have been output changes in the object.  
-false: there have been no output changes in the object.  
+true: there have been output flag changes in the object.  
+false: there have been no output flag changes in the object.  
 ### Use example:  
 **`bool outputStatus = myDButton.getOutputsChange();`**  
 
 ---  
 ## **getTaskToNotify**()  
 ### Description:  
-Returns the current value of the **TaskHandle** of the task to be notified by the object when its outputsChange flag value changes (indicating if there have been changes in the outputs since last FreeRTOS notification). When the object is created, this value is set to **nullptr** and a valid TaskHandle_t value might be set by using the **setTaskToNotify()** method. The task notifying mechanism will not be used while the task handle keeps the **nullptr** value, in which case the solution implementation will have to include a mechanism to test the object status through **getOutputsChange()** and/or **getIsOn()** and the other flags values testing methods provided.  
+Returns the current **TaskHandle** for the task to be notified by the object when its output flags changes (indicating there have been changes in the outputs since last FreeRTOS notification). When the object is created, this value is set to **nullptr** and a valid TaskHandle_t value might be set by using the **setTaskToNotify()** method. The task notifying mechanism will not be used while the task handle keeps the **nullptr** value, in which case the solution implementation will have to include a mechanism to test the object status, ideally through **getOutputsChange()** first, and in the case of a true returned from it a **getIsOn()** and the other methods corresponding to the other flags returned by the object.  
 ### Parameters:  
 **None**  
 ### Return value:  
@@ -169,12 +174,12 @@ TaskHandle_t value pointing to the task implemented to be notified of the change
 ---  
 ## **init**(uint8_t **mpbttnPin**(, bool **pulledUp**(, bool **typeNO**(, unsigned long int **dbncTimeOrigSett**))))  
 ### Description:  
-Sets the significant attributes that are needed at instantiation time, and makes the needed operations to get the internal mechanisms active. This method can be applied to objects instantiated with de dafault contructor only. Having the **mpbttnPin** attribute already setted to a valid value blocks the **init()** method of being executed.  
+Sets the significant attributes that are needed at instantiation time, and makes the needed operations to get the internal mechanisms active. This method can be applied to objects instantiated with de default constructor only. Having the **mpbttnPin** attribute already set to a valid value blocks the **init()** method of being executed.  
 ### Parameters:  
-**mpbttnPin:** uint8_t (unsigned char), passes the pin number that is connected to the push button. The pin must be free to be used as a digital input.  
-**pulledUp:** optional boolean, indicates if the input pin must be configured as INPUT_PULLUP (true, default value), or INPUT_PULLDOWN (false), to calculate correctly the expected voltage level in the input pin. The pin is configured by the constructor so no previous programming is needed. The pin must be free to be used as a digital input, and must be a pin with a **internal pull-up circuit**, as not every GPIO pin has the option.  
-**typeNO:** optional boolean, indicates if the mpb is a **Normally Open (NO)** switch (true, default value), or **Normally Closed (NC)** (false), to calculate correctly the expected level of voltage indicating the mpb is pressed.   
-**dbncTimeOrigSett:** optional unsigned long integer (uLong), indicates the time (in milliseconds) to wait for a stable input signal before considering the mpb to be pressed (or not pressed). If no value is passed the constructor will assign the minimum value provided in the class, that is 50 milliseconds as it is an empirical value obtained in various published tests.  
+**mpbttnPin:** Analog to the **DbncdMPBttn** constructor equally named parameter.  
+**pulledUp:** optional boolean, analog to the **DbncdMPBttn** constructor equally named parameter.  
+**typeNO:**  analog to the **DbncdMPBttn** constructor equally named parameter.  
+**dbncTimeOrigSett:**  analog to the **DbncdMPBttn** constructor equally named parameter.  
 ### Return value:  
 The object with the corresponding attributes set to their initial values.  
 ### Use example:  
@@ -188,7 +193,7 @@ Stops the software timer updating the calculation of the object internal flags. 
 **None**  
 ### Return value:  
 true: the object's timer could be stopped by the O.S..  
-false: the objectobject's timer couldn't be stopped by the O.S..  
+false: the object's timer couldn't be stopped by the O.S..  
 ### Use example:  
 **`myDButton.pause();`**  
 
@@ -212,7 +217,7 @@ Restarts the software timer updating the calculation of the object internal flag
 **None**  
 ### Return value:  
 true: the object's timer could be restarted by the O.S..  
-false: the objectobject's timer couldn't be restarted by the O.S..  
+false: the object's timer couldn't be restarted by the O.S..  
 ### Use example:  
 **`myDButton.resume();`**  
 
@@ -224,10 +229,10 @@ Sets a new time for the debouncing period. The value must be equal or greater th
 **newDbncTime:** unsigned long integer, the new debounce value for the object.  
 ### Return value:  
 true: the new value is in the accepted range and the change was made.  
-false: the value was aready in use, or was out of the accepted range, no change was made.  
+false: the value was already in use, or was out of the accepted range, no change was made.  
 ### Use example:  
 **`myDButton.setDbncTime(_HwMinDbncTime + 200);`** //Sets the new debounce time and returns true.  
-**`myDButton.setDbncTime(_HwMinDbncTime - 5);`** //Returns false and the deboounce time is kept unchanged.  
+**`myDButton.setDbncTime(_HwMinDbncTime - 5);`** //Returns false and the debounce time is kept unchanged.  
 
 ---  
 ### **setOutputsChange**(bool **newOutputChange**)
