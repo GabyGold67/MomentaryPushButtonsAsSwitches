@@ -222,6 +222,7 @@ false: the object's timer couldn't be restarted by the O.S..
 **`myDButton.resume();`**  
 
 ---  
+
 ### **setDbncTime**(unsigned long int **newDbncTime**)
 ### Description:  
 Sets a new time for the debouncing period. The value must be equal or greater than the minimum empirical value set as a property for all the classes, 20 milliseconds. A long debounce time will produce a delay in the press event generation, making it less "responsive".  
@@ -231,23 +232,35 @@ Sets a new time for the debouncing period. The value must be equal or greater th
 true: the new value is in the accepted range and the change was made.  
 false: the value was already in use, or was out of the accepted range, no change was made.  
 ### Use example:  
-**`myDButton.setDbncTime(_HwMinDbncTime + 200);`** //Sets the new debounce time and returns true.  
-**`myDButton.setDbncTime(_HwMinDbncTime - 5);`** //Returns false and the debounce time is kept unchanged.  
+**`myDButton.setDbncTime(200);`** //Sets the new debounce time and returns true.  
+**`myDButton.setDbncTime(15);`** //Returns false and the debounce time is kept unchanged.  
 
 ---  
 ### **setOutputsChange**(bool **newOutputChange**)
 ### Description:  
+Sets the value of the flag indicating if a change took place in any of the output flags (IsOn included). The usual path for the _outputsChange flag is to be set to true by any method changing an output flag, the callback function signaled to take care of the hardware actions because of this changes clears back _outputsChange after taking care of them. In the unusual case the developer wants to "intercept" this sequence, this method is provided to set (true) or clear (false) _outputsChange value.  
 ### Parameters:  
+**newOutputChange:** boolean, the new value to set the _outputsChange flag to.  
 ### Return value:  
+true: The value change was successful.  
+false: The value held by _outputsChange and the newOutputChange parameter are the same, no change was then produced.  
 ### Use example:  
+**`myDButton.setOutputsChange(false);`** //Returns true if the newOutputChange if different to the _outputsChange value, and the change is made.  
 
 ---  
 
 ### **setTaskToNotify**(TaskHandle_t **newHandle**)
 ### Description:  
+Sets the pointer to the task to be notified by the object when its output flags changes (indicating there have been changes in the outputs since last FreeRTOS notification). When the object is created, this value is set to **nullptr** and a valid TaskHandle_t value might be set by using this method. The task notifying mechanism will not be used while the task handle keeps the **nullptr** value. After the TaskHandle value is set it might be changed to point to other task 
 ### Parameters:  
+**newHandle:** TaskHandle_t, a valid handle of an actual existent task/thread running. There's no provided exception mechanism for dangling pointer errors caused by a pointed task being deleted and/or stopped.  
 ### Return value:  
+true: A TaskHandle_t type was passed to the object to be it's new pointer to the task to be messaged when a change in the output flags occur. There's no checking for the validity of the pointer, if ir refers to an active task/thread whatsoever.  
+false: The value passed to the method was **nullptr**, and that's the value will be stored, so the whole RTOS messaging mechanism won't be used.  
 ### Use example:  
+**`TaskHandle_t myHwUpdtTask;`**
+**`[...]`**
+**`myDButton.setTasToNotify(myHwUpdtTask);`** //
 
 ---  
 
