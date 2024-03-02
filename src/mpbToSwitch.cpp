@@ -16,7 +16,7 @@ DbncdMPBttn::DbncdMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp, const b
         strcat(_mpbPollTmrName, mpbttnPinChar);
         strcat(_mpbPollTmrName, "_tmr");
 
-        if(_dbncTimeOrigSett < _stdMinDbncTime) //Best practice would impose failing the constructor (throwing an exeption or building a "zombie" object)
+        if(_dbncTimeOrigSett < _stdMinDbncTime) //Best practice would impose failing the constructor (throwing an exception or building a "zombie" object)
             _dbncTimeOrigSett = _stdMinDbncTime;    //this tolerant approach taken for developers benefit, but object will be no faithful to the instantiation parameters
         _dbncTimeTempSett = _dbncTimeOrigSett;
         pinMode(mpbttnPin, (pulledUp == true)?INPUT_PULLUP:INPUT_PULLDOWN);
@@ -215,7 +215,7 @@ bool DbncdMPBttn::begin(const unsigned long int &pollDelayMs) {
                 _mpbPollTmrName,  //Timer name
                 pdMS_TO_TICKS(pollDelayMs),  //Timer period in ticks
                 pdTRUE,     //Autoreload true
-                this,       //TimerID: data passed to the callback funtion to work
+                this,       //TimerID: data passed to the callback function to work
                 mpbPollCallback  //DbncdMPBttn::mpbPollCallback  //Callback function
             );
         }
@@ -365,7 +365,7 @@ bool DbncdDlydMPBttn::begin(const unsigned long int &pollDelayMs){
                 _mpbPollTmrName,  //Timer name
                 pdMS_TO_TICKS(pollDelayMs),  //Timer period in ticks
                 pdTRUE,     //Autoreload true
-                this,       //TimerID: data passed to the callback funtion to work                
+                this,       //TimerID: data passed to the callback function to work                
                 mpbPollCallback   // DbncdDlydMPBttn::mpbPollCallback   //Callback function
             );
             if (_mpbPollTmrHndl != nullptr){
@@ -527,7 +527,7 @@ void LtchMPBttn::mpbPollCallback(TimerHandle_t mpbTmrCbArg){
 TmLtchMPBttn::TmLtchMPBttn(const uint8_t &mpbttnPin, const unsigned long int &actTime, const bool &pulledUp, const bool &typeNO, const unsigned long int &dbncTimeOrigSett, const unsigned long int &strtDelay)
 :LtchMPBttn(mpbttnPin, pulledUp, typeNO, dbncTimeOrigSett, strtDelay), _srvcTime{actTime}
 {
-    if(_srvcTime < _MinSrvcTime)    //Best practice would impose failing the constructor (throwing an exeption or building a "zombie" object)
+    if(_srvcTime < _MinSrvcTime)    //Best practice would impose failing the constructor (throwing an exception or building a "zombie" object)
         _srvcTime = _MinSrvcTime;    //this tolerant approach taken for developers benefit, but object will be no faithful to the instantiation parameters
 
 }
@@ -1003,7 +1003,7 @@ bool TmVdblMPBttn::setIsEnabled(const bool &newEnabledValue){
         if (newEnabledValue){  //Changed to Enabled
             clrStatus();
             setIsVoided(true);  //For safety reasons if the mpb was disabled and re-enabled, it is set as voided, so if it was pressed when is was re-enabled there's no risk
-                                // of activating somethin unexpectedly. It'll have to be released and then pressed back to intentionally set it to ON.
+                                // of activating something unexpectedly. It'll have to be released and then pressed back to intentionally set it to ON.
             resume();   //It's resuming the timer that keeps the inputs updated and calculates and updates the output flags... before this some conditions of timers and flags had to be insured
         }
         _isEnabled = newEnabledValue;
