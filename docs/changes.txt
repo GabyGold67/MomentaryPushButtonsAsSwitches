@@ -1,3 +1,6 @@
+v3.0.1 Methods security adjustment, documentation update
+_ Access modifiers to some methods managing the internal flags update changed for improved protection.
+_ Documentation upgrade for better description of classes methods.
 v3.0.0 Upgraded methods, naming convention revision and base setting for new subclasses
 _ The default value of a non initialized input pin (_mpbttnPin) changes from 0x00 to 0xFF, as the Pin 0 (D0/GPIO0/GPIO_NUM_0) is usable in most development boards. Now (_mpbttnPin == 0xFF) expresses a non assigned pin.
 _ DbncdMPBttn::clrStatus() method now affects the _outputsChange flag if the _isOn flag is changed from true to false condition.

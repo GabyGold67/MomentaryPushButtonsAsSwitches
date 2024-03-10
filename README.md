@@ -1,14 +1,16 @@
 # **Momentary Push Buttons to Switches** Library (mpbToSwitch)
 ## An ESP32-RTOS Arduino library that builds switch mechanisms replacements out of simple push buttons.  
-By using just a push button (a.k.a. momentary switches or momentary buttons, _**MPB**_ for short from here on) the classes implemented in this library will manage, calculate and update different parameters to **simulate the behavior of standard electromechanical switches**. Those parameters include presses, releases, timings, counters or secondary inputs as needed.
+By using just a push button (a.k.a. momentary switches or momentary buttons, _**MPB**_ for short from here on) the classes implemented in this library will manage, calculate and update different parameters to **generate the behavior of standard electromechanical switches**. Those parameters include presses, releases, timings, counters or secondary input readings as needed.
 
 The instantiated switch state is updated independently by a standard FreeRTOS software timer (or ESP-RTOS in this case), that keeps the ON/OFF state of the objects created constantly updated. The timer setup is managed by in-class methods, including the possibility to pause, resume or end the timer of each object independently of the others.  
 Each class offers a wide range of methods to set, read and modify every significant aspect of each switch mechanism simulated, and the signal received from the push button is debounced for a correct behavior of the event processing.  
 
-The benefits of the use of those simulated switches mechanisms are not just economic, as push buttons come in a wide range of prices and qualities similar to the simulated hardware switches. In a domestic lighting project, for example, detecting after the implementation, through the daily use, that an installed switch was not the best choice when a physical switch is involved, requires for the correction to a best suited kind of switch a bunch of activities to get the change of the switch unit done:
+The benefits of the use of those simulated switches mechanisms are not just economic, as push buttons come in a wide range of prices and qualities similar to the simulated hardware switches.  
+
+_**In a domestic lighting project**_, for example, detecting after the implementation, through the daily use, that an installed switch was not the best choice when a physical switch is involved, requires for the correction to a best suited kind of switch a bunch of activities to get the change of the switch unit done:
 * Searching for the availability of a best suited switch to match our intended functionalities.    
-* Buying that different best suited switch.  
-* Uninstalling the first switch installed.  
+* Getting that different best suited switch, with the time and resources investment involved.  
+* Uninstalling the first switch.  
 * Maybe modifying the cabling.  
 * Installing the new switch...  
 
@@ -17,6 +19,13 @@ While with the simulated switches this situation might be solved by just changin
 * Want to turn off the pilot light because it bothers? Another parameter.  
 * Want to be sure the door mechanism isn't kept unlocked with an adhesive tape? Change the switch class.  
 
+_**In an Industrial machines environment**_ the operator's physical security policies enforcement implies that no time can be wasted and the switch must fit perfectly it's purpose, while still giving the chance to change it's working parameters to adjust the mechanism to changing production operations. In this case the development depending on a simple "OK to proceed"/"The security device is correctly activated" might become a dangerous issue if not correctly isolated and solved as a remove and replace solution. The security switches must comply with issues as:
+- Activation enforcement
+- Release enforcement
+- Time Voidable activation or releases
+- Activation sequence enforcement
+- Production related disabling of any of the switches while conserving the activation logic... and so many others.  
+ 
 Just to add possibilities, consider that everywhere the **"Momentary Push Button"** is mentioned, any kind of momentary activation signal provider might be used instead: touch sensors, PIR sensors, RFID signals, fingerprint reader and so on...  
 
 ## The library implements the following switches mechanisms: ###  
@@ -55,9 +64,6 @@ The **Debounced Momentary Button** keeps the ON state since the moment the signa
 |**setDbncTime()**|unsigned long int **newDbncTime**|
 |**setOutputsChange()**|bool **newOutputChange**|
 |**setTaskToNotify()**|TaskHandle_t **newHandle**|
-|**updIsOn()**|None|
-|**updIsPressed()**|None|
-|**updValidPressPend()**|None|  
 
 ---  
 ## **Methods definition and use description**
@@ -255,39 +261,12 @@ Sets the pointer to the task to be notified by the object when its output flags 
 ### Parameters:  
 **newHandle:** TaskHandle_t, a valid handle of an actual existent task/thread running. There's no provided exception mechanism for dangling pointer errors caused by a pointed task being deleted and/or stopped.  
 ### Return value:  
-true: A TaskHandle_t type was passed to the object to be it's new pointer to the task to be messaged when a change in the output flags occur. There's no checking for the validity of the pointer, if ir refers to an active task/thread whatsoever.  
+true: A TaskHandle_t type was passed to the object to be it's new pointer to the task to be messaged when a change in the output flags occur. There's no checking for the validity of the pointer, if it refers to an active task/thread whatsoever.  
 false: The value passed to the method was **nullptr**, and that's the value will be stored, so the whole RTOS messaging mechanism won't be used.  
 ### Use example:  
 **`TaskHandle_t myHwUpdtTask;`**
 **`[...]`**
 **`myDButton.setTasToNotify(myHwUpdtTask);`** //
-
----  
-
-### **updIsOn**()
-### Description:  
-### Parameters:  
-**None**  
-### Return value:  
-### Use example:  
-
----  
-
-### **updIsPressed**()
-### Description:  
-### Parameters:  
-**None**  
-### Return value:  
-### Use example:  
-
----  
-
-### **updValidPressPend**()
-### Description:  
-### Parameters:  
-**None**  
-### Return value:  
-### Use example:  
 
 ---  
 # **DbncdDlydMPBttn class**  
@@ -320,17 +299,65 @@ The object created.
 ### Use example:  
 **`DbncdMPBttn myDDButton(21, true, true, 100, 500);`**
 
+---  
+## **getStrtDelay**()  
+### Description:  
+Returns the current value of time used by the object to rise the isOn flag, after the debouncing process ends, in milliseconds. If the MPB is released before completing the debounce **and** the delay time, no press will be detected by the object, and the isOn flag will not be rised. The original value for the delay process used at instantiation time might be changed with the **setStrtDelay()** method, so this method is provided to get the current value in use.  
+### Parameters:  
+**None**  
+### Return value:  
+unsigned long integer: The current delay time, in milliseconds, being used before rising the isOn flag, after the debounce process of the current object.  
+### Use example:  
+**`unsigned long curDelay {myDButton.getStrtDelay()};`**  //Stores the current Start delay value in the curDelay variable  
+
+---  
+
+### **setStrtDelay**(unsigned long int **newStrtDelay**)
+### Description:  
+Sets a new time for the Start Delay period. The value must be equal or greater than 0 milliseconds, in the case of equal to 0 the instantiated object will act as a DbncdMPBttn class object. A long Start Delay time will produce a long delay in the press event generation, making it less "responsive".  
+### Parameters:  
+**newStrtDelay:** unsigned long integer, the new start delay value for the object.  
+### Return value:  
+true: the new value is different than the previously set value, so the change was made.  
+false: the value passed is equal to the one already in use, no change was made.  
+### Use example:  
+**`myDButton.setStrtDelay(0);`** //Sets the new debounce time to 0, there will no time added to the debounce process, the MPB will act as a DbncdMPBttn.  
+**`myDButton.setStrtDelay(myDButton.getStrtDelay() + 15);`** //Changes the current start delay time by adding 15 milliseconds, and returns true.  
 ---
 ---  
 # **LtchMPBttn class**
-The **Toggle switch**  keeps the ON state since the moment the signal is stable (debouncing process), and keeps the ON state after the push button is released and until it is pressed once again. So this simulates a simple On-Off switch like the ones used to turn on/off a room light. One of the best things about the software simulated switch is that any amount of switches might be set up in a parallel configuration, so that an unlimited number of entrances or easy accessible points can each have a switch to turn on/off the same resource.  
+The **Toggle switch**  keeps the ON state since the moment the signal is stable (debouncing + Deday process), and keeps the ON state after the push button is released and until it is pressed once again. So this simulates a simple On-Off switch like the ones used to turn on/off a room light. One of the best things about the software simulated switch is that any amount of switches might be set up in a parallel configuration, so that an unlimited number of entrances or easy accessible points can each have a switch to turn on/off the same resource.  
 ## **Added Methods for LtchMPBttn class**  
 |Method | Parameters|
 |---|---|
 |**_LtchMPBttn_** |uint8_t **mpbttnPin**(, bool **pulledUp**(, bool **typeNO**(, unsigned long int **dbncTimeOrigSett**(, unsigned long int **strtDelay**))))|
 |**getUnlatchPend()**|None|
 |**setUnlatchPend()**|None|
-|**updUnlatchPend()**|None|
+
+---  
+## **getUnlatchPend**()  
+### Description:  
+Returns the current value of unlatch pending flag, whose boolean value indicates if the conditions were given to unlatch a LtchMPBttn object. The periodical timer event that takes care of keeping the internal and external objects'flags updated, takes care of the actions required to set the flag and eventually acting on this flag value. This method makes it possible to know the flag value to give the developer a tool to generate other events his development might required, but not by modifying the class.  
+### Parameters:  
+**None**  
+### Return value:  
+true: The current object's unlatchPending flag is set.  
+false: The current object's unlatchPending flag is reset.  
+### Use example:  
+**`if(myDButton.getUnlatchPend(){...}`**  //Executes some code if the unlatchPending flag is set.  
+
+---  
+
+### **setUnlatchPend**()
+### Description:  
+Sets to **true** the value of the internal flag **unlatchPending**. It is the equivalent to physically executing the action that releases the latch that keeps the isOn signal lactched, in this case it will be the equivalent to pressing the MPB while the isOn signal is true. This method gives an alternative to generate the appropiate signal to unlatch the LtchMPBttn.  
+### Parameters:  
+**None**   
+### Return value:  
+true: the unlatchPending value was set.  
+false: Abnormal situation, the unlatchPending flag could not be set.  
+### Use example:  
+**`myDButton.setUnlatchPend();`**  
 
 ---  
 ---  

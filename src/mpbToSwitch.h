@@ -27,6 +27,10 @@ protected:
     TaskHandle_t _taskToNotifyHndl {nullptr};
 
     const bool getIsPressed() const;
+    bool updIsOn();
+    bool updIsPressed();
+    bool updValidPressPend();
+
 public:    
     DbncdMPBttn();
     DbncdMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0);
@@ -41,11 +45,7 @@ public:
     bool setDbncTime(const unsigned long int &newDbncTime);
     bool setOutputsChange(bool newOutputsChange);
     bool setTaskToNotify(TaskHandle_t newHandle);
-
-    bool updIsOn();
-    bool updIsPressed();
-    bool updValidPressPend();
-
+    
     bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
     bool pause();
     bool resume();
@@ -58,14 +58,14 @@ class DbncdDlydMPBttn: public DbncdMPBttn{
     static void mpbPollCallback(TimerHandle_t mpbTmrCbArg);
 protected:    
     unsigned long int _strtDelay {0};
+
+    bool updValidPressPend();
 public:
     DbncdDlydMPBttn();
     DbncdDlydMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0);
     unsigned long int getStrtDelay();
     bool init(const uint8_t &mpbttnPin, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0);
     boolean setStrtDelay(const unsigned long int &newStrtDelay);
-
-    bool updValidPressPend();
 
     bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
 };
@@ -78,14 +78,13 @@ protected:
     bool _releasePending{false};
     bool _unlatchPending{false};
     bool unlatch();
+    bool updIsOn();
+    bool updUnlatchPend();
+    bool updValidPressPend();
 public:
     LtchMPBttn(const uint8_t &mpbttnPin, const bool &pulledUp = true, const bool &typeNO = true, const unsigned long int &dbncTimeOrigSett = 0, const unsigned long int &strtDelay = 0);
     const bool getUnlatchPend() const;
     bool setUnlatchPend();
-    bool updUnlatchPend();
-
-    bool updIsOn();
-    bool updValidPressPend();
 
     bool begin(const unsigned long int &pollDelayMs = _StdPollDelay);
 };

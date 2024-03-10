@@ -8,7 +8,7 @@
 
   1DbncdDlyd_1Ltch_InTasks.ino
   Created by Gabriel D. Goldman, August, 2023.
-  Updated by Gabriel D. Goldman, August 20, 2023.
+  Updated by Gabriel D. Goldman, August, 2023.
   Released into the public domain in accordance with "GPL-3.0-or-later" license terms.
 
   Example file to demonstrate DbncdDlydMPBttn and LtchMPBttn classes, required hardware and connections:
