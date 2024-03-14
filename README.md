@@ -1,4 +1,10 @@
 # **Momentary Push Buttons to Switches** Library (mpbToSwitch)
+
+## Switches make the World go 'round  
+### At least... Would you believe me if I told you they Turn On the devices that make it spindle...?  
+
+![Switches](https://github.com/GabyGold67/MomentaryPushButtonsAsSwitches/blob/main/extras/Switches_02b.jpg)
+
 ## An ESP32-RTOS Arduino library that builds switch mechanisms replacements out of simple push buttons.  
 By using just a push button (a.k.a. momentary switches or momentary buttons, _**MPB**_ for short from here on) the classes implemented in this library will manage, calculate and update different parameters to **generate the behavior of standard electromechanical switches**. Those parameters include presses, releases, timings, counters or secondary input readings as needed.
 
@@ -344,7 +350,7 @@ Returns the current value of unlatch pending flag, whose boolean value indicates
 true: The current object's unlatchPending flag is set.  
 false: The current object's unlatchPending flag is reset.  
 ### Use example:  
-**`if(myDButton.getUnlatchPend(){...}`**  //Executes some code if the unlatchPending flag is set.  
+**`if(myDButton.getUnlatchPend()){...}`**  //Executes some code if the unlatchPending flag is set.  
 
 ---  
 
@@ -358,7 +364,6 @@ true: the unlatchPending value was set.
 false: Abnormal situation, the unlatchPending flag could not be set.  
 ### Use example:  
 **`myDButton.setUnlatchPend();`**  
-
 ---  
 ---  
 # **TmLtchMPBttn class**  
