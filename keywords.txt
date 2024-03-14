@@ -33,9 +33,6 @@ resume  KEYWORD2
 setDbncTime KEYWORD2
 setOutputsChange  KEYWORD2
 setTaskToNotify   KEYWORD2
-updIsOn    KEYWORD2
-updIsPressed    KEYWORD2
-updValidPressPend   KEYWORD2
 ################
 #DbncdDlydMPBttn
 ################
@@ -46,7 +43,6 @@ setStrtDelay    KEYWORD2
 ###########
 getUnlatchPend  KEYWORD2
 setUnlatchPend  KEYWORD2
-updUnlatchPend  KEYWORD2
 #################
 #XtrnUnltchMPBttn
 #################
@@ -63,8 +59,6 @@ setTmerRstbl    KEYWORD2
 getPilotOn  KEYWORD2
 getWrnngOn  KEYWORD2
 setKeepPilot    KEYWORD2
-updPilotOn  KEYWORD2
-updWrnngOn  KEYWORD2
 ###########
 #VdblMPBttn
 ###########
@@ -76,7 +70,6 @@ getIsVoided KEYWORD2
 setIsEnabled    KEYWORD2
 setIsOnDisabled   KEYWORD2
 setIsVoided KEYWORD2
-updIsVoided KEYWORD2
 #############
 #TmVdblMPBttn
 #############
