@@ -340,9 +340,16 @@ The **Toggle switch**  keeps the ON state since the moment the signal is stable 
 |**setUnlatchPend()**|None|
   
 ---  
+### **LtchdMPBttn**(uint8_t **mpbttnPin**, bool **pulledUp**, bool **typeNO**, unsigned long int **dbncTimeOrigSett**, unsigned long int **strtDelay**)
+### Description:  
+Class constructor, creates an instance of the class for each **Latched Momentary Push Button**. There's no need to configure the input pin before calling the method, as the constructor takes care of the task.  
+### Parameters:  
+Same as **DbncdDlydMPBttn()** class objects constructor.  
+
+---  
 ## **getUnlatchPend**()  
 ### Description:  
-Returns the current value of unlatch pending flag, whose boolean value indicates if the conditions were given to unlatch a LtchMPBttn object. The periodical timer event that takes care of keeping the internal and external objects'flags updated, takes care of the actions required to set the flag and eventually acting on this flag value. This method makes it possible to know the flag value to give the developer a tool to generate other events his development might required, but not by modifying the class.  
+Returns the current value of unlatch pending flag, whose boolean value indicates if the conditions were given to unlatch a LtchMPBttn object. The periodical timer event that takes care of keeping the internal and external objects' flags updated takes care of the actions required to set the flag and eventually acting on this flag value. This method makes it possible to know the flag value to give the developer a tool to generate other events his development might require, but not by modifying the class.  
 ### Parameters:  
 **None**  
 ### Return value:  
@@ -367,7 +374,7 @@ false: Abnormal situation, the unlatchPending flag could not be set.
 ---  
 
 # **TmLtchMPBttn class**  
-The **Timer toggled** or **Timer Switch**, keeps the ON state since the moment the signal is debounced, and keeps the state during a set time, the switch time is set at instantiation, and can be modified through the provided methods. The switch implementation gives the option to allow to reset the timer before reaches the time limit if the push button is pressed again.  
+The **Timer toggled** or **Timer Switch**, keeps the ON state **since the moment the signal is debounced and delayed**, and keeps the ON state during a set time. The switch time is set at instantiation, and can be modified through the provided methods. The switch implementation gives the option to allow to reset the timer before reaches the time limit if the push button is pressed again.  
   
 ## **Added Methods for TmLtchMPBttn class**  
 |Method | Parameters|
@@ -376,6 +383,38 @@ The **Timer toggled** or **Timer Switch**, keeps the ON state since the moment t
 |**getSvcTime()**|None|
 |**setSvcTime()**|unsigned long int **newSvcTime**|
 |**setTmerRstbl()**|bool **isRstbl**|
+
+---  
+### **TmLtchdMPBttn**(uint8_t **mpbttnPin**, unsigned long int **svcTime**, bool **pulledUp**, bool **typeNO**, unsigned long int **dbncTimeOrigSett**, unsigned long int **strtDelay**)
+### Description:  
+Class constructor, creates an instance of the class for each **Time Latched Momentary Push Button**. There's no need to configure the input pin before calling the method, as the constructor takes care of the task.  
+### Parameters:  
+**svcTime:** unsigned long integer (uLong), indicates the time (in milliseconds) the ON flag will be kept set (true) after the debounce & delay process ends. The value must be greater or equal to the **_MinSrvcTime** library constant. The constant is set to give a minimum margin to keep the processes times guaranteed for a manual pushbutton implementation. There is no set upper limit for this parameter besides that imposed by the data type.    
+Rest of the parameters are as described at **LtchdMPBttn()** class objects constructor.  
+
+---  
+## **getSvcTime**()  
+### Description:  
+Returns the current value of time used by the object to keep the isOn flag rised, after the debouncing & delaying process ends, in milliseconds. The original value for the service time used at instantiation might be changed with the **setSvcTime()** method, so this method is provided to get the current value in use.  
+### Parameters:  
+**None**  
+### Return value:  
+unsigned long integer: The current service time, in milliseconds, being used to keep rised the isOn flag, after the debounce & delay process of the current object.  
+### Use example:  
+**`unsigned long curOnTime {myDButton.getSvcTime()};`**  //Stores the current Start delay value in the curDelay variable  
+  
+---  
+### **setSvcTime**(unsigned long int **newSvcTime**)  
+### Description:  
+Sets a new time for the Service Time period. The value must be greater or equal to the **_MinSrvcTime** library constant.  
+### Parameters:  
+**newSvcTime:** unsigned long integer, the new service time value for the object.  
+### Return value:  
+true: the new value is valid and different than the previously set value, so the change was made.  
+false: the value passed is equal to the one already in use, or is no greater or equal to the **_MinSrvcTime** value, so no change was made.  
+### Use example:  
+**`myDButton.setSvcTime(0);`** // Fails as it's not a valid value.  
+**`myDButton.setSvcTime(myDButton.getSvcTime() + 15);`** //Changes the current service time by adding 15 milliseconds, and returns true.  
 
 ---  
 ---  

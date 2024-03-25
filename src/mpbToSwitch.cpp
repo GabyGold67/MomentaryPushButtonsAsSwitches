@@ -540,9 +540,11 @@ const unsigned long int TmLtchMPBttn::getSvcTime() const{
 bool TmLtchMPBttn::setSvcTime(const unsigned long int &newSvcTime){
     bool result {false};
 
-    if (newSvcTime > _MinSrvcTime){  //The minimum activation time must be kept
-        _srvcTime = newSvcTime;
-        result = true;
+    if (newSvcTime != _srvcTime){
+        if (newSvcTime > _MinSrvcTime){  //The minimum activation time must be kept
+            _srvcTime = newSvcTime;
+            result = true;
+        }
     }
 
     return result;
@@ -1028,11 +1030,13 @@ bool TmVdblMPBttn::setIsVoided(const bool &newVoidValue){
 bool TmVdblMPBttn::setVoidTime(const unsigned long int &newVoidTime){
     bool result{false};
 
-    if(newVoidTime > 0){
-        _voidTime = newVoidTime;
-        result = true;
+    if(newVoidTime != _voidTime){    
+        if(newVoidTime > 0){
+            _voidTime = newVoidTime;
+            result = true;
+        }
     }
-    
+
     return result;
 }
 

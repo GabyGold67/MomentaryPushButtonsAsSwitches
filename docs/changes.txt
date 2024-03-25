@@ -1,3 +1,7 @@
+v3.0.3 Attribute setters improvement, documentation update
+_ Attribute setters limit verification improved for some classes.
+_ Documentation upgrade for better description of classes methods.
+
 v3.0.2 Methods security adjustment, documentation update
 _ Access modifiers to some methods managing the internal flags update changed for improved protection.
 _ Documentation upgrade for better description of classes methods.
