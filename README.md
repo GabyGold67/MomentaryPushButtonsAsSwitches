@@ -10,8 +10,8 @@ For the STM32-FreeRTOS environment:
 For the ESP32-RTOS Arduino environment
 ## https://github.com/GabyGold67/ButtonToSwitch_ESP32
 
-For the Arduino for AVR enviornment
-https://github.com/GabyGold67/ButtonToSwitch_AVR
+For the Arduino for AVR enviornment  
+## https://github.com/GabyGold67/ButtonToSwitch_AVR
 
 ---  
 ---  
