@@ -1,5 +1,21 @@
 # **Momentary Push Buttons to Switches** Library (mpbToSwitch)
 
+# This repository was moved to the **Archived status**  
+
+## The ButtonToSwitch libraries projects continue their development in the following Github repositories:  
+
+For the STM32-FreeRTOS environment:  
+## https://github.com/GabyGold67/ButtonToSwitch_STM32
+
+For the ESP32-RTOS Arduino environment
+## https://github.com/GabyGold67/ButtonToSwitch_ESP32
+
+For the Arduino for AVR enviornment
+https://github.com/GabyGold67/ButtonToSwitch_AVR
+
+---  
+---  
+
 ## Switches make the World go 'round  
 ### At least... Would you believe me if I told you they Turn On the devices that make it spindle...?  
 
